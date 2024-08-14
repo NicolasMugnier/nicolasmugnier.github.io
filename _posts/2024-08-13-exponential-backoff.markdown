@@ -1,3 +1,8 @@
+---
+tags: algorithm
+author: Nicolas Mugnier
+---
+
 :pushpin: Algorithme "d'exponentiel backoff", mais qu'est-ce que c'est ?
 
 Un algorithme d'exponentiel backoff est un algorithme permettant de temporiser les tentatives d'exécution d'un bout de code.
