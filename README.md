@@ -3,7 +3,7 @@ Hi :wave:, I'm Nicolas !
 
 I'm a Senior Backend Engineer and AWS enthousiast.
 
-:spiral_calendar: Since 14 years I've worked on differents kinds of projects and used many frameworks / tools / languages depending on the context :coffee: :
+:spiral_calendar: I've worked on differents kinds of projects and used many frameworks / tools / languages depending on the context :coffee: :
 - e-commerce extensions (Prestashop, Magento, Magento2)
 - e-commerce plateform (Magento / Magento2)
 - Containerize application (Akeneo) and deploy it on OpenShift
