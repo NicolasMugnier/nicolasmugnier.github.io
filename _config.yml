@@ -24,10 +24,13 @@ description: >-
   This blog covers technical challenges, best practices, and personal reflections 
   on navigating the backend engineering landscape.
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://nicolasmugnier.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  "NicolasMugnier"
 footer_title : "This is a footer :footprints:"
 show_excerpts: true
+
+disqus:
+  shortname: nicolasmugnier-github-io
 
 # Build settings
 theme: minima
