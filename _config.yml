@@ -18,7 +18,7 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: Thoughts from a backend engineer
+title: Backend Engineer Insights
 description: >-
   Hi :wave:, I'm Nicolas ! Sharing insights, experiences, and thoughts as a Senior Backend Engineer. 
   This blog covers technical challenges, best practices, and personal reflections 
