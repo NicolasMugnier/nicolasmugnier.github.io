@@ -1,0 +1,283 @@
+---
+tags: algorithm
+author: Nicolas Mugnier
+categories: algorithm
+---
+
+Quelques exemples de tri
+
+- [Tri par insertion](#tri-par-insertion)
+- [Tri par sélection](#tri-par-sélection)
+- [Tri par échange](#tri-par-échange)
+- [Shakesort](#shakesort)
+- [Shellsort](#shellsort)
+- [Heapsort](#heapsort)
+- [Quicksort](#quicksort)
+
+## Tri par insertion
+
+```c
+void Insertion (int tab[], int ntab)
+{
+	int i,j,k,tmp;
+	for(k=1;k<ntab;k++)
+	{
+		tmp=tab[k];
+		j=k-1;
+		while(j>=0 && tmp<tab[j])
+		{
+			tab[j+1]=tab[j];
+			j--;
+		}
+	 	
+		tab[j+1]=tmp;
+	 }
+}
+```
+
+## Tri par sélection
+
+```c
+void Selection (int tab[], int ntab)
+{
+	int i,j,k,max,rangmax,tmp;
+
+	k=ntab;
+
+	while(k>0)
+	{
+		max=tab[0];
+		rangmax=0;
+	
+		for(j=0;j<k;j++)
+		{
+			if(tab[j]>max)
+			{
+				max=tab[j];
+				rangmax=j;
+			}
+		}
+	
+		tmp=tab[k-1];
+		tab[k-1]=max;
+		tab[rangmax]=tmp;
+	
+		k--;
+	}
+}
+```
+
+## Tri par échange
+
+```c
+void Echange (int tab[], int ntab)
+{
+	int k,tmp,i;
+
+	k=ntab-1;
+
+	while(k>0)
+	{
+		for(i=0;i<k;i++)
+		{
+			if(tab[i]>tab[i+1])
+			{
+				tmp=tab[i+1];
+				tab[i+1]=tab[i];
+				tab[i]=tmp;
+			}
+		}
+
+		k--;
+	}
+}
+```
+
+## Shakesort
+
+```c
+void Shakesort(int tab[], int ntab)
+{
+	int g,d,i,tmp;
+
+	g=0;
+	d=ntab-1;
+
+	while(d>g)
+	{
+		for(i=g;i<d;i++)
+		{
+			if(tab[i]>tab[i+1])
+			{
+				tmp=tab[i+1];
+				tab[i+1]=tab[i];
+				tab[i]=tmp;
+			}
+		}
+	
+		d--;
+
+		for(i=d;i>=g;i--)
+		{
+			if(tab[i]<tab[i-1])
+			{
+				tmp=tab[i];
+				tab[i]=tab[i-1];
+				tab[i-1]=tmp;
+			}
+		}
+	
+		g++;
+	}
+}
+```
+
+## Shellsort
+
+```c
+void Shellsort(int tab[], int ntab)
+{
+	int p,i,j,tmp;
+
+	// calcul du pas
+	for(p=1;p*3+1<ntab;p=p*3+1)
+		;
+
+	while(p>=1)
+	{
+		for(i=p;i<ntab;i+=p)
+		{
+			j=i-p;
+			tmp=tab[i];
+
+			while(j>=0 && tmp<tab[j])
+			{
+				tab[j+p]=tab[j];
+				j-=p;
+			}
+	 
+			tab[j+p]=tmp;
+		}
+
+		p=(p-1)/3;
+	}
+}
+```
+
+## Heapsort
+
+```c
+void placer(int g, int d, int *T)
+{
+	int i,j,x,place_trouvee;
+	x=T[g];
+	i=g;
+	j=2*g+1;
+	place_trouvee=0;
+
+	while((j<=d) && !(place_trouvee))
+	{
+		if(j<d)
+			if (T[j+1]>T[j]) j++;
+		
+		if(x>=T[j])
+			place_trouvee=1;
+
+		else
+		{
+			T[i]=T[j];
+			i=j;
+			j=2*i+1;
+		}
+	}
+
+	T[i]=x;
+}
+
+void Heapsort(int tab[], int ntab)
+{
+	int d,g,tmp;
+	g=ntab/2;
+	d=ntab-1;
+	
+	while(g>0)
+	{
+		placer(g-1,d,tab);
+		g--;
+	}
+	
+	while(d>0)
+	{
+		tmp=tab[0];
+		tab[0]=tab[d];
+		tab[d]=tmp;
+		d--;
+		placer(0,d,tab);
+	}
+}
+```
+
+## Quicksort
+
+```c
+int partition(int t[], int gauche, int droite)
+{
+	int i,j,k,l,p,tmp;
+	
+	i=gauche;
+	j=droite-1;
+	k=(gauche+droite)/2;
+	p=t[k];
+	
+	while(i<j)
+	{
+		
+		while((i<k)&&(t[i]<=p)) i++;
+		while((j>k)&&(t[j]>=p)) j--;
+
+		if(i<k && j>k){
+			tmp=t[i];
+			t[i]=t[j];
+			t[j]=tmp;
+		}
+
+		if((j==k)&&(i<k))
+		{
+			//decalage du tableau vers la gauche
+			tmp=t[i];
+			for(l=i;l<k;l++)
+				t[l]=t[l+1];
+			t[k]=tmp;
+			k--;
+			p=t[k];
+			j--;
+		}
+
+		if((i==k)&&(j>k))
+		{
+			//decalage du tableau vers la droite
+			tmp=t[j];
+			for(l=j;l>k;l--)
+				if(l>0)
+					t[l]=t[l-1];
+			t[k]=tmp;
+			k++;
+			p=t[k];
+			i++;
+		}
+	}
+	return k;
+}
+
+void Quicksort(int t[],int debut, int fin)
+{
+	int k;
+	k=partition(t,debut,fin);
+	if(debut<fin)
+	{
+		if(debut+1<k) Quicksort(t,debut,k+1);
+		if(k<fin-1) Quicksort(t,k+1,fin);
+	}
+
+}
+```
