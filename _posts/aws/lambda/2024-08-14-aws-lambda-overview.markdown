@@ -1,5 +1,6 @@
 ---
 tags: aws lambda
+categories: aws lambda
 author: Nicolas Mugnier
 ---
 
