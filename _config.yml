@@ -32,11 +32,17 @@ show_excerpts: true
 disqus:
   shortname: nicolasmugnier-github-io
 
+minima:
+  social_links:
+    - { platform: github,  user_url: "https://github.com/NicolasMugnier" }
+
 # Build settings
-theme: minima
 plugins:
+  - jekyll-remote-theme
   - jekyll-feed
   - jemoji
+
+remote_theme: jekyll/minima
 
 # Exclude from processing.
 # The following items will not be processed, by default.
