@@ -1,6 +1,7 @@
 ---
 tags: algorithm
 author: Nicolas Mugnier
+categories: algorithm
 ---
 
 :pushpin: Algorithme "d'exponentiel backoff", mais qu'est-ce que c'est ?
