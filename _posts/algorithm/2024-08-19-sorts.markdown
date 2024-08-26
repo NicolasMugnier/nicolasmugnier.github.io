@@ -4,7 +4,7 @@ author: Nicolas Mugnier
 categories: algorithm
 ---
 
-Quelques exemples de tri
+Quelques exemples de tri en C issus d'un projet à la fac :blush:
 
 - [Tri par insertion](#tri-par-insertion)
 - [Tri par sélection](#tri-par-sélection)
@@ -41,7 +41,6 @@ void Insertion (int tab[], int ntab)
 void Selection (int tab[], int ntab)
 {
 	int i,j,k,max,rangmax,tmp;
-
 	k=ntab;
 
 	while(k>0)
@@ -73,7 +72,6 @@ void Selection (int tab[], int ntab)
 void Echange (int tab[], int ntab)
 {
 	int k,tmp,i;
-
 	k=ntab-1;
 
 	while(k>0)
@@ -99,7 +97,6 @@ void Echange (int tab[], int ntab)
 void Shakesort(int tab[], int ntab)
 {
 	int g,d,i,tmp;
-
 	g=0;
 	d=ntab-1;
 
