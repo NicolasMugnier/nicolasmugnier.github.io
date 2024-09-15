@@ -35,6 +35,49 @@ void Insertion (int tab[], int ntab)
 }
 ```
 
+### Complexité en temps
+
+**Meilleur cas (tableau déjà trié)** :
+    Dans ce cas, chaque élément est comparé une seule fois avec l'élément précédent.
+    La complexité est donc linéaire : **O(n)**.
+
+**Pire cas (tableau trié en ordre inverse)** :
+    Chaque nouvel élément doit être comparé avec tous les éléments déjà triés et déplacé au début du tableau.
+    La complexité est quadratique : **O(n^2)**.
+
+**Cas moyen** :
+    En moyenne, chaque élément doit être comparé avec la moitié des éléments déjà triés.
+    La complexité est également quadratique : **O(n^2)**.
+
+### Complexité en espace
+
+L'algorithme de tri par insertion est un algorithme en place, ce qui signifie qu'il ne nécessite pas de mémoire supplémentaire significative en dehors de l'entrée.
+La complexité en espace est donc **O(1)**.
+
+### Résumé
+
+- **Meilleur cas** : O(n)
+- **Pire cas** : O(n^2)
+- **Cas moyen** : O(n^2)
+- **Complexité en espace** : O(1)
+
+Le tri par insertion est efficace pour les petits tableaux ou les tableaux qui sont déjà partiellement triés, mais il devient inefficace pour les grands tableaux non triés en raison de sa complexité quadratique en temps dans le pire cas.
+
+<details>
+<summary>Exemple</summary>
+<div class="mermaid">
+graph TD
+    A["Début : [3, 1, 2]"]
+    A --> B["k=1, tmp=1, j=0"]
+    B --> C["[3, 3, 2]"]
+    C --> D["[1, 3, 2]"]
+    D --> E["k=2, tmp=2, j=1"]
+    E --> F["[1, 3, 3]"]
+    F --> G["[1, 2, 3]"]
+    G --> H["Fin"]
+</div>
+</details>
+
 ## Tri par sélection
 
 ```c
@@ -66,7 +109,60 @@ void Selection (int tab[], int ntab)
 }
 ```
 
-## Tri par échange
+### Complexité en temps
+
+**Meilleur cas** :
+Le tri par sélection effectue toujours le même nombre de comparaisons, quel que soit l'état initial du tableau.
+Pour chaque élément, il parcourt le reste du tableau pour trouver le maximum (ou minimum).
+La complexité est donc quadratique : **O(n^2)**.
+
+**Pire cas** :
+Comme pour le meilleur cas, le tri par sélection effectue toujours le même nombre de comparaisons.
+La complexité est quadratique : **O(n^2)**.
+
+**Cas moyen** :
+De même, le nombre de comparaisons reste constant indépendamment de l'ordre initial des éléments.
+La complexité est quadratique : **O(n^2)**.
+
+### Complexité en espace
+
+Le tri par sélection est un algorithme en place, ce qui signifie qu'il ne nécessite pas de mémoire supplémentaire significative en dehors de l'entrée.
+La complexité en espace est donc **O(1)**.
+
+### Résumé
+
+- **Meilleur cas** : O(n^2)
+- **Pire cas** : O(n^2)
+- **Cas moyen** : O(n^2)
+- **Complexité en espace** : O(1)
+
+Le tri par sélection est simple à implémenter et peut être efficace pour les petits tableaux, mais il devient inefficace pour les grands tableaux en raison de sa complexité quadratique en temps.
+
+<details>
+<summary>Exemple</summary>
+<div class="mermaid">
+graph TD
+    A["Début : [3, 1, 2]"]
+    A --> B["k=3, max=3, rangmax=0"]
+    B --> C["Parcours j=0 à 2"]
+    C --> D["j=0, max=3, rangmax=0"]
+    D --> E["j=1, max=3, rangmax=0"]
+    E --> F["j=2, max=3, rangmax=0"]
+    F --> G["Échange tab[2] et tab[0]"]
+    G --> H["[2, 1, 3]"]
+    H --> I["k=2, max=2, rangmax=0"]
+    I --> J["Parcours j=0 à 1"]
+    J --> K["j=0, max=2, rangmax=0"]
+    K --> L["j=1, max=2, rangmax=0"]
+    L --> M["Échange tab[1] et tab[0]"]
+    M --> N["[1, 2, 3]"]
+    N --> O["k=1, max=1, rangmax=0"]
+    O --> P["Aucun échange nécessaire"]
+    P --> Q["Fin"]
+</div>
+</details>
+
+## Tri par échange (ou tri à bulles)
 
 ```c
 void Echange (int tab[], int ntab)
@@ -91,7 +187,57 @@ void Echange (int tab[], int ntab)
 }
 ```
 
+### Complexité en temps
+
+**Meilleur cas (tableau déjà trié)** :
+Dans ce cas, une seule passe est nécessaire pour vérifier que le tableau est déjà trié.
+La complexité est linéaire : **O(n)**.
+
+**Pire cas (tableau trié en ordre inverse)** :
+Chaque élément doit être comparé et échangé avec tous les autres éléments.
+La complexité est quadratique : **O(n^2)**.
+
+**Cas moyen** :
+En moyenne, chaque élément doit être comparé et échangé avec la moitié des autres éléments.
+La complexité est également quadratique : **O(n^2)**.
+
+### Complexité en espace
+
+Le tri par échange est un algorithme en place, ce qui signifie qu'il ne nécessite pas de mémoire supplémentaire significative en dehors de l'entrée.
+La complexité en espace est donc **O(1)**.
+
+### Résumé
+
+- **Meilleur cas** : O(n)
+- **Pire cas** : O(n^2)
+- **Cas moyen** : O(n^2)
+- **Complexité en espace** : O(1)
+
+Le tri par échange est simple à implémenter et peut être efficace pour les petits tableaux ou les tableaux presque triés, mais il devient inefficace pour les grands tableaux non triés en raison de sa complexité quadratique en temps dans le pire cas.
+
+<details>
+<summary>Exemple</summary>
+<div class="mermaid">
+graph TD
+    A["Début : [3, 1, 2]"]
+    A --> B["k=2"]
+    B --> C["i=0, comparer tab[0] et tab[1]"]
+    C --> D["Échanger 3 et 1"]
+    D --> E["[1, 3, 2]"]
+    E --> F["i=1, comparer tab[1] et tab[2]"]
+    F --> G["Échanger 3 et 2"]
+    G --> H["[1, 2, 3]"]
+    H --> I["k=1"]
+    I --> J["i=0, comparer tab[0] et tab[1]"]
+    J --> K["Aucun échange nécessaire"]
+    K --> L["k=0"]
+    L --> M["Fin"]
+</div>
+</details>
+
 ## Shakesort
+
+Le tri par Shakesort, également connu sous le nom de tri cocktail, est une variante du tri à bulles qui fonctionne en deux passes : une passe de gauche à droite et une passe de droite à gauche. Cela permet de réduire le nombre de passes nécessaires pour trier le tableau.
 
 ```c
 void Shakesort(int tab[], int ntab)
@@ -129,8 +275,93 @@ void Shakesort(int tab[], int ntab)
 }
 ```
 
+### Complexité en temps
+
+**Meilleur cas (tableau déjà trié)** :
+Dans ce cas, une seule passe est nécessaire pour vérifier que le tableau est déjà trié.
+La complexité est linéaire : **O(n)**.
+
+**Pire cas (tableau trié en ordre inverse)** :
+Chaque élément doit être comparé et échangé avec tous les autres éléments dans les deux directions.
+La complexité est quadratique : **O(n^2)**.
+
+**Cas moyen** :
+En moyenne, chaque élément doit être comparé et échangé avec la moitié des autres éléments dans les deux directions.
+La complexité est également quadratique : **O(n^2)**.
+
+### Complexité en espace
+
+Le tri par Shakesort est un algorithme en place, ce qui signifie qu'il ne nécessite pas de mémoire supplémentaire significative en dehors de l'entrée.
+La complexité en espace est donc **O(1)**.
+
+### Résumé
+
+- **Meilleur cas** : O(n)
+- **Pire cas** : O(n^2)
+- **Cas moyen** : O(n^2)
+- **Complexité en espace** : O(1)
+
+Le tri par Shakesort est plus efficace que le tri à bulles pour les tableaux presque triés, car il réduit le nombre de passes nécessaires en triant dans les deux directions. Cependant, il reste inefficace pour les grands tableaux non triés en raison de sa complexité quadratique en temps dans le pire cas.
+
+<details>
+<summary>Exemple</summary>
+<div class="mermaid">
+graph TD
+    A["Début : [3, 1, 2]"]
+    A --> B["g=0, d=2"]
+    B --> C["Passe de gauche à droite"]
+    C --> D["i=0, comparer tab[0] et tab[1]"]
+    D --> E["Échanger 3 et 1"]
+    E --> F["[1, 3, 2]"]
+    F --> G["i=1, comparer tab[1] et tab[2]"]
+    G --> H["Échanger 3 et 2"]
+    H --> I["[1, 2, 3]"]
+    I --> J["d=1"]
+    J --> K["Passe de droite à gauche"]
+    K --> L["i=1, comparer tab[1] et tab[0]"]
+    L --> M["Aucun échange nécessaire"]
+    M --> N["g=1"]
+    N --> O["d>g ? Non"]
+    O --> P["Fin"]
+</div>
+</details>
+
 ## Shellsort
 
+Shellsort est une généralisation du tri par insertion qui permet d'échanger des éléments éloignés.
+Ce tri utilise une séquence de pas afin de trier les éléments par la suite.
+
+Il existe différents types de séquence dont l'usage impacte la complexité en temps de la fonction de tri.
+
+Ici j'utilise la séquence de Knuth `p = (p-1) / 3`
+
+La fonction est donc composée de deux parties : 
+1. le calcul du pas
+```c
+for(p=1;p*3+1<ntab;p=p*3+1)
+		;
+```
+2. l'utilisation du pas afin d'effectuer le tri
+```c
+while(p >= 1)
+{
+    for(i=p; i<ntab; i+=p)
+    {
+        j=i-p;
+        tmp=tab[i];
+
+        while(j >= 0 && tmp < tab[j])
+        {
+            tab[j+p] = tab[j];
+            j -= p;
+        }
+        tab[j+p] = tmp;
+    }
+    p = (p-1) / 3;
+}
+```
+
+Fonction complète
 ```c
 void Shellsort(int tab[], int ntab)
 {
@@ -161,7 +392,80 @@ void Shellsort(int tab[], int ntab)
 }
 ```
 
+La complexité de la fonction Shellsort dépend de la séquence de pas utilisée. Ici la séquence de pas utilisée est la séquence de Knuth, définie par la formule :
+
+`[ p_k = 1, 4, 13, 40, 121, \ldots ]`
+
+où chaque terme est calculé comme :
+
+`[ p_{k+1} = 3 \times p_k + 1 ]`
+
+### Complexité en temps
+
+**Meilleur cas** :
+La complexité en temps dans le meilleur cas pour Shellsort avec la séquence de Knuth est **O(n log n)**.
+
+**Pire cas** :
+La complexité en temps dans le pire cas pour Shellsort avec la séquence de Knuth est **O(n^(3/2))**.
+
+**Cas moyen** :
+La complexité en temps dans le cas moyen pour Shellsort avec la séquence de Knuth est généralement considérée comme étant entre **O(n log n)** et **O(n^(3/2))**.
+
+### Complexité en espace
+
+Shellsort est un algorithme en place, ce qui signifie qu'il ne nécessite pas de mémoire supplémentaire significative en dehors de l'entrée.
+La complexité en espace est donc **O(1)**.
+
+### Résumé
+
+- **Meilleur cas** : O(n log n)
+- **Pire cas** : O(n^(3/2))
+- **Cas moyen** : Entre O(n log n) et O(n^(3/2))
+- ***Complexité en espace** : O(1)
+
+La séquence de Knuth est connue pour améliorer l'efficacité du tri par rapport à d'autres séquences de pas, ce qui rend Shellsort avec cette séquence plus performant que le tri par insertion ou le tri à bulles pour des tableaux de grande taille.
+
+<details>
+<summary>Exemple</summary>
+<div class="mermaid">
+graph TD
+    A["Début : [3, 1, 2]"]
+    A --> B["Calcul du pas initial"]
+    B --> C["p=1"]
+    C --> D["Passe avec p=1"]
+    D --> E["i=1, tmp=1, j=0"]
+    E --> F["Comparer tab[1] et tab[0]"]
+    F --> G["Échanger 1 et 3"]
+    G --> H["[1, 3, 2]"]
+    H --> I["i=2, tmp=2, j=1"]
+    I --> J["Comparer tab[2] et tab[1]"]
+    J --> K["Échanger 2 et 3"]
+    K --> L["[1, 2, 3]"]
+    L --> M["Réduire p : p=(p-1)/3"]
+    M --> N["p=0"]
+    N --> O["Fin"]
+</div>
+</details>
+
 ## Heapsort
+
+Le tri par tas (Heapsort) est un algorithme de tri basé sur la structure de données appelée tas (heap). Le principe du tri par tas repose sur deux étapes principales : la construction d'un tas et l'extraction répétée de l'élément maximal (ou minimal) du tas pour le placer à sa position correcte dans le tableau.
+
+### Principe du tri Heapsort
+
+**Construction du tas** :
+Construire un tas max (ou min) à partir du tableau non trié. Un tas max est une structure de données où chaque nœud est supérieur ou égal à ses enfants.
+Cette étape garantit que le plus grand élément du tableau se trouve à la racine du tas.
+
+**Extraction répétée** :
+Échanger la racine du tas (le plus grand élément) avec le dernier élément du tableau.
+Réduire la taille du tas de 1 et rétablir la propriété de tas max en appelant la fonction placer (ou heapify) sur la nouvelle racine.
+Répéter ce processus jusqu'à ce que tous les éléments soient extraits et placés dans leur position correcte.
+
+**Fonction placer** : 
+La fonction placer (ou heapify) est utilisée pour rétablir la propriété de tas max après chaque extraction. 
+
+Voici le code de la fonction placer :
 
 ```c
 void placer(int g, int d, int *T)
@@ -190,7 +494,13 @@ void placer(int g, int d, int *T)
 
 	T[i]=x;
 }
+```
 
+**Fonction Heapsort** 
+La fonction Heapsort utilise la fonction placer pour trier le tableau.
+
+ Voici un exemple de la fonction Heapsort :
+```c
 void Heapsort(int tab[], int ntab)
 {
 	int d,g,tmp;
@@ -214,7 +524,62 @@ void Heapsort(int tab[], int ntab)
 }
 ```
 
+### Complexité en temps
+
+**Construction du tas** :
+La construction initiale du tas max se fait en parcourant les éléments du tableau à partir du milieu jusqu'au début et en appelant la fonction placer pour chaque élément.
+La complexité de la construction du tas est **O(n)**.
+
+**Extraction répétée** :
+Après la construction du tas, chaque extraction de l'élément maximal (ou minimal) et la réorganisation du tas prennent **O(log n)**.
+Comme il y a n éléments à extraire, la complexité totale de cette étape est **O(n log n)**.
+
+### Complexité en espace
+
+Le tri par tas est un algorithme en place, ce qui signifie qu'il ne nécessite pas de mémoire supplémentaire significative en dehors de l'entrée.
+La complexité en espace est donc **O(1)**.
+
+### Résumé
+
+- **Construction du tas** : O(n)
+- **Extraction répétée** : O(n log n)
+- **Complexité totale en temps** : O(n log n)
+- **Complexité en espace** : O(1)
+
+Ce type de tri est efficace pour trier de grands tableaux et est souvent utilisé en raison de sa performance stable et de sa faible utilisation de mémoire.
+
+<details>
+<summary>Exemple</summary>
+<div class="mermaid">
+graph TD
+    A["Début : [3, 1, 2]"]
+    A --> B["Construction du tas"]
+    B --> C["i=0, appeler placer(0, 2, tab)"]
+    C --> D["Tas max : [3, 1, 2]"]
+    D --> E["Extraction répétée"]
+    E --> F["Échanger tab[0] et tab[2]"]
+    F --> G["[2, 1, 3]"]
+    G --> H["Appeler placer(0, 1, tab)"]
+    H --> I["Tas max : [2, 1, 3]"]
+    I --> J["Échanger tab[0] et tab[1]"]
+    J --> K["[1, 2, 3]"]
+    K --> L["Appeler placer(0, 0, tab)"]
+    L --> M["Tas max : [1, 2, 3]"]
+    M --> N["Fin"]
+</div>
+</details>
+
 ## Quicksort
+
+Le tri rapide (Quicksort) est un algorithme de tri efficace qui utilise la technique de "diviser pour régner". Le principe de base du tri rapide repose sur la partition du tableau en sous-tableaux, puis sur le tri récursif de ces sous-tableaux. Voici les étapes principales du tri rapide :
+
+1. **Choix du pivot** : Un élément du tableau est choisi comme pivot. Le choix du pivot peut varier (premier élément, dernier élément, élément médian, etc.).
+2. **Partition** : Le tableau est réorganisé de manière à ce que tous les éléments inférieurs au pivot soient placés avant le pivot et tous les éléments supérieurs au pivot soient placés après le pivot. Le pivot est alors à sa position finale dans le tableau trié.
+3. **Tri récursif** : Les sous-tableaux formés par les éléments inférieurs et supérieurs au pivot sont triés récursivement en appliquant les mêmes étapes.
+
+### Fonctionnement de la partition
+
+La fonction de partition divise le tableau en deux parties autour du pivot. 
 
 ```c
 int partition(int t[], int gauche, int droite)
@@ -265,7 +630,11 @@ int partition(int t[], int gauche, int droite)
 	}
 	return k;
 }
+```
 
+La fonction Quicksort utilise la fonction de partition pour diviser le tableau et appelle récursivement Quicksort sur les sous-tableaux :
+
+```c
 void Quicksort(int t[],int debut, int fin)
 {
 	int k;
@@ -278,3 +647,50 @@ void Quicksort(int t[],int debut, int fin)
 
 }
 ```
+
+### Complexité en temps
+
+**Meilleur cas** :
+Le meilleur cas se produit lorsque le pivot divise toujours le tableau en deux parties égales.
+La complexité est alors **O(n log n)**, car chaque division du tableau nécessite un temps linéaire **O(n)** et il y a **log n** niveaux de récursion.
+
+**Pire cas** :
+Le pire cas se produit lorsque le pivot est toujours le plus grand ou le plus petit élément, ce qui se produit souvent si le tableau est déjà trié ou presque trié.
+La complexité est alors **O(n^2)**, car chaque division du tableau ne réduit la taille du tableau que d'un élément, nécessitant n niveaux de récursion avec un temps linéaire **O(n)** à chaque niveau.
+
+**Cas moyen** :
+En moyenne, le pivot divise le tableau de manière relativement équilibrée.
+La complexité est alors **O(n log n)**, car la probabilité de diviser le tableau en parties égales est élevée.
+
+### Complexité en espace
+
+Quicksort est un algorithme en place, ce qui signifie qu'il ne nécessite pas de mémoire supplémentaire significative en dehors de l'entrée.
+Cependant, la profondeur de la pile de récursion peut atteindre **O(log n)** dans le meilleur cas et **O(n)** dans le pire cas.
+La complexité en espace est donc **O(log n)** en moyenne et **O(n)** dans le pire cas.
+
+### Résumé
+
+- **Meilleur cas** : O(n log n)
+- **Pire cas** : O(n^2)
+- **Cas moyen** : O(n log n)
+- **Complexité en espace** : O(log n) en moyenne, O(n) dans le pire cas
+
+Quicksort est généralement très efficace et est souvent utilisé en raison de sa complexité moyenne de **O(n log n)** et de sa faible utilisation de mémoire. Cependant, des précautions doivent être prises pour éviter le pire cas, par exemple en utilisant des techniques de choix de pivot plus sophistiquées comme le pivot médian de trois.
+
+<details>
+<summary>Exemple</summary>
+<div class="mermaid">
+graph TD
+    A["Début : [3, 1, 2]"]
+    A --> B["Choix du pivot : 3"]
+    B --> C["Partition autour de 3"]
+    C --> D["[2, 1, 3]"]
+    D --> E["Quicksort([2, 1], 0, 1)"]
+    E --> F["Choix du pivot : 2"]
+    F --> G["Partition autour de 2"]
+    G --> H["[1, 2, 3]"]
+    H --> I["Quicksort([1], 0, 0)"]
+    I --> J["Quicksort([], 2, 1)"]
+    J --> K["Fin"]
+</div>
+</details>
