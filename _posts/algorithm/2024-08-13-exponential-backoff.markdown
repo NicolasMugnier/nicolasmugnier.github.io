@@ -2,9 +2,11 @@
 tags: algorithm
 author: Nicolas Mugnier
 categories: algorithm
+description: Présentation de l'algorithme d'exponentiel backoff, son utilité, quand et comment l'utiliser ?
+locale: fr_FR
 ---
 
-:pushpin: Algorithme "d'exponentiel backoff", mais qu'est-ce que c'est ?
+Présentation de l'algorithme "d'exponentiel backoff", son utilité, quand et comment l'utiliser.
 
 Un algorithme d'exponentiel backoff est un algorithme permettant de temporiser les tentatives d'exécution d'un bout de code.
 
