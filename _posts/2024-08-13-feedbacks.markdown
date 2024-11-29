@@ -1,9 +1,12 @@
 ---
 tags: feedback sois
 author: Nicolas Mugnier
+image: /assets/img/feedback-sois.webp
+description: Les feedbacks sont un outil puissant mais pas forcément évident à appréhender, comment utiliser ce formidable outil de façon pertinente ?
+locale: fr_FR
 ---
 
-📈 Les feedbacks, un outils puissant mais pas forcément évident à appréhender.
+Les feedbacks sont un outil puissant mais pas forcément évident à appréhender, comment utiliser ce formidable outil de façon pertinente ?
 
 Dans un contexte professionnel les feedbacks peuvent faire partie du process de review de milieu d'année ou de fin d'année.
 
