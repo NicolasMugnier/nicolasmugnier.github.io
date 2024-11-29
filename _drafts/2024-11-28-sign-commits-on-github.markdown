@@ -1,6 +1,9 @@
 ---
 tags: git config sign pgp ssh verified
 author: Nicolas Mugnier
+description: TODO
+image: TODO
+locale: fr_FR
 ---
 
 ## Pourquoi ?
@@ -15,11 +18,20 @@ Afin de s'assurer de l'identité de l'auteur d'un commit, il est possible de con
 
 Création des clés
 
-TODO
+https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key
+
+```bash
+gpg --full-generate-key
+gpg --list-secret-keys --keyid-format=long
+```
+
+TODO passphrase
 
 Configuration de git
 
-TODO
+```bash
+git config --global user.signingkey <key-id>
+```
 
 Ajout de la clé publique dans Github
 
@@ -28,6 +40,8 @@ TODO : ajouter un print de l'UI
 ### SSH
 
 Création des clés
+
+https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
 
 TODO : passphrase
 
@@ -84,6 +98,20 @@ Configurer git pour utiliser la clé
 git config --global user.signingkey <key-id>
 ```
 
+## Usage
+
+```bash
+git commit -S -am 'feat(feature): message'
+git commit -S --amend
+git rebase -S -i HEAD~2
+git tag -s v0.0.1
+```
+
+```bash
+git config --global commit.gpgsign true
+git config --global tag.gpgSign true
+```
+
 ## Conserver la signature du commit lors du merge
 
 Les options disponibles depuis l'UI de Github ne permettent pas de conserver le commit signer lors du merge dans le cas où on shouaite conserver un historique linéaire sans commit de merge.
@@ -95,3 +123,7 @@ git pull origin main
 git merge --ff-only <head>
 git push -u origin main
 ```
+
+## Documentation
+
+https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits
