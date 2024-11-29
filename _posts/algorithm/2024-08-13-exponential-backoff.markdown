@@ -3,6 +3,7 @@ tags: algorithm
 author: Nicolas Mugnier
 categories: algorithm
 description: Présentation de l'algorithme d'exponentiel backoff, son utilité, quand et comment l'utiliser ?
+image: /assets/img/logo.webp
 locale: fr_FR
 ---
 
