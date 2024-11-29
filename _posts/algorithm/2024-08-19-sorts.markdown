@@ -2,9 +2,12 @@
 tags: algorithm
 author: Nicolas Mugnier
 categories: algorithm
+description: Présentation des principaux algorithmes de tris permettant de réordonner les informations contenues dans un tableau d'entiers.
+image: /assets/img/algorithmes-de-tri.webp
+locale: fr_FR
 ---
 
-Quelques exemples de tri en C issus d'un projet à la fac :blush:
+Présentation de quelques algorithmes de tris, réalisés en C, permettant de réordonner les informations contenues dans un tableau d'entiers. Dans cet article nous allons mettre en avant les différences entre les algorithmes et mesurer leur complexité.
 
 - [Tri par insertion](#tri-par-insertion)
 - [Tri par sélection](#tri-par-sélection)
