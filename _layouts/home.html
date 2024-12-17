@@ -25,16 +25,16 @@ layout: base
     <div class="post-list">
       {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
       {% for post in site.posts %}
+      <a class="post-link" href="{{ post.url | relative_url }}">
         <div class="card">
-          <a class="post-link" href="{{ post.url | relative_url }}">
             <div class="image-container">
               <img src="{{ post.image }}" alt="{{ post.image }}" />
             </div>
-          </a>
           <h2>{{ post.title }}</h2>
           <!--<p>{{ post.excerpt | strip_html }}</p>-->
           <p class="date">{{ post.date | date: date_format }}</p>
         </div>
+      </a>
       {% endfor %}
     </div>
 

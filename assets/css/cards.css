@@ -1,7 +1,14 @@
-.post-list {
+  .post-list {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
+    justify-content: center;
+  }
+
+  .post-list a {
+    text-decoration: none;
+    text-transform: none;
+    color: #111111;
   }
   
   .card {
