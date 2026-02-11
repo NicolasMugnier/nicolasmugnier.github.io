@@ -1,0 +1,28 @@
+// Dark theme palette overrides for Minima dark skin
+$brand-color:          #9b7dff !default;
+$brand-color-light:    lighten($brand-color, 15%) !default;
+$brand-color-dark:     darken($brand-color, 20%) !default;
+
+$site-title-color:     #ffffff !default;
+
+$text-color:           #b0b0b0 !default;
+$background-color:     #0d0d0d !default;
+$code-background-color:#1a1a1a !default;
+
+$link-base-color:      #9b7dff !default;
+$link-visited-color:   darken($link-base-color, 10%) !default;
+$link-hover-color:     lighten($link-base-color, 10%) !default;
+
+$border-color-01:      #2a2a2a !default;
+$border-color-02:      #333333 !default;
+$border-color-03:      #444444 !default;
+
+$table-text-color:     #b0b0b0 !default;
+$table-zebra-color:    #1a1a1a !default;
+$table-header-bg-color:#1e1e1e !default;
+$table-header-border:  #333333 !default;
+$table-border-color:   #2a2a2a !default;
+
+$content-width:        1320px !default;
+
+$base-font-family:     'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !default;

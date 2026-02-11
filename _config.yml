@@ -29,16 +29,20 @@ github_username:  "NicolasMugnier"
 footer_title : "This is a footer :footprints:"
 show_excerpts: true
 
-disqus:
-  shortname: nicolasmugnier-github-io
+#disqus:
+#  shortname: nicolasmugnier-github-io
 
 author:
   name: Nicolas Mugnier
+  bio: "Senior Backend Engineer & AWS enthusiast"
+  avatar: /assets/img/logo.webp
 
 header_pages:
-  - about.markdown
+  #- about.markdown
+  - tags.markdown
 
 minima:
+  skin: dark
   social_links:
     - { platform: github,  user_url: "https://github.com/NicolasMugnier" }
     - { platform: linkedin,  user_url: "https://www.linkedin.com/in/nicolas-mugnier/" }
