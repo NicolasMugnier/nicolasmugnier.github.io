@@ -1,7 +1,7 @@
 ---
 tags: feedback sois
 author: Nicolas Mugnier
-image: /assets/img/feedback-sois.webp
+image: /assets/img/feedbacks.png
 description: Les feedbacks sont un outil puissant mais pas forcément évident à appréhender, comment utiliser ce formidable outil de façon pertinente ?
 locale: fr_FR
 ---
