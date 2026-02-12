@@ -52,6 +52,7 @@ plugins:
   - jekyll-remote-theme
   - jekyll-feed
   - jemoji
+  - jekyll-seo-tag
 
 remote_theme: jekyll/minima
 

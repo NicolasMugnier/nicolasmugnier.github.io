@@ -2,6 +2,7 @@
 tags: algorithm
 author: Nicolas Mugnier
 categories: algorithm
+title: Les algorithmes de tris
 description: Présentation des principaux algorithmes de tris permettant de réordonner les informations contenues dans un tableau d'entiers.
 image: /assets/img/sorts.png
 locale: fr_FR
