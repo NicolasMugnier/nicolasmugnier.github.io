@@ -6,732 +6,730 @@ description: Explorer le vibecoding à travers la création d'un Snake game joua
 locale: fr_FR
 ---
 
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: #1a1a1a;
-            overflow: hidden;
-            touch-action: none;
-        }
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: #1a1a1a;
+        overflow: hidden;
+        touch-action: none;
+    }
 
-        #gameContainer {
-            position: relative;
-            max-width: 400px;
-            max-height: 800px;
-            width: 100%;
-            height: 100vh;
-        }
+    #gameContainer {
+        position: relative;
+        max-width: 400px;
+        max-height: 800px;
+        width: 100%;
+        height: 100vh;
+    }
 
-        #gameCanvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
+    #gameCanvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
 
-        #startScreen,
-        #gameOverScreen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.8);
-            color: #00ffff;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-            box-sizing: border-box;
-        }
+    #startScreen,
+    #gameOverScreen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.8);
+        color: #00ffff;
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 20px;
+        box-sizing: border-box;
+    }
 
-        #restartBtn,
-        #startBtn {
-            padding: 15px 30px;
-            font-size: 18px;
-            background: none;
-            border: 2px solid #00ffff;
-            color: #00ffff;
-            cursor: pointer;
-            min-width: 44px;
-            min-height: 44px;
-            margin-top: 20px;
-            border-radius: 5px;
-        }
+    #restartBtn,
+    #startBtn {
+        padding: 15px 30px;
+        font-size: 18px;
+        background: none;
+        border: 2px solid #00ffff;
+        color: #00ffff;
+        cursor: pointer;
+        min-width: 44px;
+        min-height: 44px;
+        margin-top: 20px;
+        border-radius: 5px;
+    }
 
-        #restartBtn:hover,
-        #startBtn:hover {
-            background: #00ffff;
-            color: #1a1a1a;
-        }
-
-        
-    </style>
+    #restartBtn:hover,
+    #startBtn:hover {
+        background: #00ffff;
+        color: #1a1a1a;
+    }
+</style>
 
 
 
-    <div id="gameContainer">
-        <canvas id="gameCanvas"></canvas>
-        <div id="startScreen">
-            <h1>Neon Snake</h1>
-            <p>
-                Swipe to control (mobile) or use arrow keys (desktop)<br />Collect food to grow<br />Avoid hitting
-                yourself
-            </p>
-            <button id="startBtn">Start</button>
-        </div>
-        <div id="gameOverScreen" style="display: none">
-            <h1>Game Over</h1>
-            <p>Score: <span id="finalScore"></span></p>
-            <p>High Score: <span id="highScoreDisplay"></span></p>
-            <button id="restartBtn">Restart</button>
-        </div>
+<div id="gameContainer">
+    <canvas id="gameCanvas"></canvas>
+    <div id="startScreen">
+        <h1>Neon Snake</h1>
+        <p>
+            Swipe to control (mobile) or use arrow keys (desktop)<br />Collect food to grow<br />Avoid hitting
+            yourself
+        </p>
+        <button id="startBtn">Start</button>
     </div>
+    <div id="gameOverScreen" style="display: none">
+        <h1>Game Over</h1>
+        <p>Score: <span id="finalScore"></span></p>
+        <p>High Score: <span id="highScoreDisplay"></span></p>
+        <button id="restartBtn">Restart</button>
+    </div>
+</div>
 
-    <script>
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
-        const startScreen = document.getElementById("startScreen");
-        const gameOverScreen = document.getElementById("gameOverScreen");
-        const restartBtn = document.getElementById("restartBtn");
-        const startBtn = document.getElementById("startBtn");
-        const finalScore = document.getElementById("finalScore");
-        const highScoreDisplay = document.getElementById("highScoreDisplay");
+<script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const startScreen = document.getElementById("startScreen");
+    const gameOverScreen = document.getElementById("gameOverScreen");
+    const restartBtn = document.getElementById("restartBtn");
+    const startBtn = document.getElementById("startBtn");
+    const finalScore = document.getElementById("finalScore");
+    const highScoreDisplay = document.getElementById("highScoreDisplay");
 
-        // Canvas setup
-        const maxWidth = 400;
-        const maxHeight = 800;
-        const gridSize = 20;
-        let actualWidth = Math.min(maxWidth, window.innerWidth);
-        let actualHeight = Math.min(maxHeight, window.innerHeight);
-        const tileCountX = Math.floor(actualWidth / gridSize);
-        const tileCountY = Math.floor(actualHeight / gridSize);
+    // Canvas setup
+    const maxWidth = 400;
+    const maxHeight = 800;
+    const gridSize = 20;
+    let actualWidth = Math.min(maxWidth, window.innerWidth);
+    let actualHeight = Math.min(maxHeight, window.innerHeight);
+    const tileCountX = Math.floor(actualWidth / gridSize);
+    const tileCountY = Math.floor(actualHeight / gridSize);
 
-        const dpr = window.devicePixelRatio || 1;
-        canvas.width = tileCountX * gridSize * dpr;
-        canvas.height = tileCountY * gridSize * dpr;
-        canvas.style.width = `${tileCountX * gridSize}px`;
-        canvas.style.height = `${tileCountY * gridSize}px`;
-        ctx.scale(dpr, dpr);
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = tileCountX * gridSize * dpr;
+    canvas.height = tileCountY * gridSize * dpr;
+    canvas.style.width = `${tileCountX * gridSize}px`;
+    canvas.style.height = `${tileCountY * gridSize}px`;
+    ctx.scale(dpr, dpr);
 
-        // Game variables
-        let snake = [{ x: Math.floor(tileCountX / 2), y: Math.floor(tileCountY / 2) }];
-        let food = { x: 15, y: 15 };
-        let bonusFood = null;
-        let dx = 1;
-        let dy = 0;
-        let score = 0;
-        let level = 1;
-        let highScore = localStorage.getItem("highScore") || 0;
-        let eatParticles = [];
-        let powerParticles = [];
-        let bonusText = null;
-        let levelUpEffect = null;
-        let gameStarted = false;
-        let speed = 100;
-        let lastUpdate = 0;
-        let isMuted = false;
-        let previousColor = "#00FFFF";
-        let directionQueue = [];
-        let hasMoved = false;
-        let lastSwipeTime = 0; // For swipe debounce
+    // Game variables
+    let snake = [{ x: Math.floor(tileCountX / 2), y: Math.floor(tileCountY / 2) }];
+    let food = { x: 15, y: 15 };
+    let bonusFood = null;
+    let dx = 1;
+    let dy = 0;
+    let score = 0;
+    let level = 1;
+    let highScore = localStorage.getItem("highScore") || 0;
+    let eatParticles = [];
+    let powerParticles = [];
+    let bonusText = null;
+    let levelUpEffect = null;
+    let gameStarted = false;
+    let speed = 100;
+    let lastUpdate = 0;
+    let isMuted = false;
+    let previousColor = "#00FFFF";
+    let directionQueue = [];
+    let hasMoved = false;
+    let lastSwipeTime = 0; // For swipe debounce
 
-        // Audio setup
-        let audioContext = null;
-        let masterGain = null;
-        let isPlaying = false;
-        let audioFunctions = null;
-        let melodyTimeout = null;
-        let kickTimeout = null;
-        const melody = [261.63, 329.63, 392.0, 523.25, 784.0, 659.25, 440.0, 698.46];
-        const eatSound = [523.25, 659.25];
-        const bonusEatSound = [784.0, 1046.5];
+    // Audio setup
+    let audioContext = null;
+    let masterGain = null;
+    let isPlaying = false;
+    let audioFunctions = null;
+    let melodyTimeout = null;
+    let kickTimeout = null;
+    const melody = [261.63, 329.63, 392.0, 523.25, 784.0, 659.25, 440.0, 698.46];
+    const eatSound = [523.25, 659.25];
+    const bonusEatSound = [784.0, 1046.5];
 
-        function initAudio() {
-            try {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                masterGain = audioContext.createGain();
-                masterGain.gain.value = isMuted ? 0 : 0.7;
-                masterGain.connect(audioContext.destination);
+    function initAudio() {
+        try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            masterGain = audioContext.createGain();
+            masterGain.gain.value = isMuted ? 0 : 0.7;
+            masterGain.connect(audioContext.destination);
 
-                function playMelody() {
-                    if (!audioContext || audioContext.state !== "running") return;
-                    let time = audioContext.currentTime;
-                    melody.forEach((freq, index) => {
-                        const osc = audioContext.createOscillator();
-                        const gain = audioContext.createGain();
-                        osc.type = "square";
-                        osc.frequency.setValueAtTime(freq, time + index * 0.333);
-                        gain.gain.setValueAtTime(0.1, time + index * 0.333);
-                        gain.gain.exponentialRampToValueAtTime(0.01, time + index * 0.333 + 0.3);
-                        osc.connect(gain);
-                        gain.connect(masterGain);
-                        osc.start(time + index * 0.333);
-                        osc.stop(time + index * 0.333 + 0.333);
-                    });
-                    melodyTimeout = setTimeout(playMelody, 2664);
-                }
-
-                function playKick() {
-                    if (!audioContext || audioContext.state !== "running") return;
+            function playMelody() {
+                if (!audioContext || audioContext.state !== "running") return;
+                let time = audioContext.currentTime;
+                melody.forEach((freq, index) => {
                     const osc = audioContext.createOscillator();
                     const gain = audioContext.createGain();
-                    osc.frequency.setValueAtTime(120, audioContext.currentTime);
-                    gain.gain.setValueAtTime(0.8, audioContext.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                    osc.type = "square";
+                    osc.frequency.setValueAtTime(freq, time + index * 0.333);
+                    gain.gain.setValueAtTime(0.1, time + index * 0.333);
+                    gain.gain.exponentialRampToValueAtTime(0.01, time + index * 0.333 + 0.3);
                     osc.connect(gain);
                     gain.connect(masterGain);
-                    osc.start();
-                    osc.stop(audioContext.currentTime + 0.2);
-                    kickTimeout = setTimeout(playKick, 666);
-                }
+                    osc.start(time + index * 0.333);
+                    osc.stop(time + index * 0.333 + 0.333);
+                });
+                melodyTimeout = setTimeout(playMelody, 2664);
+            }
 
-                function playEatSound() {
-                    if (!audioContext || audioContext.state !== "running") return;
-                    let time = audioContext.currentTime;
-                    eatSound.forEach((freq, index) => {
-                        const osc = audioContext.createOscillator();
-                        const gain = audioContext.createGain();
-                        osc.type = "square";
-                        osc.frequency.setValueAtTime(freq, time + index * 0.1);
-                        gain.gain.setValueAtTime(0.5, time + index * 0.1);
-                        gain.gain.exponentialRampToValueAtTime(0.01, time + index * 0.1 + 0.08);
-                        osc.connect(gain);
-                        gain.connect(masterGain);
-                        osc.start(time + index * 0.1);
-                        osc.stop(time + index * 0.1 + 0.1);
-                    });
-                }
+            function playKick() {
+                if (!audioContext || audioContext.state !== "running") return;
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.frequency.setValueAtTime(120, audioContext.currentTime);
+                gain.gain.setValueAtTime(0.8, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                osc.connect(gain);
+                gain.connect(masterGain);
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.2);
+                kickTimeout = setTimeout(playKick, 666);
+            }
 
-                function playBonusEatSound() {
-                    if (!audioContext || audioContext.state !== "running") return;
-                    let time = audioContext.currentTime;
-                    bonusEatSound.forEach((freq, index) => {
-                        const osc = audioContext.createOscillator();
-                        const gain = audioContext.createGain();
-                        osc.type = "triangle";
-                        osc.frequency.setValueAtTime(freq, time + index * 0.15);
-                        gain.gain.setValueAtTime(0.6, time + index * 0.15);
-                        gain.gain.exponentialRampToValueAtTime(0.01, time + index * 0.15 + 0.12);
-                        osc.connect(gain);
-                        gain.connect(masterGain);
-                        osc.start(time + index * 0.15);
-                        osc.stop(time + index * 0.15 + 0.15);
-                    });
-                }
-
-                function playCymbalSound() {
-                    if (!audioContext || audioContext.state !== "running") return;
-                    const time = audioContext.currentTime;
-                    const noise = audioContext.createBufferSource();
-                    const buffer = audioContext.createBuffer(1, audioContext.sampleRate * 0.2, audioContext.sampleRate);
-                    const data = buffer.getChannelData(0);
-                    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
-                    noise.buffer = buffer;
-                    const filter = audioContext.createBiquadFilter();
-                    filter.type = "highpass";
-                    filter.frequency.setValueAtTime(1000, time);
-                    const gain = audioContext.createGain();
-                    gain.gain.setValueAtTime(0.5, time);
-                    gain.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
-                    noise.connect(filter);
-                    filter.connect(gain);
-                    gain.connect(masterGain);
-                    noise.start(time);
-                    noise.stop(time + 0.2);
-                }
-
-                function playColorChangeSound(score) {
-                    if (!audioContext || audioContext.state !== "running") return;
-                    const time = audioContext.currentTime;
-                    let notes;
-                    if (score >= 65) notes = [261.63, 523.25, 784.0, 1046.5];
-                    else if (score >= 51) notes = [261.63, 392.0, 523.25, 659.25];
-                    else if (score >= 31) notes = [261.63, 392.0, 523.25];
-                    else if (score >= 16) notes = [261.63, 329.63, 392.0];
-                    else return;
-                    notes.forEach((freq, index) => {
-                        const osc = audioContext.createOscillator();
-                        const gain = audioContext.createGain();
-                        osc.type = "sine";
-                        osc.frequency.setValueAtTime(freq, time + index * 0.1);
-                        gain.gain.setValueAtTime(1.0, time + index * 0.1);
-                        gain.gain.exponentialRampToValueAtTime(0.01, time + index * 0.1 + 0.15);
-                        osc.connect(gain);
-                        gain.connect(masterGain);
-                        osc.start(time + index * 0.1);
-                        osc.stop(time + index * 0.1 + 0.2);
-                    });
-                }
-
-                function playTestSound() {
+            function playEatSound() {
+                if (!audioContext || audioContext.state !== "running") return;
+                let time = audioContext.currentTime;
+                eatSound.forEach((freq, index) => {
                     const osc = audioContext.createOscillator();
                     const gain = audioContext.createGain();
-                    osc.frequency.setValueAtTime(440, audioContext.currentTime);
-                    gain.gain.setValueAtTime(0.5, audioContext.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                    osc.type = "square";
+                    osc.frequency.setValueAtTime(freq, time + index * 0.1);
+                    gain.gain.setValueAtTime(0.5, time + index * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.01, time + index * 0.1 + 0.08);
                     osc.connect(gain);
                     gain.connect(masterGain);
-                    osc.start();
-                    osc.stop(audioContext.currentTime + 0.5);
-                }
-
-                return {
-                    playMelody,
-                    playKick,
-                    playEatSound,
-                    playBonusEatSound,
-                    playCymbalSound,
-                    playColorChangeSound,
-                    playTestSound,
-                };
-            } catch (e) {
-                return {
-                    playMelody: () => { },
-                    playKick: () => { },
-                    playEatSound: () => { },
-                    playBonusEatSound: () => { },
-                    playCymbalSound: () => { },
-                    playColorChangeSound: () => { },
-                    playTestSound: () => { },
-                };
-            }
-        }
-
-        // Input handling
-        let touchStartX, touchStartY;
-
-        startBtn.addEventListener("click", () => {
-            audioFunctions = initAudio();
-            if (audioContext.state === "suspended") audioContext.resume();
-            audioFunctions.playMelody();
-            audioFunctions.playKick();
-            isPlaying = true;
-            startGame();
-        });
-
-        canvas.addEventListener("touchstart", handleTouchStart);
-        canvas.addEventListener("touchmove", handleTouchMove, { passive: false });
-        document.addEventListener("keydown", handleKeyDown);
-
-        function handleTouchStart(e) {
-            if (!gameStarted) return;
-            const touch = e.touches[0];
-            touchStartX = touch.clientX;
-            touchStartY = touch.clientY;
-            lastSwipeTime = 0; // Reset debounce on new touch
-        }
-
-        function handleTouchMove(e) {
-            if (!gameStarted) return;
-            e.preventDefault();
-            const touch = e.touches[0];
-            const diffX = touch.clientX - touchStartX;
-            const diffY = touch.clientY - touchStartY;
-            const magnitude = Math.sqrt(diffX * diffX + diffY * diffY);
-            const threshold = 8; // Balanced sensitivity
-            const now = performance.now();
-            const swipeCooldown = 100; // 100ms debounce between swipes
-
-            if (magnitude < threshold || now - lastSwipeTime < swipeCooldown) return;
-
-            // Calculate swipe angle in degrees (0° = right, 90° = down, -90° = up, 180°/-180° = left)
-            const angle = Math.atan2(diffY, diffX) * (180 / Math.PI);
-
-            // Define direction with 60° wedges
-            let newDx, newDy;
-            if (angle >= -30 && angle < 30) {
-                newDx = 1;
-                newDy = 0; // Right
-            } else if (angle >= 30 && angle < 150) {
-                newDx = 0;
-                newDy = 1; // Down
-            } else if (angle >= 150 || angle < -150) {
-                newDx = -1;
-                newDy = 0; // Left
-            } else if (angle >= -150 && angle < -30) {
-                newDx = 0;
-                newDy = -1; // Up
+                    osc.start(time + index * 0.1);
+                    osc.stop(time + index * 0.1 + 0.1);
+                });
             }
 
-            // Prevent 180° reversal and queue the direction
-            if (!((newDx === -dx && newDy === 0) || (newDy === -dy && newDx === 0))) {
-                directionQueue.push({ dx: newDx, dy: newDy });
-                lastSwipeTime = now; // Update last swipe time
+            function playBonusEatSound() {
+                if (!audioContext || audioContext.state !== "running") return;
+                let time = audioContext.currentTime;
+                bonusEatSound.forEach((freq, index) => {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.type = "triangle";
+                    osc.frequency.setValueAtTime(freq, time + index * 0.15);
+                    gain.gain.setValueAtTime(0.6, time + index * 0.15);
+                    gain.gain.exponentialRampToValueAtTime(0.01, time + index * 0.15 + 0.12);
+                    osc.connect(gain);
+                    gain.connect(masterGain);
+                    osc.start(time + index * 0.15);
+                    osc.stop(time + index * 0.15 + 0.15);
+                });
             }
 
-            // Reset touch start for the next swipe
-            touchStartX = touch.clientX;
-            touchStartY = touch.clientY;
-        }
-
-        function handleKeyDown(e) {
-            e.preventDefault();
-            switch (e.key) {
-                case "ArrowUp":
-                    if (dy !== 1 && !hasMoved) directionQueue.push({ dx: 0, dy: -1 });
-                    break;
-                case "ArrowDown":
-                    if (dy !== -1 && !hasMoved) directionQueue.push({ dx: 0, dy: 1 });
-                    break;
-                case "ArrowLeft":
-                    if (dx !== 1 && !hasMoved) directionQueue.push({ dx: -1, dy: 0 });
-                    break;
-                case "ArrowRight":
-                    if (dx !== -1 && !hasMoved) directionQueue.push({ dx: 1, dy: 0 });
-                    break;
+            function playCymbalSound() {
+                if (!audioContext || audioContext.state !== "running") return;
+                const time = audioContext.currentTime;
+                const noise = audioContext.createBufferSource();
+                const buffer = audioContext.createBuffer(1, audioContext.sampleRate * 0.2, audioContext.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+                noise.buffer = buffer;
+                const filter = audioContext.createBiquadFilter();
+                filter.type = "highpass";
+                filter.frequency.setValueAtTime(1000, time);
+                const gain = audioContext.createGain();
+                gain.gain.setValueAtTime(0.5, time);
+                gain.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(masterGain);
+                noise.start(time);
+                noise.stop(time + 0.2);
             }
+
+            function playColorChangeSound(score) {
+                if (!audioContext || audioContext.state !== "running") return;
+                const time = audioContext.currentTime;
+                let notes;
+                if (score >= 65) notes = [261.63, 523.25, 784.0, 1046.5];
+                else if (score >= 51) notes = [261.63, 392.0, 523.25, 659.25];
+                else if (score >= 31) notes = [261.63, 392.0, 523.25];
+                else if (score >= 16) notes = [261.63, 329.63, 392.0];
+                else return;
+                notes.forEach((freq, index) => {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.type = "sine";
+                    osc.frequency.setValueAtTime(freq, time + index * 0.1);
+                    gain.gain.setValueAtTime(1.0, time + index * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.01, time + index * 0.1 + 0.15);
+                    osc.connect(gain);
+                    gain.connect(masterGain);
+                    osc.start(time + index * 0.1);
+                    osc.stop(time + index * 0.1 + 0.2);
+                });
+            }
+
+            function playTestSound() {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.frequency.setValueAtTime(440, audioContext.currentTime);
+                gain.gain.setValueAtTime(0.5, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                osc.connect(gain);
+                gain.connect(masterGain);
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.5);
+            }
+
+            return {
+                playMelody,
+                playKick,
+                playEatSound,
+                playBonusEatSound,
+                playCymbalSound,
+                playColorChangeSound,
+                playTestSound,
+            };
+        } catch (e) {
+            return {
+                playMelody: () => { },
+                playKick: () => { },
+                playEatSound: () => { },
+                playBonusEatSound: () => { },
+                playCymbalSound: () => { },
+                playColorChangeSound: () => { },
+                playTestSound: () => { },
+            };
+        }
+    }
+
+    // Input handling
+    let touchStartX, touchStartY;
+
+    startBtn.addEventListener("click", () => {
+        audioFunctions = initAudio();
+        if (audioContext.state === "suspended") audioContext.resume();
+        audioFunctions.playMelody();
+        audioFunctions.playKick();
+        isPlaying = true;
+        startGame();
+    });
+
+    canvas.addEventListener("touchstart", handleTouchStart);
+    canvas.addEventListener("touchmove", handleTouchMove, { passive: false });
+    document.addEventListener("keydown", handleKeyDown);
+
+    function handleTouchStart(e) {
+        if (!gameStarted) return;
+        const touch = e.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+        lastSwipeTime = 0; // Reset debounce on new touch
+    }
+
+    function handleTouchMove(e) {
+        if (!gameStarted) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        const diffX = touch.clientX - touchStartX;
+        const diffY = touch.clientY - touchStartY;
+        const magnitude = Math.sqrt(diffX * diffX + diffY * diffY);
+        const threshold = 8; // Balanced sensitivity
+        const now = performance.now();
+        const swipeCooldown = 100; // 100ms debounce between swipes
+
+        if (magnitude < threshold || now - lastSwipeTime < swipeCooldown) return;
+
+        // Calculate swipe angle in degrees (0° = right, 90° = down, -90° = up, 180°/-180° = left)
+        const angle = Math.atan2(diffY, diffX) * (180 / Math.PI);
+
+        // Define direction with 60° wedges
+        let newDx, newDy;
+        if (angle >= -30 && angle < 30) {
+            newDx = 1;
+            newDy = 0; // Right
+        } else if (angle >= 30 && angle < 150) {
+            newDx = 0;
+            newDy = 1; // Down
+        } else if (angle >= 150 || angle < -150) {
+            newDx = -1;
+            newDy = 0; // Left
+        } else if (angle >= -150 && angle < -30) {
+            newDx = 0;
+            newDy = -1; // Up
         }
 
-        function resetGame() {
-            snake = [{ x: Math.floor(tileCountX / 2), y: Math.floor(tileCountY / 2) }];
-            dx = 1;
-            dy = 0;
-            score = 0;
-            level = 1;
-            speed = 100;
-            highScore = localStorage.getItem("highScore") || 0;
-            generateFood();
-            bonusFood = null;
-            bonusText = null;
-            levelUpEffect = null;
-            gameStarted = true;
-            lastUpdate = 0;
-            previousColor = "#00FFFF";
-            eatParticles = [];
-            powerParticles = [];
-            directionQueue = [];
+        // Prevent 180° reversal and queue the direction
+        if (!((newDx === -dx && newDy === 0) || (newDy === -dy && newDx === 0))) {
+            directionQueue.push({ dx: newDx, dy: newDy });
+            lastSwipeTime = now; // Update last swipe time
+        }
+
+        // Reset touch start for the next swipe
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+    }
+
+    function handleKeyDown(e) {
+        e.preventDefault();
+        switch (e.key) {
+            case "ArrowUp":
+                if (dy !== 1 && !hasMoved) directionQueue.push({ dx: 0, dy: -1 });
+                break;
+            case "ArrowDown":
+                if (dy !== -1 && !hasMoved) directionQueue.push({ dx: 0, dy: 1 });
+                break;
+            case "ArrowLeft":
+                if (dx !== 1 && !hasMoved) directionQueue.push({ dx: -1, dy: 0 });
+                break;
+            case "ArrowRight":
+                if (dx !== -1 && !hasMoved) directionQueue.push({ dx: 1, dy: 0 });
+                break;
+        }
+    }
+
+    function resetGame() {
+        snake = [{ x: Math.floor(tileCountX / 2), y: Math.floor(tileCountY / 2) }];
+        dx = 1;
+        dy = 0;
+        score = 0;
+        level = 1;
+        speed = 100;
+        highScore = localStorage.getItem("highScore") || 0;
+        generateFood();
+        bonusFood = null;
+        bonusText = null;
+        levelUpEffect = null;
+        gameStarted = true;
+        lastUpdate = 0;
+        previousColor = "#00FFFF";
+        eatParticles = [];
+        powerParticles = [];
+        directionQueue = [];
+        hasMoved = false;
+        lastSwipeTime = 0;
+        gameOverScreen.style.display = "none";
+    }
+
+    function startGame() {
+        startScreen.style.display = "none";
+        resetGame();
+        requestAnimationFrame(update);
+    }
+
+    function update(timestamp) {
+        if (!gameStarted) return;
+
+        if (!lastUpdate) lastUpdate = timestamp;
+        const delta = timestamp - lastUpdate;
+
+        if (delta >= speed) {
+            lastUpdate = timestamp;
             hasMoved = false;
-            lastSwipeTime = 0;
-            gameOverScreen.style.display = "none";
-        }
 
-        function startGame() {
-            startScreen.style.display = "none";
-            resetGame();
-            requestAnimationFrame(update);
-        }
-
-        function update(timestamp) {
-            if (!gameStarted) return;
-
-            if (!lastUpdate) lastUpdate = timestamp;
-            const delta = timestamp - lastUpdate;
-
-            if (delta >= speed) {
-                lastUpdate = timestamp;
-                hasMoved = false;
-
-                if (directionQueue.length > 0) {
-                    const nextDirection = directionQueue[directionQueue.length - 1]; // Take latest direction
-                    if (!(nextDirection.dx === -dx && nextDirection.dy === -dy)) {
-                        const oldDx = dx;
-                        const oldDy = dy;
-                        dx = nextDirection.dx;
-                        dy = nextDirection.dy;
-                        hasMoved = true;
-                        if ((oldDx !== dx || oldDy !== dy) && audioFunctions && audioFunctions.playCymbalSound) {
-                            audioFunctions.playCymbalSound();
-                        }
-                    }
-                    directionQueue = []; // Clear queue after applying
-                }
-
-                let head = { x: snake[0].x + dx, y: snake[0].y + dy };
-                if (head.x < 0) head.x = tileCountX - 1;
-                if (head.x >= tileCountX) head.x = 0;
-                if (head.y < 0) head.y = tileCountY - 1;
-                if (head.y >= tileCountY) head.y = 0;
-
-                snake.unshift(head);
-
-                for (let i = 1; i < snake.length; i++) {
-                    if (head.x === snake[i].x && head.y === snake[i].y) {
-                        gameOver();
-                        return;
+            if (directionQueue.length > 0) {
+                const nextDirection = directionQueue[directionQueue.length - 1]; // Take latest direction
+                if (!(nextDirection.dx === -dx && nextDirection.dy === -dy)) {
+                    const oldDx = dx;
+                    const oldDy = dy;
+                    dx = nextDirection.dx;
+                    dy = nextDirection.dy;
+                    hasMoved = true;
+                    if ((oldDx !== dx || oldDy !== dy) && audioFunctions && audioFunctions.playCymbalSound) {
+                        audioFunctions.playCymbalSound();
                     }
                 }
-
-                let ateFood = head.x === food.x && head.y === food.y;
-                if (ateFood) {
-                    score++;
-                    speed = Math.max(50, 100 - score * 2);
-                    createEatParticles(head.x, head.y);
-                    generateFood();
-                    if (audioFunctions && audioFunctions.playEatSound) audioFunctions.playEatSound();
-                }
-
-                let ateBonus = bonusFood && head.x === bonusFood.x && head.y === bonusFood.y;
-                if (ateBonus) {
-                    const bonusValue = 5;
-                    score += bonusValue;
-                    speed = Math.max(50, 100 - score * 2);
-                    createEatParticles(head.x, head.y);
-                    bonusText = { x: head.x * gridSize + gridSize / 2, y: head.y * gridSize - 10, value: bonusValue, life: 1 };
-                    bonusFood = null;
-                    if (audioFunctions && audioFunctions.playBonusEatSound) audioFunctions.playBonusEatSound();
-                } else if (!ateFood) {
-                    snake.pop();
-                }
-
-                if (level >= 3 && !bonusFood && Math.random() < 0.01) {
-                    generateBonusFood();
-                }
-                if (bonusFood) {
-                    bonusFood.life -= 0.05;
-                    if (bonusFood.life <= 0) bonusFood = null;
-                }
-
-                if (bonusText) {
-                    bonusText.y -= 0.5;
-                    bonusText.life -= 0.02;
-                    if (bonusText.life <= 0) bonusText = null;
-                }
-
-                if (levelUpEffect) {
-                    levelUpEffect.life -= 0.05;
-                    if (levelUpEffect.life <= 0) levelUpEffect = null;
-                }
-
-                const currentColor = getSnakeColor(score);
-                if (currentColor !== previousColor) {
-                    level = getLevel(score);
-                    if (audioFunctions && audioFunctions.playColorChangeSound) audioFunctions.playColorChangeSound(score);
-                    levelUpEffect = { color: currentColor, life: 1 };
-                    previousColor = currentColor;
-                }
-
-                draw();
+                directionQueue = []; // Clear queue after applying
             }
 
-            requestAnimationFrame(update);
-        }
+            let head = { x: snake[0].x + dx, y: snake[0].y + dy };
+            if (head.x < 0) head.x = tileCountX - 1;
+            if (head.x >= tileCountX) head.x = 0;
+            if (head.y < 0) head.y = tileCountY - 1;
+            if (head.y >= tileCountY) head.y = 0;
 
-        function getSnakeColor(score) {
-            if (score >= 65) return "rainbow";
-            if (score >= 51) return "#FF00FF";
-            if (score >= 31) return "#FFEA00";
-            if (score >= 16) return "#00FF00";
-            return "#00FFFF";
-        }
+            snake.unshift(head);
 
-        function getLevel(score) {
-            if (score >= 65) return 5;
-            if (score >= 51) return 4;
-            if (score >= 31) return 3;
-            if (score >= 16) return 2;
-            return 1;
-        }
-
-        function drawStar(x, y, size, alpha) {
-            ctx.fillStyle = `rgba(255, 0, 0, ${alpha})`;
-            ctx.beginPath();
-            const outerRadius = size;
-            const innerRadius = size / 2;
-            const spikes = 5;
-            let rot = (Math.PI / 2) * 3;
-            let step = Math.PI / spikes;
-
-            ctx.moveTo(x, y - outerRadius);
-            for (let i = 0; i < spikes; i++) {
-                ctx.lineTo(x + Math.cos(rot) * outerRadius, y + Math.sin(rot) * outerRadius);
-                rot += step;
-                ctx.lineTo(x + Math.cos(rot) * innerRadius, y + Math.sin(rot) * innerRadius);
-                rot += step;
-            }
-            ctx.lineTo(x, y - outerRadius);
-            ctx.closePath();
-            ctx.fill();
-        }
-
-        function draw() {
-            ctx.fillStyle = "#1a1a1a";
-            ctx.fillRect(0, 0, canvas.width / dpr, canvas.height / dpr);
-
-            ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
-            ctx.lineWidth = 1;
-            for (let i = 0; i <= tileCountX; i++) {
-                ctx.beginPath();
-                ctx.moveTo(i * gridSize, 0);
-                ctx.lineTo(i * gridSize, tileCountY * gridSize);
-                ctx.stroke();
-            }
-            for (let i = 0; i <= tileCountY; i++) {
-                ctx.beginPath();
-                ctx.moveTo(0, i * gridSize);
-                ctx.lineTo(tileCountX * gridSize, i * gridSize);
-                ctx.stroke();
+            for (let i = 1; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) {
+                    gameOver();
+                    return;
+                }
             }
 
-            const snakeColor = getSnakeColor(score);
+            let ateFood = head.x === food.x && head.y === food.y;
+            if (ateFood) {
+                score++;
+                speed = Math.max(50, 100 - score * 2);
+                createEatParticles(head.x, head.y);
+                generateFood();
+                if (audioFunctions && audioFunctions.playEatSound) audioFunctions.playEatSound();
+            }
+
+            let ateBonus = bonusFood && head.x === bonusFood.x && head.y === bonusFood.y;
+            if (ateBonus) {
+                const bonusValue = 5;
+                score += bonusValue;
+                speed = Math.max(50, 100 - score * 2);
+                createEatParticles(head.x, head.y);
+                bonusText = { x: head.x * gridSize + gridSize / 2, y: head.y * gridSize - 10, value: bonusValue, life: 1 };
+                bonusFood = null;
+                if (audioFunctions && audioFunctions.playBonusEatSound) audioFunctions.playBonusEatSound();
+            } else if (!ateFood) {
+                snake.pop();
+            }
+
+            if (level >= 3 && !bonusFood && Math.random() < 0.01) {
+                generateBonusFood();
+            }
+            if (bonusFood) {
+                bonusFood.life -= 0.05;
+                if (bonusFood.life <= 0) bonusFood = null;
+            }
+
+            if (bonusText) {
+                bonusText.y -= 0.5;
+                bonusText.life -= 0.02;
+                if (bonusText.life <= 0) bonusText = null;
+            }
+
             if (levelUpEffect) {
-                ctx.save();
-                const pulseSize = gridSize + Math.sin(performance.now() / 100) * 4;
-                if (levelUpEffect.color === "rainbow") {
-                    snake.forEach((segment, index) => {
-                        const hue = (performance.now() / 10 + index * 15) % 360;
-                        ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
-                        ctx.lineWidth = 4 * levelUpEffect.life;
-                        ctx.shadowBlur = 20 * levelUpEffect.life;
-                        ctx.shadowColor = ctx.strokeStyle;
-                        ctx.beginPath();
-                        ctx.rect(segment.x * gridSize - 2, segment.y * gridSize - 2, pulseSize, pulseSize);
-                        ctx.stroke();
-                    });
-                } else {
-                    ctx.strokeStyle = levelUpEffect.color;
-                    ctx.lineWidth = 4 * levelUpEffect.life;
-                    ctx.shadowBlur = 20 * levelUpEffect.life;
-                    ctx.shadowColor = levelUpEffect.color;
-                    snake.forEach((segment) => {
-                        ctx.beginPath();
-                        ctx.rect(segment.x * gridSize - 2, segment.y * gridSize - 2, pulseSize, pulseSize);
-                        ctx.stroke();
-                    });
-                }
-                ctx.restore();
+                levelUpEffect.life -= 0.05;
+                if (levelUpEffect.life <= 0) levelUpEffect = null;
             }
 
-            if (snakeColor === "rainbow") {
+            const currentColor = getSnakeColor(score);
+            if (currentColor !== previousColor) {
+                level = getLevel(score);
+                if (audioFunctions && audioFunctions.playColorChangeSound) audioFunctions.playColorChangeSound(score);
+                levelUpEffect = { color: currentColor, life: 1 };
+                previousColor = currentColor;
+            }
+
+            draw();
+        }
+
+        requestAnimationFrame(update);
+    }
+
+    function getSnakeColor(score) {
+        if (score >= 65) return "rainbow";
+        if (score >= 51) return "#FF00FF";
+        if (score >= 31) return "#FFEA00";
+        if (score >= 16) return "#00FF00";
+        return "#00FFFF";
+    }
+
+    function getLevel(score) {
+        if (score >= 65) return 5;
+        if (score >= 51) return 4;
+        if (score >= 31) return 3;
+        if (score >= 16) return 2;
+        return 1;
+    }
+
+    function drawStar(x, y, size, alpha) {
+        ctx.fillStyle = `rgba(255, 0, 0, ${alpha})`;
+        ctx.beginPath();
+        const outerRadius = size;
+        const innerRadius = size / 2;
+        const spikes = 5;
+        let rot = (Math.PI / 2) * 3;
+        let step = Math.PI / spikes;
+
+        ctx.moveTo(x, y - outerRadius);
+        for (let i = 0; i < spikes; i++) {
+            ctx.lineTo(x + Math.cos(rot) * outerRadius, y + Math.sin(rot) * outerRadius);
+            rot += step;
+            ctx.lineTo(x + Math.cos(rot) * innerRadius, y + Math.sin(rot) * innerRadius);
+            rot += step;
+        }
+        ctx.lineTo(x, y - outerRadius);
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    function draw() {
+        ctx.fillStyle = "#1a1a1a";
+        ctx.fillRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= tileCountX; i++) {
+            ctx.beginPath();
+            ctx.moveTo(i * gridSize, 0);
+            ctx.lineTo(i * gridSize, tileCountY * gridSize);
+            ctx.stroke();
+        }
+        for (let i = 0; i <= tileCountY; i++) {
+            ctx.beginPath();
+            ctx.moveTo(0, i * gridSize);
+            ctx.lineTo(tileCountX * gridSize, i * gridSize);
+            ctx.stroke();
+        }
+
+        const snakeColor = getSnakeColor(score);
+        if (levelUpEffect) {
+            ctx.save();
+            const pulseSize = gridSize + Math.sin(performance.now() / 100) * 4;
+            if (levelUpEffect.color === "rainbow") {
                 snake.forEach((segment, index) => {
                     const hue = (performance.now() / 10 + index * 15) % 360;
-                    ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
-                    ctx.shadowBlur = 15;
-                    ctx.shadowColor = ctx.fillStyle;
+                    ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+                    ctx.lineWidth = 4 * levelUpEffect.life;
+                    ctx.shadowBlur = 20 * levelUpEffect.life;
+                    ctx.shadowColor = ctx.strokeStyle;
                     ctx.beginPath();
-                    ctx.rect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
-                    ctx.fill();
+                    ctx.rect(segment.x * gridSize - 2, segment.y * gridSize - 2, pulseSize, pulseSize);
+                    ctx.stroke();
                 });
-                ctx.shadowBlur = 0;
             } else {
-                ctx.fillStyle = snakeColor;
-                ctx.shadowBlur = 15;
-                ctx.shadowColor = snakeColor;
+                ctx.strokeStyle = levelUpEffect.color;
+                ctx.lineWidth = 4 * levelUpEffect.life;
+                ctx.shadowBlur = 20 * levelUpEffect.life;
+                ctx.shadowColor = levelUpEffect.color;
                 snake.forEach((segment) => {
                     ctx.beginPath();
-                    ctx.rect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
-                    ctx.fill();
+                    ctx.rect(segment.x * gridSize - 2, segment.y * gridSize - 2, pulseSize, pulseSize);
+                    ctx.stroke();
                 });
-                ctx.shadowBlur = 0;
             }
+            ctx.restore();
+        }
 
-            ctx.fillStyle = "#00b7eb";
-            ctx.beginPath();
-            ctx.arc(food.x * gridSize + gridSize / 2, food.y * gridSize + gridSize / 2, gridSize / 2 - 2, 0, Math.PI * 2);
-            ctx.fill();
-
-            if (bonusFood) {
-                ctx.fillStyle = "#FF4500";
+        if (snakeColor === "rainbow") {
+            snake.forEach((segment, index) => {
+                const hue = (performance.now() / 10 + index * 15) % 360;
+                ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = ctx.fillStyle;
                 ctx.beginPath();
-                ctx.arc(
-                    bonusFood.x * gridSize + gridSize / 2,
-                    bonusFood.y * gridSize + gridSize / 2,
-                    gridSize / 2 - 2,
-                    0,
-                    Math.PI * 2,
-                );
+                ctx.rect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
                 ctx.fill();
-            }
-
-            eatParticles = eatParticles.filter((p) => p.life > 0);
-            eatParticles.forEach((p) => {
-                drawStar(p.x, p.y, p.size, p.life);
-                p.x += p.vx;
-                p.y += p.vy;
-                if (p.life > 0.5) p.size += 0.6;
-                p.life -= p.decay;
             });
-
-            if (bonusText && bonusText.life > 0) {
-                ctx.save();
-                ctx.fillStyle = `rgba(255, 165, 0, ${bonusText.life})`;
-                ctx.font = "16px Arial";
-                ctx.textAlign = "center";
-                ctx.fillText(`+${bonusText.value}`, bonusText.x, bonusText.y);
-                ctx.restore();
-            }
-
-            ctx.fillStyle = "#00ffff";
-            ctx.font = "20px Arial";
-            ctx.textAlign = "left";
-            ctx.fillText(`Score: ${score}`, 10, 30);
-            ctx.fillText(`Level: ${level}`, 10, 50);
+            ctx.shadowBlur = 0;
+        } else {
+            ctx.fillStyle = snakeColor;
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = snakeColor;
+            snake.forEach((segment) => {
+                ctx.beginPath();
+                ctx.rect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
+                ctx.fill();
+            });
+            ctx.shadowBlur = 0;
         }
 
-        function generateFood() {
-            let newFood;
-            do {
-                newFood = { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY) };
-            } while (
-                snake.some((segment) => segment.x === newFood.x && segment.y === newFood.y) ||
-                (bonusFood && bonusFood.x === newFood.x && bonusFood.y === newFood.y)
+        ctx.fillStyle = "#00b7eb";
+        ctx.beginPath();
+        ctx.arc(food.x * gridSize + gridSize / 2, food.y * gridSize + gridSize / 2, gridSize / 2 - 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (bonusFood) {
+            ctx.fillStyle = "#FF4500";
+            ctx.beginPath();
+            ctx.arc(
+                bonusFood.x * gridSize + gridSize / 2,
+                bonusFood.y * gridSize + gridSize / 2,
+                gridSize / 2 - 2,
+                0,
+                Math.PI * 2,
             );
-            food.x = newFood.x;
-            food.y = newFood.y;
+            ctx.fill();
         }
 
-        function generateBonusFood() {
-            let newBonus;
-            do {
-                newBonus = { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), life: 1 };
-            } while (
-                snake.some((segment) => segment.x === newBonus.x && segment.y === newBonus.y) ||
-                (food.x === newBonus.x && food.y === newBonus.y)
-            );
-            bonusFood = newBonus;
-        }
-
-        function createEatParticles(x, y) {
-            for (let i = 0; i < 5; i++) {
-                eatParticles.push({
-                    x: x * gridSize + gridSize / 2,
-                    y: y * gridSize + gridSize / 2,
-                    vx: (Math.random() - 0.5) * 3,
-                    vy: (Math.random() - 0.5) * 3,
-                    size: 5,
-                    life: 1,
-                    decay: 0.05,
-                });
-            }
-        }
-
-        function gameOver() {
-            gameStarted = false;
-            isPlaying = false;
-            if (melodyTimeout) clearTimeout(melodyTimeout);
-            if (kickTimeout) clearTimeout(kickTimeout);
-            if (audioContext && audioContext.state !== "closed") {
-                audioContext.close().then(() => {
-                    audioContext = null;
-                    audioFunctions = null;
-                });
-            }
-            if (score > highScore) {
-                highScore = score;
-                localStorage.setItem("highScore", highScore);
-            }
-            finalScore.textContent = score;
-            highScoreDisplay.textContent = highScore;
-            gameOverScreen.style.display = "flex";
-        }
-
-        restartBtn.addEventListener("click", () => {
-            resetGame();
-            audioFunctions = initAudio();
-            if (audioContext.state === "suspended") audioContext.resume();
-            audioFunctions.playMelody();
-            audioFunctions.playKick();
-            isPlaying = true;
-            requestAnimationFrame(update);
+        eatParticles = eatParticles.filter((p) => p.life > 0);
+        eatParticles.forEach((p) => {
+            drawStar(p.x, p.y, p.size, p.life);
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.life > 0.5) p.size += 0.6;
+            p.life -= p.decay;
         });
 
-        generateFood();
-        draw();
-    </script>
+        if (bonusText && bonusText.life > 0) {
+            ctx.save();
+            ctx.fillStyle = `rgba(255, 165, 0, ${bonusText.life})`;
+            ctx.font = "16px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText(`+${bonusText.value}`, bonusText.x, bonusText.y);
+            ctx.restore();
+        }
+
+        ctx.fillStyle = "#00ffff";
+        ctx.font = "20px Arial";
+        ctx.textAlign = "left";
+        ctx.fillText(`Score: ${score}`, 10, 30);
+        ctx.fillText(`Level: ${level}`, 10, 50);
+    }
+
+    function generateFood() {
+        let newFood;
+        do {
+            newFood = { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY) };
+        } while (
+            snake.some((segment) => segment.x === newFood.x && segment.y === newFood.y) ||
+            (bonusFood && bonusFood.x === newFood.x && bonusFood.y === newFood.y)
+        );
+        food.x = newFood.x;
+        food.y = newFood.y;
+    }
+
+    function generateBonusFood() {
+        let newBonus;
+        do {
+            newBonus = { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), life: 1 };
+        } while (
+            snake.some((segment) => segment.x === newBonus.x && segment.y === newBonus.y) ||
+            (food.x === newBonus.x && food.y === newBonus.y)
+        );
+        bonusFood = newBonus;
+    }
+
+    function createEatParticles(x, y) {
+        for (let i = 0; i < 5; i++) {
+            eatParticles.push({
+                x: x * gridSize + gridSize / 2,
+                y: y * gridSize + gridSize / 2,
+                vx: (Math.random() - 0.5) * 3,
+                vy: (Math.random() - 0.5) * 3,
+                size: 5,
+                life: 1,
+                decay: 0.05,
+            });
+        }
+    }
+
+    function gameOver() {
+        gameStarted = false;
+        isPlaying = false;
+        if (melodyTimeout) clearTimeout(melodyTimeout);
+        if (kickTimeout) clearTimeout(kickTimeout);
+        if (audioContext && audioContext.state !== "closed") {
+            audioContext.close().then(() => {
+                audioContext = null;
+                audioFunctions = null;
+            });
+        }
+        if (score > highScore) {
+            highScore = score;
+            localStorage.setItem("highScore", highScore);
+        }
+        finalScore.textContent = score;
+        highScoreDisplay.textContent = highScore;
+        gameOverScreen.style.display = "flex";
+    }
+
+    restartBtn.addEventListener("click", () => {
+        resetGame();
+        audioFunctions = initAudio();
+        if (audioContext.state === "suspended") audioContext.resume();
+        audioFunctions.playMelody();
+        audioFunctions.playKick();
+        isPlaying = true;
+        requestAnimationFrame(update);
+    });
+
+    generateFood();
+    draw();
+</script>
