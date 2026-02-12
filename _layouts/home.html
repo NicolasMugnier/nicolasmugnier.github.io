@@ -39,7 +39,7 @@ layout: base
     {%- comment -%} Main: grid + sidebar {%- endcomment -%}
     <div class="home-main">
       <div class="post-grid">
-        {%- for post in posts offset:1 -%}
+        {%- for post in posts offset:0 -%}
         <a class="post-card" href="{{ post.url | relative_url }}">
           <div class="card-image-wrapper">
             <img src="{{ post.image }}" alt="{{ post.title | escape }}"/>
