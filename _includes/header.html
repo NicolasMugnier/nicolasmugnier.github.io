@@ -1,7 +1,10 @@
 <header class="site-header" role="banner">
   <div class="wrapper">
-    {%- assign default_paths = site.pages | map: "path" -%}
-    {%- assign page_paths = site.header_pages | default: default_paths -%}
+    {%- if site.header_pages != nil -%}
+      {%- assign page_paths = site.header_pages -%}
+    {%- else -%}
+      {%- assign page_paths = site.pages | map: "path" -%}
+    {%- endif -%}
 
     <a class="site-title" rel="author" href="{{ "/" | relative_url }}">
       <img class="header-avatar" src="{{ "/assets/img/logo.webp" | relative_url }}" alt="{{ site.title }} logo"/>
