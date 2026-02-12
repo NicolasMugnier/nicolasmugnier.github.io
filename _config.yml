@@ -35,11 +35,11 @@ show_excerpts: true
 author:
   name: Nicolas Mugnier
   bio: "Senior Backend Engineer & AWS enthusiast"
-  avatar: /assets/img/logo.webp
+  avatar: /assets/img/avatar.jpeg
 
-header_pages:
+header_pages: []
   #- about.markdown
-  - tags.markdown
+  #- tags.markdown
 
 minima:
   skin: dark
