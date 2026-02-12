@@ -34,7 +34,7 @@ hr {
   .wrapper {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
   }
 
   .site-title {
@@ -42,7 +42,7 @@ hr {
     align-items: center;
     gap: 10px;
     color: #ffffff;
-    font-weight: 600;
+    font-weight: 50;
     text-decoration: none;
 
     &:hover {
