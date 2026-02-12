@@ -5,7 +5,7 @@ layout: base
 <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
   {%- if page.image -%}
   <div class="post-cover">
-    <img src="{{ page.image }}" alt="{{ page.title | escape }}"/>
+    <img src="{{ page.image }}" alt="{{ page.title | escape }}" />
   </div>
   {%- endif -%}
 
@@ -13,21 +13,31 @@ layout: base
     <h1 class="post-title p-name" itemprop="name headline">{{ page.title | escape }}</h1>
     <p class="post-meta">
       {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
-      <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
-        {{ page.date | date: date_format }}
-      </time>
-      {%- if page.author -%}
-        &bull; <span itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <span class="p-author h-card" itemprop="name">{{ page.author }}</span>
+      <span class="post-meta-left">
+        <img class="post-author-avatar" src="{{ site.author.avatar | relative_url }}" alt="{{
+  site.author.name }}" />
+        <span>
+          {%- if page.author -%}
+          <span class="post-author-name" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            <span class="p-author h-card" itemprop="name">{{ page.author }}</span>
+          </span>
+          {%- endif -%}
+          <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
+            {{ page.date | date: date_format }}
+          </time>
         </span>
-      {%- endif -%}
+      </span>
+      <button class="post-share-btn"
+        onclick="navigator.clipboard.writeText(window.location.href);this.textContent='Lien copié !';setTimeout(()=>this.textContent='Copier le lien',2000)">
+        Copier le lien
+      </button>
     </p>
   </header>
 
   {%- if page.tags.size > 0 -%}
   <div class="post-tags">
     {%- for tag in page.tags -%}
-      <span class="tag-badge">{{ tag }}</span>
+    <span class="tag-badge">{{ tag }}</span>
     {%- endfor -%}
   </div>
   {%- endif -%}
@@ -37,7 +47,7 @@ layout: base
   </div>
 
   {%- if site.disqus.shortname -%}
-    {%- include disqus_comments.html -%}
+  {%- include disqus_comments.html -%}
   {%- endif -%}
 
   <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
