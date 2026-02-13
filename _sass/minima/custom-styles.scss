@@ -675,6 +675,64 @@ hr {
   }
 }
 
+// --- Tag cloud (circle layout) ---
+.tag-sphere-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.tag-sphere {
+  position: relative;
+  width: 500px;
+  height: 500px;
+}
+
+.tag-sphere-item {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  text-decoration: none;
+  color: var(--text);
+  white-space: nowrap;
+  transition: color 0.2s ease, transform 0.2s ease;
+
+  // Distribute items across the full circle area using sunflower pattern
+  $r: 220px;
+  --ratio: calc((var(--i) + 0.5) / var(--total));
+  --dist: calc(#{$r} * sqrt(var(--ratio)));
+  --angle: calc(var(--i) * 2.39996323);
+  --x: calc(var(--dist) * cos(var(--angle)));
+  --y: calc(var(--dist) * sin(var(--angle)));
+  transform: translate(-50%, -50%) translate(var(--x), var(--y));
+
+  &:hover {
+    color: var(--brand);
+    text-decoration: none;
+    transform: translate(-50%, -50%) translate(var(--x), var(--y)) scale(1.15);
+  }
+}
+
+.tag-sphere-1 { font-size: 0.85rem; }
+.tag-sphere-2 { font-size: 1rem; }
+.tag-sphere-3 { font-size: 1.2rem; font-weight: 500; }
+.tag-sphere-4 { font-size: 1.5rem; font-weight: 600; }
+.tag-sphere-5 { font-size: 1.8rem; font-weight: 700; color: var(--brand); }
+
+@media screen and (max-width: 600px) {
+  .tag-sphere {
+    width: 320px;
+    height: 320px;
+  }
+
+  .tag-sphere-item {
+    $r: 140px;
+    --dist: calc(#{$r} * sqrt(var(--ratio)));
+    --x: calc(var(--dist) * cos(var(--angle)));
+    --y: calc(var(--dist) * sin(var(--angle)));
+  }
+}
+
 // --- Tags page ---
 .tags-page {
   h3 {
