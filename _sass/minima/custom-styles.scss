@@ -657,6 +657,36 @@ hr {
   transition: color 0.2s ease;
 }
 
+// --- Back to top button ---
+.back-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #2a2a2a;
+  border-radius: 50%;
+  background: #1a1a1a;
+  color: #b0b0b0;
+  font-size: 1.3rem;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease, background 0.2s ease, color 0.2s ease;
+  z-index: 100;
+
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  &:hover {
+    background: #9b7dff;
+    color: #fff;
+    border-color: #9b7dff;
+  }
+}
+
 // --- Line numbers dark override ---
 pre {
   border-color: #2a2a2a !important;
