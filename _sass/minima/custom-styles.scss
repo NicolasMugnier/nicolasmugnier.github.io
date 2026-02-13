@@ -609,6 +609,54 @@ hr {
   }
 }
 
+// --- Post navigation (prev / next) ---
+.post-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #2a2a2a;
+}
+
+.post-nav-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  text-decoration: none;
+  max-width: 48%;
+
+  &:hover {
+    text-decoration: none;
+
+    .post-nav-title {
+      color: #9b7dff;
+    }
+  }
+}
+
+.post-nav-prev {
+  align-items: flex-start;
+}
+
+.post-nav-next {
+  align-items: flex-end;
+  margin-left: auto;
+  text-align: right;
+}
+
+.post-nav-label {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.post-nav-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+  transition: color 0.2s ease;
+}
+
 // --- Line numbers dark override ---
 pre {
   border-color: #2a2a2a !important;

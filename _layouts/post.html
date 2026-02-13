@@ -46,6 +46,23 @@ layout: base
     {{ content }}
   </div>
 
+  {%- if page.previous or page.next -%}
+  <nav class="post-nav">
+    {%- if page.previous -%}
+    <a class="post-nav-link post-nav-prev" href="{{ page.previous.url | relative_url }}">
+      <span class="post-nav-label">&larr; Article précédent</span>
+      <span class="post-nav-title">{{ page.previous.title | escape }}</span>
+    </a>
+    {%- endif -%}
+    {%- if page.next -%}
+    <a class="post-nav-link post-nav-next" href="{{ page.next.url | relative_url }}">
+      <span class="post-nav-label">Article suivant &rarr;</span>
+      <span class="post-nav-title">{{ page.next.title | escape }}</span>
+    </a>
+    {%- endif -%}
+  </nav>
+  {%- endif -%}
+
   {%- if site.disqus.shortname -%}
   {%- include disqus_comments.html -%}
   {%- endif -%}
