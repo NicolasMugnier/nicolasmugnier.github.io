@@ -319,6 +319,12 @@ hr {
       line-height: 1.5;
       flex: 1;
     }
+
+    .card-reading-time {
+      color: #666;
+      font-size: 0.78rem;
+      margin-top: 0.5rem;
+    }
   }
 }
 
@@ -454,6 +460,11 @@ hr {
   display: block;
   font-weight: 600;
   color: #fff;
+}
+
+.reading-time {
+  color: #666;
+  font-size: 0.85rem;
 }
 
 .post-share-btn {

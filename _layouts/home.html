@@ -40,7 +40,9 @@ layout: base
         <div class="hero-content">
           <h2 class="hero-title">{{ hero.title | escape }}</h2>
           <p class="hero-description">{{ hero.description | default: hero.excerpt | strip_html | truncate: 180 }}</p>
-          <span class="hero-date">{{ hero.date | date: date_format }}</span>
+          {% assign hero_words = hero.content | number_of_words %}
+          {% assign hero_reading_time = hero_words | divided_by: 200 | plus: 1 %}
+          <span class="hero-date">{{ hero.date | date: date_format }} · {{ hero_reading_time }} min de lecture</span>
         </div>
       </a>
     </section>
@@ -64,6 +66,9 @@ layout: base
           <div class="card-body">
             <h3 class="card-title">{{ post.title | escape }}</h3>
             <p class="card-description">{{ post.description | default: post.excerpt | strip_html | truncate: 120 }}</p>
+            {% assign post_words = post.content | number_of_words %}
+            {% assign post_reading_time = post_words | divided_by: 200 | plus: 1 %}
+            <span class="card-reading-time">{{ post_reading_time }} min de lecture</span>
           </div>
         </a>
         {%- endfor -%}

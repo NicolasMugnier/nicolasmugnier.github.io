@@ -22,9 +22,12 @@ layout: base
             <span class="p-author h-card" itemprop="name">{{ page.author }}</span>
           </span>
           {%- endif -%}
+          {% assign words = content | number_of_words %}
+          {% assign reading_time = words | divided_by: 200 | plus: 1 %}
           <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
             {{ page.date | date: date_format }}
           </time>
+          <span class="reading-time">· {{ reading_time }} min de lecture</span>
         </span>
       </span>
       <button class="post-share-btn"
