@@ -98,10 +98,16 @@ hr {
 
 // --- Footer ---
 .site-footer {
-  display: none;
   background-color: #0d0d0d;
   border-top: 1px solid #1a1a1a;
   color: #666;
+  padding: 1.5rem 0;
+  text-align: center;
+
+  .footer-copyright {
+    margin: 0;
+    font-size: 0.9rem;
+  }
 
   a {
     color: #9b7dff;
