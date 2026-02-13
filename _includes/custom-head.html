@@ -9,3 +9,21 @@
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
     mermaid.initialize({ startOnLoad: true, theme: 'dark' });
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('pre > code').forEach(function(code) {
+    var pre = code.parentNode;
+    pre.style.position = 'relative';
+    var btn = document.createElement('button');
+    btn.className = 'code-copy-btn';
+    btn.textContent = 'Copier';
+    btn.addEventListener('click', function() {
+      navigator.clipboard.writeText(code.textContent).then(function() {
+        btn.textContent = 'Copié !';
+        setTimeout(function() { btn.textContent = 'Copier'; }, 2000);
+      });
+    });
+    pre.appendChild(btn);
+  });
+});
+</script>
