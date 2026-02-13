@@ -5,9 +5,33 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ "/assets/css/vim.css" | relative_url }}">
+<script>
+// Apply theme immediately to avoid flash
+(function() {
+  var saved = localStorage.getItem('theme');
+  if (!saved) {
+    saved = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  }
+  if (saved === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+
+function toggleTheme() {
+  var current = document.documentElement.getAttribute('data-theme');
+  var next = current === 'light' ? 'dark' : 'light';
+  if (next === 'dark') {
+    document.documentElement.removeAttribute('data-theme');
+  } else {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+  localStorage.setItem('theme', next);
+}
+</script>
 <script type="module">
-    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  var isDark = !document.documentElement.hasAttribute('data-theme');
+  mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default' });
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
