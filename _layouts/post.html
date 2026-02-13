@@ -5,7 +5,7 @@ layout: base
 <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
   {%- if page.image -%}
   <div class="post-cover">
-    <img src="{{ page.image }}" alt="{{ page.title | escape }}" />
+    <img src="{{ page.image }}" alt="{{ page.title | escape }}" loading="lazy" />
   </div>
   {%- endif -%}
 
