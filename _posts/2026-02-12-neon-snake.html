@@ -8,30 +8,56 @@ locale: fr_FR
 ---
 
 <style>
+    /* Override Jekyll/Minima wrapper constraints */
     body {
         margin: 0;
         padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
         background: #1a1a1a;
         overflow: hidden;
         touch-action: none;
     }
 
+    .site-header,
+    .site-footer,
+    .post-header,
+    .post-cover,
+    .post-tags,
+    .post-meta {
+        display: none;
+    }
+
+    .page-content {
+        padding: 0;
+    }
+
+    .page-content .wrapper,
+    .post-content {
+        max-width: none;
+        padding: 0;
+        margin: 0;
+    }
+
     #gameContainer {
-        position: relative;
-        max-width: 400px;
-        max-height: 800px;
-        width: 100%;
-        height: 100vh;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 400px;
+        height: 700px;
+        border-radius: 12px;
+        overflow: hidden;
     }
 
     #gameCanvas {
         display: block;
-        width: 100%;
-        height: 100%;
+    }
+
+    @media (max-width: 600px) {
+        #gameContainer {
+            width: calc(100vw - 20px);
+            height: calc(100vh - 20px);
+            border-radius: 8px;
+        }
     }
 
     #startScreen,
@@ -105,20 +131,25 @@ locale: fr_FR
     const highScoreDisplay = document.getElementById("highScoreDisplay");
 
     // Canvas setup
-    const maxWidth = 400;
-    const maxHeight = 800;
     const gridSize = 20;
-    let actualWidth = Math.min(maxWidth, window.innerWidth);
-    let actualHeight = Math.min(maxHeight, window.innerHeight);
-    const tileCountX = Math.floor(actualWidth / gridSize);
-    const tileCountY = Math.floor(actualHeight / gridSize);
-
+    let tileCountX, tileCountY;
     const dpr = window.devicePixelRatio || 1;
-    canvas.width = tileCountX * gridSize * dpr;
-    canvas.height = tileCountY * gridSize * dpr;
-    canvas.style.width = `${tileCountX * gridSize}px`;
-    canvas.style.height = `${tileCountY * gridSize}px`;
-    ctx.scale(dpr, dpr);
+    const container = document.getElementById("gameContainer");
+
+    function resizeCanvas() {
+        const w = container.clientWidth;
+        const h = container.clientHeight;
+        tileCountX = Math.floor(w / gridSize);
+        tileCountY = Math.floor(h / gridSize);
+        canvas.width = tileCountX * gridSize * dpr;
+        canvas.height = tileCountY * gridSize * dpr;
+        canvas.style.width = `${tileCountX * gridSize}px`;
+        canvas.style.height = `${tileCountY * gridSize}px`;
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpr, dpr);
+    }
+
+    resizeCanvas();
 
     // Game variables
     let snake = [{ x: Math.floor(tileCountX / 2), y: Math.floor(tileCountY / 2) }];
@@ -729,6 +760,11 @@ locale: fr_FR
         audioFunctions.playKick();
         isPlaying = true;
         requestAnimationFrame(update);
+    });
+
+    window.addEventListener("resize", () => {
+        resizeCanvas();
+        if (!gameStarted) draw();
     });
 
     generateFood();
