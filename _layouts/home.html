@@ -14,8 +14,19 @@ layout: base
 
   {%- if posts.size > 0 -%}
 
-    {%- comment -%} Hero: latest post {%- endcomment -%}
-    {% assign hero = posts.first %}
+    {%- comment -%} Hero: configurable via site.hero slug, fallback to latest post {%- endcomment -%}
+    {% assign hero = nil %}
+    {% if site.hero %}
+      {% for p in posts %}
+        {% if p.slug == site.hero %}
+          {% assign hero = p %}
+          {% break %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+    {% unless hero %}
+      {% assign hero = posts.first %}
+    {% endunless %}
     <section class="hero-section">
       <a class="hero-card" href="{{ hero.url | relative_url }}">
         <div class="hero-image">
@@ -39,7 +50,8 @@ layout: base
     {%- comment -%} Main: grid + sidebar {%- endcomment -%}
     <div class="home-main">
       <div class="post-grid">
-        {%- for post in posts offset:0 -%}
+        {%- for post in posts -%}
+        {%- if post.url == hero.url -%}{%- continue -%}{%- endif -%}
         <a class="post-card" href="{{ post.url | relative_url }}">
           <div class="card-image-wrapper">
             <img src="{{ post.image }}" alt="{{ post.title | escape }}"/>

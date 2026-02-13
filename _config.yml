@@ -29,6 +29,7 @@ url: "https://nicolasmugnier.github.io" # the base hostname & protocol for your 
 github_username:  "NicolasMugnier"
 footer_title : "This is a footer :footprints:"
 show_excerpts: true
+hero: docker-guide
 
 #disqus:
 #  shortname: nicolasmugnier-github-io
