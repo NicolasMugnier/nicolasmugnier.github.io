@@ -45,6 +45,8 @@ layout: base
   </div>
   {%- endif -%}
 
+  <nav class="post-toc" id="post-toc"></nav>
+
   <div class="post-content e-content" itemprop="articleBody">
     {{ content }}
   </div>
@@ -72,6 +74,27 @@ layout: base
 
   <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
 </article>
+
+<script>
+(function(){
+  var content = document.querySelector('.post-content');
+  var toc = document.getElementById('post-toc');
+  var headings = content.querySelectorAll('h2, h3');
+  if (headings.length < 3) { toc.remove(); return; }
+  var list = document.createElement('ul');
+  headings.forEach(function(h, i) {
+    if (!h.id) h.id = 'heading-' + i;
+    var li = document.createElement('li');
+    li.className = h.tagName === 'H3' ? 'toc-h3' : '';
+    var a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    li.appendChild(a);
+    list.appendChild(li);
+  });
+  toc.appendChild(list);
+})();
+</script>
 
 <button class="back-to-top" aria-label="Retour en haut" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8679;</button>
 <script>

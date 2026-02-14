@@ -621,6 +621,38 @@ hr {
   }
 }
 
+// --- Table of contents ---
+.post-toc {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 2rem;
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      padding: 0.25rem 0;
+
+      a {
+        color: var(--text);
+        text-decoration: none;
+        font-size: 0.9rem;
+
+        &:hover {
+          color: var(--brand);
+        }
+      }
+    }
+
+    .toc-h3 {
+      padding-left: 1rem;
+    }
+  }
+}
+
 .post-content {
   color: var(--text);
   line-height: 1.8;
