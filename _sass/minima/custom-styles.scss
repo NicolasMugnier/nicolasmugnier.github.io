@@ -727,6 +727,12 @@ hr {
     display: block;
     margin: 1.5rem auto;
   }
+
+  img.emoji {
+    display: inline;
+    margin: 0;
+    border-radius: 0;
+  }
 }
 
 // --- Page layout ---
