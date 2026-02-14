@@ -5,7 +5,7 @@ categories: farcaster
 title: "Spin the Wheel"
 description: "Build a Farcaster Frame"
 image: /assets/img/spin-the-wheel.jpg
-locale: fr_FR
+locale: en_US
 ---
 
 In this article I will describe how I build "Spin the Wheel" frame. The idea of this frame came to me after seeing usage of a wheel in order to select winner for a raffle or for a NFT airdrop.
@@ -163,7 +163,7 @@ But Vercel also allow to link an external domain to the application in "Project 
 
 ![Vercel custom domains](/assets/img/spin-the-wheel/vercel-custom-domains.png)
 
-So now the application is available at [https://spin-wheel.anyvoid.xyz](https://spin-wheel.anyvoid.xyz)
+[updated] So now the application is available at [https://spin-wheel-anyvoid-eth-three.vercel.app](https://spin-wheel-anyvoid-eth-three.vercel.app)
 
 ### 4. Configure Frame
 
