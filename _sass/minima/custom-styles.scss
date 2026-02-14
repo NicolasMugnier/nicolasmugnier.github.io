@@ -199,6 +199,25 @@ hr {
   .footer-copyright {
     margin: 0;
     font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+
+  .footer-separator {
+    color: var(--text-muted);
+  }
+
+  .footer-rss {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--text-muted);
+
+    &:hover {
+      color: var(--brand);
+    }
   }
 
   a {
