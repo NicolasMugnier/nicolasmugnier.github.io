@@ -5,7 +5,7 @@ categories: farcaster
 title: "Introduction to Farcaster Frames"
 description: "How to configure a Farcaster frame on an existing Single Page Application"
 image: /assets/img/farcaster-frames.jpg
-locale: fr_FR
+locale: en_US
 ---
 
 In this article I will share the process I have followed in order to configure a Farcaster frame on an existing SPA. Let's go!
@@ -111,11 +111,7 @@ Now we can test the frame in Settings > Developer > Frames
 
 > **Note:** we can also test the frame using this url : https://warpcast.com/~/developers/frames
 
-The frame is now ready to be used in Farcaster by sharing the link to the application into a cast :partying_face:
-
-Below a short video presenting the result :
-
-[Tweet - @anyvoid_eth](https://twitter.com/anyvoid_eth/status/1886103232004685833)
+The frame is now ready to be used in Farcaster by sharing the link to the application into a cast.
 
 ### Conclusion
 
