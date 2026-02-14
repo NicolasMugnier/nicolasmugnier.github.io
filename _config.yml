@@ -55,6 +55,7 @@ plugins:
   - jekyll-feed
   - jemoji
   - jekyll-seo-tag
+  - jekyll-sitemap
 
 remote_theme: jekyll/minima
 
