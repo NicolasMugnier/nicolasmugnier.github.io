@@ -8,21 +8,17 @@ Jekyll-based static blog (personal technical blog in French) hosted on GitHub Pa
 
 ## Commands
 
+Local development uses Docker Compose (no local Ruby/Bundler required).
+
 ```bash
-# Install dependencies
-bundle install
+# Start development server in background (serves at http://localhost:4000, live reload on :35729, includes drafts)
+docker compose up -d
 
-# Development server (watches for changes, serves at http://localhost:4000)
-bundle exec jekyll serve
+# Restart after config changes
+docker compose restart
 
-# Include drafts in local preview
-bundle exec jekyll serve --drafts
-
-# Production build (output to _site/)
-bundle exec jekyll build
-
-# Clean generated files
-bundle exec jekyll clean
+# Stop the server
+docker compose stop
 ```
 
 No automated test suite exists. Testing is manual via the local dev server.
