@@ -1,22 +1,22 @@
 ---
-layout: page
+layout: about
 title: About
 permalink: /about/
 ---
 
-Hi :wave:, I'm Nicolas !
+Ingénieur Backend Senior avec plus 15 années d'expérience en développement d'applications web et microservices.
 
-I'm a Senior Backend Engineer and AWS enthousiast.
+Expertise technique :
 
-:spiral_calendar: I've worked on differents kinds of projects and used many frameworks / tools / languages depending on the context :coffee: :
-- e-commerce extensions (Prestashop, Magento, Magento2)
-- e-commerce plateform (Magento / Magento2)
-- Containerize application (Akeneo) and deploy it on OpenShift
-- MicroServices / AWS / serverless / TypeScript
-- Laravel on personal projects
-- Symfony / Clean Architecture in my current position
+- Architecture backend et conception d'APIs
+- PHP (frameworks modernes)
+- Node.js / TypeScript
+- Microservices et architecture distribuée
 
-Hobbies : 
-- I'm riding MTB 2 or 3 times a week :mountain_biking_man:, I like to be in the forest and push my limits physically and technically
-- I'm also playing electric guitar :guitar: (:metal:)
-- I also like skiing :ski:
+Domaines d'intervention :
+
+- Conception et développement de nouvelles fonctionnalités
+- Architecture et optimisation de systèmes backend
+- Mentorat technique et review de code
+
+Passionné par la création de solutions techniques robustes et scalables qui répondent aux besoins métier.

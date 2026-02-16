@@ -1,0 +1,43 @@
+---
+layout: base
+---
+
+<div class="gh-profile">
+  <aside class="gh-sidebar">
+    <img class="gh-avatar" src="{{ site.author.avatar | relative_url }}" alt="{{ site.author.name }}">
+    <h1 class="gh-name">{{ site.author.name }}</h1>
+    <p class="gh-bio">{{ site.author.bio }}</p>
+
+    <div class="gh-meta">
+      <div class="gh-meta-item">
+        <svg viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="m12.596 11.596-3.535 3.536a1.5 1.5 0 0 1-2.122 0l-3.535-3.536a6.5 6.5 0 1 1 9.192 0ZM8 14.5l3.535-3.535a5.002 5.002 0 0 0-7.07 0L8 14.5ZM8 8.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg>
+        <span>France</span>
+      </div>
+      <div class="gh-meta-item">
+        <svg viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M7.775 3.275a.75.75 0 0 0 1.06 1.06l1.25-1.25a2 2 0 1 1 2.83 2.83l-2.5 2.5a2 2 0 0 1-2.83 0 .75.75 0 0 0-1.06 1.06 3.5 3.5 0 0 0 4.95 0l2.5-2.5a3.5 3.5 0 0 0-4.95-4.95l-1.25 1.25Zm-.025 5.475a.75.75 0 0 0-1.06-1.06l-1.25 1.25a2 2 0 1 1-2.83-2.83l2.5-2.5a2 2 0 0 1 2.83 0 .75.75 0 1 0 1.06-1.06 3.5 3.5 0 0 0-4.95 0l-2.5 2.5a3.5 3.5 0 0 0 4.95 4.95l1.25-1.25Z"/></svg>
+        <a href="{{ site.url }}">{{ site.url | remove: "https://" }}</a>
+      </div>
+    </div>
+
+    <div class="gh-social">
+      {% for link in site.minima.social_links %}
+        <a href="{{ link.user_url }}" target="_blank" rel="noopener">
+          {% if link.platform == "github" %}
+            <svg viewBox="0 0 16 16" width="20" height="20"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+          {% elsif link.platform == "linkedin" %}
+            <svg viewBox="0 0 16 16" width="20" height="20"><path fill="currentColor" d="M13.632 13.635h-2.37V9.922c0-.886-.018-2.025-1.234-2.025-1.235 0-1.424.964-1.424 1.96v3.778h-2.37V6H8.51v1.04h.03c.318-.6 1.092-1.233 2.247-1.233 2.4 0 2.845 1.58 2.845 3.637v4.188ZM3.558 4.955a1.376 1.376 0 1 1 0-2.752 1.376 1.376 0 0 1 0 2.752Zm1.188 8.68H2.37V6h2.376v7.635ZM14.816 0H1.18C.528 0 0 .516 0 1.153v13.694C0 15.484.528 16 1.18 16h13.635c.652 0 1.185-.516 1.185-1.153V1.153C16 .516 15.467 0 14.815 0Z"/></svg>
+          {% endif %}
+        </a>
+      {% endfor %}
+    </div>
+  </aside>
+
+  <main class="gh-readme">
+    <div class="gh-readme-header">
+      <span class="gh-readme-user">NicolasMugnier</span> / <span class="gh-readme-file">README.md</span>
+    </div>
+    <div class="gh-readme-content post-content">
+      {{ content }}
+    </div>
+  </main>
+</div>
