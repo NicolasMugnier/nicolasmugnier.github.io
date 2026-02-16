@@ -23,14 +23,14 @@ The manifest can be generated from Developer Tools in Warpcast.
 
 First we have to enable Developer Tools in Settings > Advanced > Developer mode
 
-![Enable Developer Tools](/assets/img/farcaster-frames/enable-dev-tools.png)
+![Enable Developer Tools](/assets/img/farcaster-frames/enable-dev-tools.png){: width="350"}
 *Enable Developer Tools*
 
 We can now access to the Domain Manifest section in Settings > Developer > Domains
 
 Here we can add domain name without protocol (ex web3.anyvoid.xyz), and next we can click on Generate domain manifest. A json file is generated and copied into the clipboard, the next step is to update the frame section of the manifest.
 
-![Generate Manifest](/assets/img/farcaster-frames/generate-manifest.png)
+![Generate Manifest](/assets/img/farcaster-frames/generate-manifest.png){: width="350"}
 *Generate Manifest*
 
 ---
@@ -56,10 +56,10 @@ The manifest must accessible from `.well-known/farcaster.json` in the public dir
 
 As we can see we have to add 2 images in the public directory, in my case I have used the following images :
 
-![web3-principles.png](/assets/img/farcaster-frames/web3-principles.png)
+![web3-principles.png](/assets/img/farcaster-frames/web3-principles.png){: width="200"}
 *web3-principles.png*
 
-![splash.png](/assets/img/farcaster-frames/splash.png)
+![splash.png](/assets/img/farcaster-frames/splash.png){: width="200"}
 *splash.png*
 
 ---
@@ -99,14 +99,14 @@ The result in my case is the following :
 
 Deploy the application and go back on Warpcast in Settings > Developer > Domains and click on "Check domain status"
 
-![Check domain status](/assets/img/farcaster-frames/check-domain-status.png)
+![Check domain status](/assets/img/farcaster-frames/check-domain-status.png){: width="350"}
 *Check domain status*
 
 Here we go! The status is verified, it means Farcaster has successfully parsed the manifest .well-known/farcaster.json
 
 Now we can test the frame in Settings > Developer > Frames
 
-![Frame Embed - Preview](/assets/img/farcaster-frames/frame-preview.png)
+![Frame Embed - Preview](/assets/img/farcaster-frames/frame-preview.png){: width="350"}
 *Frame Embed - Preview*
 
 > **Note:** we can also test the frame using this url : https://warpcast.com/~/developers/frames
@@ -121,7 +121,3 @@ In this article we've seen how to configure a Farcaster frame into an existing a
 
 - [https://github.com/NicolasMugnier/nm-web3/commits/main/](https://github.com/NicolasMugnier/nm-web3/commits/main/)
 - [https://docs.farcaster.xyz/developers/frames/](https://docs.farcaster.xyz/developers/frames/)
-
----
-
-Thank you for taking the time to read this article, feel free to share your thoughts, experiences, or questions in the comments. Have a great day!

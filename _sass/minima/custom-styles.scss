@@ -722,7 +722,7 @@ hr {
 
   img {
     border-radius: 8px;
-    max-width: 100%;
+    max-width: 50%;
     height: auto;
     display: block;
     margin: 1.5rem auto;
@@ -732,6 +732,18 @@ hr {
     display: inline;
     margin: 0;
     border-radius: 0;
+  }
+
+  img.default-width {
+    max-width: 50%;
+  }
+
+  img + em {
+    display: block;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: -1rem;
   }
 }
 
@@ -1043,5 +1055,9 @@ pre a::before {
 
   .author-sidebar .sidebar-social {
     justify-content: center;
+  }
+
+  .post-content img {
+    max-width: 100%;
   }
 }

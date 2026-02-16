@@ -12,7 +12,7 @@ In this article I will describe how I build "Spin the Wheel" frame. The idea of 
 
 So let's go an build a small adds and tracking free application!
 
-![Spin the Wheel app](/assets/img/spin-the-wheel/app-screenshot.png)
+![Spin the Wheel app](/assets/img/spin-the-wheel/app-screenshot.png){: width="350"}
 
 ### 1. Initialyze the project
 
@@ -194,7 +194,3 @@ The application is now also accessible into a Farcaster frame
 ## Conclusion
 
 The usage of vite, react and vercel allow to deploy an application very quickly. The usage of a custom domain on a project allow to personalized the project and keep consistency between applications.
-
----
-
-Thank you for taking the time to read this article, feel free to share your thoughts, experiences, or questions in the comments.
