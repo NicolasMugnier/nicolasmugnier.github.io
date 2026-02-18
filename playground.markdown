@@ -16,4 +16,14 @@ permalink: /playground/
     </div>
   </a>
 
+  <a class="playground-card" href="https://raffle.anyvoid.dev" target="_blank" rel="noopener">
+    <div class="playground-card-image">
+      <img src="/assets/img/raffle.png" alt="Raffle"/>
+    </div>
+    <div class="playground-card-body">
+      <h3 class="playground-card-title">Raffle</h3>
+      <p class="playground-card-description">Une roue interactive pour tirer au sort parmi plusieurs options, créée en vibecoding.</p>
+    </div>
+  </a>
+
 </div>
