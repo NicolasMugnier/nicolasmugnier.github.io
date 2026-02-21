@@ -36,6 +36,9 @@ layout: base
             {{ site.author.name }}
           </span>
           <span class="card-date-badge">{{ hero.date | date: date_format }}</span>
+          {%- if hero.locale -%}
+          <span class="card-locale-badge">{{ hero.locale | split: "_" | first | upcase }}</span>
+          {%- endif -%}
         </div>
         <div class="hero-content">
           <h2 class="hero-title">{{ hero.title | escape }}</h2>
@@ -62,6 +65,9 @@ layout: base
               {{ site.author.name }}
             </span>
             <span class="card-date-badge">{{ post.date | date: date_format }}</span>
+            {%- if post.locale -%}
+            <span class="card-locale-badge">{{ post.locale | split: "_" | first | upcase }}</span>
+            {%- endif -%}
           </div>
           <div class="card-body">
             <h3 class="card-title">{{ post.title | escape }}</h3>

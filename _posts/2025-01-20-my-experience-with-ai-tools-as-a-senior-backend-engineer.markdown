@@ -5,7 +5,7 @@ categories: ai
 title: "My Experience with AI Tools as a Senior Backend Engineer"
 description: "Feedback on using AI tools in a daily workflow as a Senior Backend Engineer"
 image: /assets/img/ai-tools-experience.jpg
-locale: fr_FR
+locale: en_US
 ---
 
 As a Senior Backend Engineer, I've integrated AI tools into my daily workflow to explore their potential benefits. While these tools offer some promising capabilities, my experience has been mixed, particularly in how they align with professional development practices and coding standards.

@@ -5,7 +5,7 @@ categories: web3
 title: "The Ultimate Guide to BIP39 Passphrases"
 description: "Demystifying BIP39: A Conceptual Breakdown of Passphrase Generation"
 image: /assets/img/bip39-guide.jpg
-locale: fr_FR
+locale: en_US
 ---
 
 ## Introduction: Why Passphrase Security Matters
