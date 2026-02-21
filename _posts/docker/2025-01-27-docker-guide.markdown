@@ -5,7 +5,7 @@ categories: docker
 title: "Docker guide, build a PHP Application"
 description: "Step by step guide showing how to build a simple application using Docker"
 image: /assets/img/docker-guide.jpg
-locale: fr_FR
+locale: en_US
 ---
 
 Step by step guide showing how to build a simple application using Docker.

@@ -292,6 +292,21 @@ hr {
       padding: 4px 10px;
       border-radius: 6px;
     }
+
+    .card-locale-badge {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: var(--overlay);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #ffffff;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+    }
   }
 
   .hero-card:hover .hero-image img {
@@ -403,6 +418,21 @@ hr {
       font-weight: 500;
       padding: 4px 10px;
       border-radius: 6px;
+    }
+
+    .card-locale-badge {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: var(--overlay);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #ffffff;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
     }
   }
 
