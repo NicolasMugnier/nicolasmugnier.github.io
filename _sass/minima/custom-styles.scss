@@ -1101,9 +1101,42 @@ pre {
   background: var(--bg-card) !important;
 }
 
-pre a::before {
-  background: var(--bg-table-zebra);
-  color: var(--text-line-number);
+// --- Code line highlighting ---
+.code-line {
+  display: block;
+  padding: 0 1rem 0 0;
+  counter-increment: code-line-numbering;
+  border-left: 3px solid transparent;
+
+  &::before {
+    content: counter(code-line-numbering);
+    display: inline-block;
+    width: 3ch;
+    margin-right: 1.2em;
+    text-align: right;
+    color: var(--text-line-number);
+    font-size: 0.85em;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: pointer;
+  }
+
+  &:hover {
+    background: rgba(155, 125, 255, 0.06);
+  }
+
+  &.highlighted {
+    background: rgba(155, 125, 255, 0.15);
+    border-left-color: var(--brand);
+
+    &::before {
+      color: var(--brand);
+    }
+  }
+}
+
+pre > code {
+  counter-reset: code-line-numbering;
 }
 
 // --- Playground grid ---

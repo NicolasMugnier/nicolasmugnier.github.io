@@ -40,9 +40,69 @@ function toggleTheme() {
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('pre > code').forEach(function(code) {
+  var lastClickedLine = null;
+
+  document.querySelectorAll('pre > code').forEach(function(code, blockIndex) {
     var pre = code.parentNode;
     pre.style.position = 'relative';
+
+    // Assign unique ID to code block
+    var blockId = 'code-' + blockIndex;
+    pre.id = blockId;
+
+    // Wrap each line in a span.code-line
+    var lines = code.innerHTML.split('\n');
+    // Remove trailing empty line (highlighter often adds one)
+    if (lines.length > 0 && lines[lines.length - 1] === '') {
+      lines.pop();
+    }
+    code.innerHTML = lines.map(function(line, i) {
+      var lineNum = i + 1;
+      return '<span class="code-line" id="' + blockId + '-L' + lineNum + '">' + line + '</span>';
+    }).join('');
+
+    // Click handler for line selection
+    code.addEventListener('click', function(e) {
+      var lineEl = e.target.closest('.code-line');
+      if (!lineEl) return;
+
+      // Only trigger on clicks in the line-number gutter area
+      var codeRect = code.getBoundingClientRect();
+      var clickX = e.clientX - codeRect.left + code.parentNode.scrollLeft;
+      if (clickX > 50) return;
+
+      e.preventDefault();
+      window.getSelection().removeAllRanges();
+
+      var lineId = lineEl.id;
+      var parts = lineId.match(/^(code-\d+)-L(\d+)$/);
+      if (!parts) return;
+      var currentBlock = parts[1];
+      var currentLineNum = parseInt(parts[2], 10);
+
+      // Clear previous highlights
+      document.querySelectorAll('.code-line.highlighted').forEach(function(el) {
+        el.classList.remove('highlighted');
+      });
+
+      if (e.shiftKey && lastClickedLine && lastClickedLine.block === currentBlock) {
+        // Range selection
+        var start = Math.min(lastClickedLine.line, currentLineNum);
+        var end = Math.max(lastClickedLine.line, currentLineNum);
+        for (var l = start; l <= end; l++) {
+          var el = document.getElementById(currentBlock + '-L' + l);
+          if (el) el.classList.add('highlighted');
+        }
+        history.replaceState(null, '', '#' + currentBlock + '-L' + start + '-L' + end);
+      } else {
+        // Single line selection
+        lineEl.classList.add('highlighted');
+        lastClickedLine = { block: currentBlock, line: currentLineNum };
+        history.replaceState(null, '', '#' + lineId);
+      }
+    });
+
+    // Copy button
     var btn = document.createElement('button');
     btn.className = 'code-copy-btn';
     btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/></svg>';
@@ -54,5 +114,40 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     pre.appendChild(btn);
   });
+
+  // Parse URL hash on load to highlight lines
+  function highlightFromHash() {
+    var hash = window.location.hash.substring(1);
+    if (!hash) return;
+
+    // Match #code-N-LX or #code-N-LX-LY
+    var match = hash.match(/^(code-\d+)-L(\d+)(?:-L(\d+))?$/);
+    if (!match) return;
+
+    var blockId = match[1];
+    var startLine = parseInt(match[2], 10);
+    var endLine = match[3] ? parseInt(match[3], 10) : startLine;
+
+    // Clear any existing highlights
+    document.querySelectorAll('.code-line.highlighted').forEach(function(el) {
+      el.classList.remove('highlighted');
+    });
+
+    var firstEl = null;
+    for (var l = startLine; l <= endLine; l++) {
+      var el = document.getElementById(blockId + '-L' + l);
+      if (el) {
+        el.classList.add('highlighted');
+        if (!firstEl) firstEl = el;
+      }
+    }
+
+    if (firstEl) {
+      firstEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  highlightFromHash();
+  window.addEventListener('hashchange', highlightFromHash);
 });
 </script>
