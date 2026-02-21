@@ -27,12 +27,13 @@ layout: base
           <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
             {{ page.date | date: date_format }}
           </time>
-          <span class="reading-time">· {{ reading_time }} min de lecture</span>
+          <span class="reading-time">· <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-2px"><path d="M8 3.5a.5.5 0 0 0-1 0V8a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 7.71z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/></svg> {{ reading_time }} min</span>
         </span>
       </span>
-      <button class="post-share-btn"
-        onclick="navigator.clipboard.writeText(window.location.href);this.textContent='Lien copié !';setTimeout(()=>this.textContent='Copier le lien',2000)">
-        Copier le lien
+      <button class="post-share-btn" aria-label="Copy link"
+        onclick="navigator.clipboard.writeText(window.location.href);this.classList.add('copied');setTimeout(()=>this.classList.remove('copied'),2000)">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/><path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/></svg>
+        <svg class="check-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>
       </button>
     </p>
   </header>
@@ -51,18 +52,38 @@ layout: base
     {{ content }}
   </div>
 
-  {%- if page.previous or page.next -%}
+  {%- comment -%} Find prev/next posts, skipping translations of the same article {%- endcomment -%}
+  {%- assign nav_prev = nil -%}
+  {%- assign nav_next = nil -%}
+  {%- assign found_current = false -%}
+  {%- for p in site.posts -%}
+    {%- if p.url == page.url -%}
+      {%- assign found_current = true -%}
+      {%- continue -%}
+    {%- endif -%}
+    {%- if page.translation_key and p.translation_key == page.translation_key -%}
+      {%- continue -%}
+    {%- endif -%}
+    {%- if found_current and nav_next == nil -%}
+      {%- assign nav_next = p -%}
+    {%- endif -%}
+    {%- unless found_current -%}
+      {%- assign nav_prev = p -%}
+    {%- endunless -%}
+  {%- endfor -%}
+
+  {%- if nav_prev or nav_next -%}
   <nav class="post-nav">
-    {%- if page.previous -%}
-    <a class="post-nav-link post-nav-prev" href="{{ page.previous.url | relative_url }}">
-      <span class="post-nav-label">&larr; Article précédent</span>
-      <span class="post-nav-title">{{ page.previous.title | escape }}</span>
+    {%- if nav_prev -%}
+    <a class="post-nav-link post-nav-prev" href="{{ nav_prev.url | relative_url }}">
+      <span class="post-nav-label">&larr;</span>
+      <span class="post-nav-title">{{ nav_prev.title | escape }}</span>
     </a>
     {%- endif -%}
-    {%- if page.next -%}
-    <a class="post-nav-link post-nav-next" href="{{ page.next.url | relative_url }}">
-      <span class="post-nav-label">Article suivant &rarr;</span>
-      <span class="post-nav-title">{{ page.next.title | escape }}</span>
+    {%- if nav_next -%}
+    <a class="post-nav-link post-nav-next" href="{{ nav_next.url | relative_url }}">
+      <span class="post-nav-label">&rarr;</span>
+      <span class="post-nav-title">{{ nav_next.title | escape }}</span>
     </a>
     {%- endif -%}
   </nav>
@@ -96,7 +117,7 @@ layout: base
 })();
 </script>
 
-<button class="back-to-top" aria-label="Retour en haut" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8679;</button>
+<button class="back-to-top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8679;</button>
 <script>
 (function(){
   var btn=document.querySelector('.back-to-top');
