@@ -9,8 +9,26 @@ layout: base
 
   {{ content }}
 
-  {% assign posts = site.posts %}
+  {% assign all_posts = site.posts %}
   {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
+
+  {%- comment -%} Deduplicate translated posts: keep first occurrence per translation_key {%- endcomment -%}
+  {% assign seen_keys = "" %}
+  {% assign posts = "" | split: "" %}
+  {% for p in all_posts %}
+    {% if p.translation_key %}
+      {% assign key_check = seen_keys | split: "," | where_exp: "k", "k == p.translation_key" %}
+      {% if key_check.size > 0 %}
+        {% continue %}
+      {% endif %}
+      {% if seen_keys == "" %}
+        {% assign seen_keys = p.translation_key %}
+      {% else %}
+        {% assign seen_keys = seen_keys | append: "," | append: p.translation_key %}
+      {% endif %}
+    {% endif %}
+    {% assign posts = posts | push: p %}
+  {% endfor %}
 
   {%- if posts.size > 0 -%}
 
@@ -36,7 +54,15 @@ layout: base
             {{ site.author.name }}
           </span>
           <span class="card-date-badge">{{ hero.date | date: date_format }}</span>
-          {%- if hero.locale -%}
+          {%- if hero.translation_key -%}
+          <span class="card-locale-group">
+            {%- for tp in all_posts -%}
+              {%- if tp.translation_key == hero.translation_key -%}
+              <span class="card-locale-link{% if tp.url == hero.url %} active{% endif %}" data-href="{{ tp.url | relative_url }}">{{ tp.locale | split: "_" | first | upcase }}</span>
+              {%- endif -%}
+            {%- endfor -%}
+          </span>
+          {%- elsif hero.locale -%}
           <span class="card-locale-badge">{{ hero.locale | split: "_" | first | upcase }}</span>
           {%- endif -%}
         </div>
@@ -65,7 +91,15 @@ layout: base
               {{ site.author.name }}
             </span>
             <span class="card-date-badge">{{ post.date | date: date_format }}</span>
-            {%- if post.locale -%}
+            {%- if post.translation_key -%}
+            <span class="card-locale-group">
+              {%- for tp in all_posts -%}
+                {%- if tp.translation_key == post.translation_key -%}
+              <span class="card-locale-link{% if tp.url == post.url %} active{% endif %}" data-href="{{ tp.url | relative_url }}">{{ tp.locale | split: "_" | first | upcase }}</span>
+                {%- endif -%}
+              {%- endfor -%}
+            </span>
+            {%- elsif post.locale -%}
             <span class="card-locale-badge">{{ post.locale | split: "_" | first | upcase }}</span>
             {%- endif -%}
           </div>
@@ -107,3 +141,13 @@ layout: base
 
   {%- endif -%}
 </div>
+
+<script>
+document.querySelectorAll('.card-locale-link[data-href]').forEach(function(el) {
+  el.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    window.location.href = this.getAttribute('data-href');
+  });
+});
+</script>
