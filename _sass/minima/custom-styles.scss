@@ -781,6 +781,25 @@ hr {
   h5,
   h6 {
     color: var(--text-heading);
+    position: relative;
+    scroll-margin-top: 1rem;
+
+    .heading-anchor {
+      opacity: 0;
+      margin-left: 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      vertical-align: middle;
+      transition: opacity 0.2s ease, color 0.2s ease;
+
+      &:hover {
+        color: var(--brand);
+      }
+    }
+
+    &:hover .heading-anchor {
+      opacity: 1;
+    }
   }
 
   a {
