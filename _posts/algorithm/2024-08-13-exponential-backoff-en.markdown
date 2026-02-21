@@ -6,6 +6,7 @@ title: Exponential Backoff Algorithm
 description: Overview of the exponential backoff algorithm, its purpose, and when and how to use it.
 image: /assets/img/exponential-backoff.png
 locale: en_US
+translation_key: exponential-backoff
 ---
 
 An overview of the exponential backoff algorithm, its purpose, and when and how to use it.
