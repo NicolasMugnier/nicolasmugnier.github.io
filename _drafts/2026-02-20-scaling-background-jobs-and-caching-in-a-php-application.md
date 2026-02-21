@@ -196,7 +196,7 @@ job_processing:
         max_delay: 3600000 # never wait more than 1 hour
 ```
 
-The exponential backoff is deliberate. Transient failures — rate limits, network blips, momentary service unavailability — typically resolve within minutes. Retrying immediately would pile additional pressure onto an already stressed downstream system. Waiting progressively longer gives it time to recover while still eventually processing the message. After four retries, the message lands in a dedicated failure transport where it can be inspected, understood, and manually re-dispatched once the root cause is resolved.
+The [exponential backoff](/algorithm/2024/08/13/exponential-backoff-en.html) is deliberate. Transient failures — rate limits, network blips, momentary service unavailability — typically resolve within minutes. Retrying immediately would pile additional pressure onto an already stressed downstream system. Waiting progressively longer gives it time to recover while still eventually processing the message. After four retries, the message lands in a dedicated failure transport where it can be inspected, understood, and manually re-dispatched once the root cause is resolved.
 
 A marker interface routes all related messages to this transport through a single routing rule, keeping the configuration clean.
 
