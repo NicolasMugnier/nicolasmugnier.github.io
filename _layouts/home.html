@@ -71,7 +71,7 @@ layout: base
           <p class="hero-description">{{ hero.description | default: hero.excerpt | strip_html | truncate: 180 }}</p>
           {% assign hero_words = hero.content | number_of_words %}
           {% assign hero_reading_time = hero_words | divided_by: 200 | plus: 1 %}
-          <span class="hero-date">{{ hero.date | date: date_format }} · {{ hero_reading_time }} min de lecture</span>
+          <span class="hero-date">{{ hero.date | date: date_format }} · <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-2px"><path d="M8 3.5a.5.5 0 0 0-1 0V8a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 7.71z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/></svg> {{ hero_reading_time }} min</span>
         </div>
       </a>
     </section>
@@ -108,7 +108,7 @@ layout: base
             <p class="card-description">{{ post.description | default: post.excerpt | strip_html | truncate: 120 }}</p>
             {% assign post_words = post.content | number_of_words %}
             {% assign post_reading_time = post_words | divided_by: 200 | plus: 1 %}
-            <span class="card-reading-time">{{ post_reading_time }} min de lecture</span>
+            <span class="card-reading-time"><svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-2px"><path d="M8 3.5a.5.5 0 0 0-1 0V8a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 7.71z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/></svg> {{ post_reading_time }} min</span>
           </div>
         </a>
         {%- endfor -%}

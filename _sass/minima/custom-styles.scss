@@ -681,13 +681,32 @@ hr {
 .post-share-btn {
   background: none;
   cursor: pointer;
-  padding: 6px 14px;
+  padding: 6px 10px;
   border: 1px solid var(--border-light);
   border-radius: 8px;
   color: var(--text);
   text-decoration: none;
   font-size: 0.85rem;
   font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+
+  .check-icon {
+    display: none;
+  }
+
+  &.copied {
+    border-color: var(--brand);
+    color: var(--brand);
+
+    svg:first-child {
+      display: none;
+    }
+
+    .check-icon {
+      display: inline;
+    }
+  }
 
   &:hover {
     color: var(--text-heading);
