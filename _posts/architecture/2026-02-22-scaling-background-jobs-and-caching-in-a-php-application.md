@@ -33,7 +33,7 @@ The problem is that `OFFSET` is a lie. When you write `OFFSET 50000`, you are no
 
 To fetch page *p* of size *k*, the database must scan *p × k* rows. The cost of a single page is **O(p × k)**, and the total cost to iterate the entire dataset across all *n/k* pages is **O(n²/k)** — quadratic in the number of records. Memory is bounded at **O(k)** per page, but the time cost grows explosively.
 
-The correct alternative is **keyset pagination**, also called **cursor-based pagination**. Instead of telling the database "skip N rows", you tell it "give me rows where `id > :last_seen_id`". The database uses the primary key index directly and jumps immediately to the right position — no scanning, no discarding. Each page costs **O(k + log n)**: a B-tree index seek in **O(log n)** to find the starting point, then a sequential scan of *k* rows. The total cost to iterate the entire dataset is **O(n + (n/k) × log n)** — essentially linear.
+The correct alternative is **keyset pagination**, also called **cursor-based pagination**. Instead of telling the database "skip N rows", you tell it "give me rows where `id > :last_seen_id`". The database uses the primary key index directly and jumps immediately to the right position — no scanning, no discarding. Each page costs **O(k + log n)**: a B-tree index seek in **O(log n)** to find the starting point, then a sequential scan of *k* rows. The total cost to [iterate the entire dataset](/architecture/2026/02/23/postgresql-pagination.html#keyset-pagination) is **O(n + (n/k) × log n)** — essentially linear.
 
 ```sql
 SELECT DISTINCT user_id
