@@ -2,7 +2,7 @@
 tags: [php, symfony, doctrine, caching, phpstan]
 author: Nicolas Mugnier
 categories: architecture
-description: "Retour d'expérience sur l'optimisation de jobs background et de cache dans une application PHP/Symfony : itération cursor-based, Messenger, cache par tags et règle PHPStan custom."
+description: "How we scaled a fragile PHP/Symfony pipeline into a resilient system: cursor-based iteration with Doctrine, async jobs with Messenger, tag-based cache invalidation, and a custom PHPStan rule."
 locale: en_US
 image: /assets/img/scaling-background-jobs-and-caching.png
 ---
@@ -50,7 +50,7 @@ Each page starts exactly where the last one ended. The cursor is simply the last
 
 PHP's `\Generator` is the natural fit for exposing this pattern. A generator is lazy — it computes the next value only when the caller asks for it, and suspends execution between yields. This means memory usage stays bounded regardless of the total dataset size.
 
-Two methods were introduced on the repository:
+Two methods were introduced on the gateway:
 
 `iterateAll(batchSize: 100)` yields fully hydrated entities one batch at a time. Critically, after each batch is yielded and the caller has processed it, the Doctrine Entity Manager is explicitly cleared to detach all entities from the identity map and release their memory before the next page:
 
@@ -122,7 +122,7 @@ flowchart LR
 The command is now trivially simple. It iterates over the ID generator and dispatches one batch message per page. It completes in seconds:
 
 ```php
-foreach ($this->repository->iterateUserIds(batchSize: 500) as $userIds) {
+foreach ($this->gateway->iterateUserIds(batchSize: 500) as $userIds) {
     $this->bus->dispatch(new ProcessBatchRequest($userIds));
     $batchCount++;
 }
@@ -212,7 +212,7 @@ The solution was to reconstruct the necessary state inside the handler itself by
 $wasIndexed = $this->isIndexed($request->id);
 
 try {
-    $entity = $this->repository->findById($request->id);
+    $entity = $this->gateway->findById($request->id);
     $this->searchGateway->insert($entity);
 
     if (!$wasIndexed) {
@@ -268,7 +268,7 @@ The solution is aggressive caching with a 90-day TTL, backed by tag-based invali
     '"profile_completion_" ~ request',
     '"profile_completion_" ~ request.userId',
 ])]
-public function execute(Request $request): Response
+public function __invoke(Request $request): Response
 ```
 
 The two tags serve different invalidation scopes:
@@ -280,11 +280,11 @@ The two tags serve different invalidation scopes:
 
 Caching a read is only half the work. The other half is ensuring the cache is invalidated precisely when the underlying data changes. This is where many caching implementations fall apart — they cache aggressively but invalidate too broadly (wiping everything on any change) or not at all (serving stale data indefinitely).
 
-Tag-based invalidation gives you surgical precision. Every mutation use case that modifies a profile section — create, edit, delete, save — carries an explicit cache invalidation declaration on its `execute()` method:
+Tag-based invalidation gives you surgical precision. Every mutation use case that modifies a profile section — create, edit, delete, save — carries an explicit cache invalidation declaration on its `__invoke()` method:
 
 ```php
 #[InvalidateCache(tags: ['"profile_completion_" ~ request.userId'])]
-public function execute(UpdateSectionRequest $request): SectionResponse
+public function __invoke(UpdateSectionRequest $request): SectionResponse
 ```
 
 When a user saves their phone number, updates their bio, or adds a new experience, only their profile completion cache entry is invalidated. Every other user's cache remains untouched. The next call for that user recomputes from scratch and caches the result for another 90 days.
@@ -390,7 +390,7 @@ The correct answer is to make the compiler catch it before it ships.
 
 ### What the rule checks and how
 
-`ProfileCompletionInvalidateCacheRule` is a custom PHPStan rule that operates on `ClassMethod` nodes. For every `execute()` method in the codebase, it applies four sequential filters:
+`ProfileCompletionInvalidateCacheRule` is a custom PHPStan rule that operates on `ClassMethod` nodes. For every `__invoke()` method in the codebase, it applies four sequential filters:
 
 **Is this a mutation use case?**
 The class short name must start with `Create`, `Edit`, `Delete`, `Save`, or `Update`. Everything else is skipped immediately.
@@ -417,7 +417,7 @@ App\UseCase\SocialLinks\DeleteSocialLinks
 
 The rule then checks via `get_declared_classes()` whether any `ProfileCompletionSection` implementor shares the same domain namespace. `GetExperiences` and `CreateExperience` both resolve to `App\UseCase\Experience`. The match is reliable across both structural patterns.
 
-**Does the `execute()` method carry the right cache tag?**
+**Does the `__invoke()` method carry the right cache tag?**
 The rule walks the AST of the method's attribute groups, finds `#[InvalidateCache]`, locates the `tags` named argument, iterates its array items, and checks whether any string value contains `profile_completion_`:
 
 ```php
@@ -447,11 +447,11 @@ If this check fails, a descriptive error is emitted with a tip pointing to the e
 
 ```
 Mutation use case "App\UseCase\Experience\CreateExperience" affects a profile
-completion section but its execute() method is missing an #[InvalidateCache]
+completion section but its __invoke() method is missing an #[InvalidateCache]
 attribute with a tag containing "profile_completion_".
 
 💡 Add #[InvalidateCache(tags: ['"profile_completion_" ~ request.userId'])]
-   to the execute() method.
+   to the __invoke() method.
 ```
 
 ### Immediate payoff and long-term value
