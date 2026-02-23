@@ -33,7 +33,7 @@ void Insertion (int tab[], int ntab)
 			tab[j+1]=tab[j];
 			j--;
 		}
-	 	
+
 		tab[j+1]=tmp;
 	 }
 }
@@ -43,27 +43,27 @@ void Insertion (int tab[], int ntab)
 
 **Meilleur cas (tableau déjà trié)** :
     Dans ce cas, chaque élément est comparé une seule fois avec l'élément précédent.
-    La complexité est donc linéaire : **O(n)**.
+    La complexité est donc linéaire : **$O(n)$**.
 
 **Pire cas (tableau trié en ordre inverse)** :
     Chaque nouvel élément doit être comparé avec tous les éléments déjà triés et déplacé au début du tableau.
-    La complexité est quadratique : **O(n^2)**.
+    La complexité est quadratique : **$O(n^2)$**.
 
 **Cas moyen** :
     En moyenne, chaque élément doit être comparé avec la moitié des éléments déjà triés.
-    La complexité est également quadratique : **O(n^2)**.
+    La complexité est également quadratique : **$O(n^2)$**.
 
 ### Complexité en espace
 
 L'algorithme de tri par insertion est un algorithme en place, ce qui signifie qu'il ne nécessite pas de mémoire supplémentaire significative en dehors de l'entrée.
-La complexité en espace est donc **O(1)**.
+La complexité en espace est donc **$O(1)$**.
 
 ### Résumé
 
-- **Meilleur cas** : O(n)
-- **Pire cas** : O(n^2)
-- **Cas moyen** : O(n^2)
-- **Complexité en espace** : O(1)
+- **Meilleur cas** : $O(n)$
+- **Pire cas** : $O(n^2)$
+- **Cas moyen** : $O(n^2)$
+- **Complexité en espace** : $O(1)$
 
 Le tri par insertion est efficace pour les petits tableaux ou les tableaux qui sont déjà partiellement triés, mais il devient inefficace pour les grands tableaux non triés en raison de sa complexité quadratique en temps dans le pire cas.
 
@@ -94,7 +94,7 @@ void Selection (int tab[], int ntab)
 	{
 		max=tab[0];
 		rangmax=0;
-	
+
 		for(j=0;j<k;j++)
 		{
 			if(tab[j]>max)
@@ -103,11 +103,11 @@ void Selection (int tab[], int ntab)
 				rangmax=j;
 			}
 		}
-	
+
 		tmp=tab[k-1];
 		tab[k-1]=max;
 		tab[rangmax]=tmp;
-	
+
 		k--;
 	}
 }
@@ -118,27 +118,27 @@ void Selection (int tab[], int ntab)
 **Meilleur cas** :
 Le tri par sélection effectue toujours le même nombre de comparaisons, quel que soit l'état initial du tableau.
 Pour chaque élément, il parcourt le reste du tableau pour trouver le maximum (ou minimum).
-La complexité est donc quadratique : **O(n^2)**.
+La complexité est donc quadratique : **$O(n^2)$**.
 
 **Pire cas** :
 Comme pour le meilleur cas, le tri par sélection effectue toujours le même nombre de comparaisons.
-La complexité est quadratique : **O(n^2)**.
+La complexité est quadratique : **$O(n^2)$**.
 
 **Cas moyen** :
 De même, le nombre de comparaisons reste constant indépendamment de l'ordre initial des éléments.
-La complexité est quadratique : **O(n^2)**.
+La complexité est quadratique : **$O(n^2)$**.
 
 ### Complexité en espace
 
 Le tri par sélection est un algorithme en place, ce qui signifie qu'il ne nécessite pas de mémoire supplémentaire significative en dehors de l'entrée.
-La complexité en espace est donc **O(1)**.
+La complexité en espace est donc **$O(1)$**.
 
 ### Résumé
 
-- **Meilleur cas** : O(n^2)
-- **Pire cas** : O(n^2)
-- **Cas moyen** : O(n^2)
-- **Complexité en espace** : O(1)
+- **Meilleur cas** : $O(n^2)$
+- **Pire cas** : $O(n^2)$
+- **Cas moyen** : $O(n^2)$
+- **Complexité en espace** : $O(1)$
 
 Le tri par sélection est simple à implémenter et peut être efficace pour les petits tableaux, mais il devient inefficace pour les grands tableaux en raison de sa complexité quadratique en temps.
 
@@ -195,27 +195,27 @@ void Echange (int tab[], int ntab)
 
 **Meilleur cas (tableau déjà trié)** :
 Dans ce cas, une seule passe est nécessaire pour vérifier que le tableau est déjà trié.
-La complexité est linéaire : **O(n)**.
+La complexité est linéaire : **$O(n)$**.
 
 **Pire cas (tableau trié en ordre inverse)** :
 Chaque élément doit être comparé et échangé avec tous les autres éléments.
-La complexité est quadratique : **O(n^2)**.
+La complexité est quadratique : **$O(n^2)$**.
 
 **Cas moyen** :
 En moyenne, chaque élément doit être comparé et échangé avec la moitié des autres éléments.
-La complexité est également quadratique : **O(n^2)**.
+La complexité est également quadratique : **$O(n^2)$**.
 
 ### Complexité en espace
 
 Le tri par échange est un algorithme en place, ce qui signifie qu'il ne nécessite pas de mémoire supplémentaire significative en dehors de l'entrée.
-La complexité en espace est donc **O(1)**.
+La complexité en espace est donc **$O(1)$**.
 
 ### Résumé
 
-- **Meilleur cas** : O(n)
-- **Pire cas** : O(n^2)
-- **Cas moyen** : O(n^2)
-- **Complexité en espace** : O(1)
+- **Meilleur cas** : $O(n)$
+- **Pire cas** : $O(n^2)$
+- **Cas moyen** : $O(n^2)$
+- **Complexité en espace** : $O(1)$
 
 Le tri par échange est simple à implémenter et peut être efficace pour les petits tableaux ou les tableaux presque triés, mais il devient inefficace pour les grands tableaux non triés en raison de sa complexité quadratique en temps dans le pire cas.
 
@@ -261,7 +261,7 @@ void Shakesort(int tab[], int ntab)
 				tab[i]=tmp;
 			}
 		}
-	
+
 		d--;
 
 		for(i=d;i>=g;i--)
@@ -273,7 +273,7 @@ void Shakesort(int tab[], int ntab)
 				tab[i-1]=tmp;
 			}
 		}
-	
+
 		g++;
 	}
 }
@@ -283,27 +283,27 @@ void Shakesort(int tab[], int ntab)
 
 **Meilleur cas (tableau déjà trié)** :
 Dans ce cas, une seule passe est nécessaire pour vérifier que le tableau est déjà trié.
-La complexité est linéaire : **O(n)**.
+La complexité est linéaire : **$O(n)$**.
 
 **Pire cas (tableau trié en ordre inverse)** :
 Chaque élément doit être comparé et échangé avec tous les autres éléments dans les deux directions.
-La complexité est quadratique : **O(n^2)**.
+La complexité est quadratique : **$O(n^2)$**.
 
 **Cas moyen** :
 En moyenne, chaque élément doit être comparé et échangé avec la moitié des autres éléments dans les deux directions.
-La complexité est également quadratique : **O(n^2)**.
+La complexité est également quadratique : **$O(n^2)$**.
 
 ### Complexité en espace
 
 Le tri par Shakesort est un algorithme en place, ce qui signifie qu'il ne nécessite pas de mémoire supplémentaire significative en dehors de l'entrée.
-La complexité en espace est donc **O(1)**.
+La complexité en espace est donc **$O(1)$**.
 
 ### Résumé
 
-- **Meilleur cas** : O(n)
-- **Pire cas** : O(n^2)
-- **Cas moyen** : O(n^2)
-- **Complexité en espace** : O(1)
+- **Meilleur cas** : $O(n)$
+- **Pire cas** : $O(n^2)$
+- **Cas moyen** : $O(n^2)$
+- **Complexité en espace** : $O(1)$
 
 Le tri par Shakesort est plus efficace que le tri à bulles pour les tableaux presque triés, car il réduit le nombre de passes nécessaires en triant dans les deux directions. Cependant, il reste inefficace pour les grands tableaux non triés en raison de sa complexité quadratique en temps dans le pire cas.
 
@@ -339,7 +339,7 @@ Il existe différents types de séquence dont l'usage impacte la complexité en 
 
 Ici j'utilise la séquence de Knuth `p = (p-1) / 3`
 
-La fonction est donc composée de deux parties : 
+La fonction est donc composée de deux parties :
 1. le calcul du pas
 ```c
 for(p=1;p*3+1<ntab;p=p*3+1)
@@ -387,7 +387,7 @@ void Shellsort(int tab[], int ntab)
 				tab[j+p]=tab[j];
 				j-=p;
 			}
-	 
+
 			tab[j+p]=tmp;
 		}
 
@@ -398,34 +398,34 @@ void Shellsort(int tab[], int ntab)
 
 La complexité de la fonction Shellsort dépend de la séquence de pas utilisée. Ici la séquence de pas utilisée est la séquence de Knuth, définie par la formule :
 
-`[ p_k = 1, 4, 13, 40, 121, \ldots ]`
+$$p_k = 1, 4, 13, 40, 121, \ldots$$
 
 où chaque terme est calculé comme :
 
-`[ p_{k+1} = 3 \times p_k + 1 ]`
+$$p_{k+1} = 3 \times p_k + 1$$
 
 ### Complexité en temps
 
 **Meilleur cas** :
-La complexité en temps dans le meilleur cas pour Shellsort avec la séquence de Knuth est **O(n log n)**.
+La complexité en temps dans le meilleur cas pour Shellsort avec la séquence de Knuth est **$O(n \log n)$**.
 
 **Pire cas** :
-La complexité en temps dans le pire cas pour Shellsort avec la séquence de Knuth est **O(n^(3/2))**.
+La complexité en temps dans le pire cas pour Shellsort avec la séquence de Knuth est **$O(n^{3/2})$**.
 
 **Cas moyen** :
-La complexité en temps dans le cas moyen pour Shellsort avec la séquence de Knuth est généralement considérée comme étant entre **O(n log n)** et **O(n^(3/2))**.
+La complexité en temps dans le cas moyen pour Shellsort avec la séquence de Knuth est généralement considérée comme étant entre **$O(n \log n)$** et **$O(n^{3/2})$**.
 
 ### Complexité en espace
 
 Shellsort est un algorithme en place, ce qui signifie qu'il ne nécessite pas de mémoire supplémentaire significative en dehors de l'entrée.
-La complexité en espace est donc **O(1)**.
+La complexité en espace est donc **$O(1)$**.
 
 ### Résumé
 
-- **Meilleur cas** : O(n log n)
-- **Pire cas** : O(n^(3/2))
-- **Cas moyen** : Entre O(n log n) et O(n^(3/2))
-- ***Complexité en espace** : O(1)
+- **Meilleur cas** : $O(n \log n)$
+- **Pire cas** : $O(n^{3/2})$
+- **Cas moyen** : Entre $O(n \log n)$ et $O(n^{3/2})$
+- ***Complexité en espace** : $O(1)$
 
 La séquence de Knuth est connue pour améliorer l'efficacité du tri par rapport à d'autres séquences de pas, ce qui rend Shellsort avec cette séquence plus performant que le tri par insertion ou le tri à bulles pour des tableaux de grande taille.
 
@@ -466,8 +466,8 @@ Cette étape garantit que le plus grand élément du tableau se trouve à la rac
 Réduire la taille du tas de 1 et rétablir la propriété de tas max en appelant la fonction placer (ou heapify) sur la nouvelle racine.
 Répéter ce processus jusqu'à ce que tous les éléments soient extraits et placés dans leur position correcte.
 
-**Fonction placer** : 
-La fonction placer (ou heapify) est utilisée pour rétablir la propriété de tas max après chaque extraction. 
+**Fonction placer** :
+La fonction placer (ou heapify) est utilisée pour rétablir la propriété de tas max après chaque extraction.
 
 Voici le code de la fonction placer :
 
@@ -484,7 +484,7 @@ void placer(int g, int d, int *T)
 	{
 		if(j<d)
 			if (T[j+1]>T[j]) j++;
-		
+
 		if(x>=T[j])
 			place_trouvee=1;
 
@@ -500,7 +500,7 @@ void placer(int g, int d, int *T)
 }
 ```
 
-**Fonction Heapsort** 
+**Fonction Heapsort**
 La fonction Heapsort utilise la fonction placer pour trier le tableau.
 
  Voici un exemple de la fonction Heapsort :
@@ -510,13 +510,13 @@ void Heapsort(int tab[], int ntab)
 	int d,g,tmp;
 	g=ntab/2;
 	d=ntab-1;
-	
+
 	while(g>0)
 	{
 		placer(g-1,d,tab);
 		g--;
 	}
-	
+
 	while(d>0)
 	{
 		tmp=tab[0];
@@ -532,23 +532,23 @@ void Heapsort(int tab[], int ntab)
 
 **Construction du tas** :
 La construction initiale du tas max se fait en parcourant les éléments du tableau à partir du milieu jusqu'au début et en appelant la fonction placer pour chaque élément.
-La complexité de la construction du tas est **O(n)**.
+La complexité de la construction du tas est **$O(n)$**.
 
 **Extraction répétée** :
-Après la construction du tas, chaque extraction de l'élément maximal (ou minimal) et la réorganisation du tas prennent **O(log n)**.
-Comme il y a n éléments à extraire, la complexité totale de cette étape est **O(n log n)**.
+Après la construction du tas, chaque extraction de l'élément maximal (ou minimal) et la réorganisation du tas prennent **$O(\log n)$**.
+Comme il y a n éléments à extraire, la complexité totale de cette étape est **$O(n \log n)$**.
 
 ### Complexité en espace
 
 Le tri par tas est un algorithme en place, ce qui signifie qu'il ne nécessite pas de mémoire supplémentaire significative en dehors de l'entrée.
-La complexité en espace est donc **O(1)**.
+La complexité en espace est donc **$O(1)$**.
 
 ### Résumé
 
-- **Construction du tas** : O(n)
-- **Extraction répétée** : O(n log n)
-- **Complexité totale en temps** : O(n log n)
-- **Complexité en espace** : O(1)
+- **Construction du tas** : $O(n)$
+- **Extraction répétée** : $O(n \log n)$
+- **Complexité totale en temps** : $O(n \log n)$
+- **Complexité en espace** : $O(1)$
 
 Ce type de tri est efficace pour trier de grands tableaux et est souvent utilisé en raison de sa performance stable et de sa faible utilisation de mémoire.
 
@@ -583,21 +583,21 @@ Le tri rapide (Quicksort) est un algorithme de tri efficace qui utilise la techn
 
 ### Fonctionnement de la partition
 
-La fonction de partition divise le tableau en deux parties autour du pivot. 
+La fonction de partition divise le tableau en deux parties autour du pivot.
 
 ```c
 int partition(int t[], int gauche, int droite)
 {
 	int i,j,k,l,p,tmp;
-	
+
 	i=gauche;
 	j=droite-1;
 	k=(gauche+droite)/2;
 	p=t[k];
-	
+
 	while(i<j)
 	{
-		
+
 		while((i<k)&&(t[i]<=p)) i++;
 		while((j>k)&&(t[j]>=p)) j--;
 
@@ -656,30 +656,30 @@ void Quicksort(int t[],int debut, int fin)
 
 **Meilleur cas** :
 Le meilleur cas se produit lorsque le pivot divise toujours le tableau en deux parties égales.
-La complexité est alors **O(n log n)**, car chaque division du tableau nécessite un temps linéaire **O(n)** et il y a **log n** niveaux de récursion.
+La complexité est alors **$O(n \log n)$**, car chaque division du tableau nécessite un temps linéaire **$O(n)$** et il y a $\log n$ niveaux de récursion.
 
 **Pire cas** :
 Le pire cas se produit lorsque le pivot est toujours le plus grand ou le plus petit élément, ce qui se produit souvent si le tableau est déjà trié ou presque trié.
-La complexité est alors **O(n^2)**, car chaque division du tableau ne réduit la taille du tableau que d'un élément, nécessitant n niveaux de récursion avec un temps linéaire **O(n)** à chaque niveau.
+La complexité est alors **$O(n^2)$**, car chaque division du tableau ne réduit la taille du tableau que d'un élément, nécessitant n niveaux de récursion avec un temps linéaire **$O(n)$** à chaque niveau.
 
 **Cas moyen** :
 En moyenne, le pivot divise le tableau de manière relativement équilibrée.
-La complexité est alors **O(n log n)**, car la probabilité de diviser le tableau en parties égales est élevée.
+La complexité est alors **$O(n \log n)$**, car la probabilité de diviser le tableau en parties égales est élevée.
 
 ### Complexité en espace
 
 Quicksort est un algorithme en place, ce qui signifie qu'il ne nécessite pas de mémoire supplémentaire significative en dehors de l'entrée.
-Cependant, la profondeur de la pile de récursion peut atteindre **O(log n)** dans le meilleur cas et **O(n)** dans le pire cas.
-La complexité en espace est donc **O(log n)** en moyenne et **O(n)** dans le pire cas.
+Cependant, la profondeur de la pile de récursion peut atteindre **$O(\log n)$** dans le meilleur cas et **$O(n)$** dans le pire cas.
+La complexité en espace est donc **$O(\log n)$** en moyenne et **$O(n)$** dans le pire cas.
 
 ### Résumé
 
-- **Meilleur cas** : O(n log n)
-- **Pire cas** : O(n^2)
-- **Cas moyen** : O(n log n)
-- **Complexité en espace** : O(log n) en moyenne, O(n) dans le pire cas
+- **Meilleur cas** : $O(n \log n)$
+- **Pire cas** : $O(n^2)$
+- **Cas moyen** : $O(n \log n)$
+- **Complexité en espace** : $O(\log n)$ en moyenne, $O(n)$ dans le pire cas
 
-Quicksort est généralement très efficace et est souvent utilisé en raison de sa complexité moyenne de **O(n log n)** et de sa faible utilisation de mémoire. Cependant, des précautions doivent être prises pour éviter le pire cas, par exemple en utilisant des techniques de choix de pivot plus sophistiquées comme le pivot médian de trois.
+Quicksort est généralement très efficace et est souvent utilisé en raison de sa complexité moyenne de **$O(n \log n)$** et de sa faible utilisation de mémoire. Cependant, des précautions doivent être prises pour éviter le pire cas, par exemple en utilisant des techniques de choix de pivot plus sophistiquées comme le pivot médian de trois.
 
 <details>
 <summary>Exemple</summary>

@@ -190,8 +190,8 @@ A **collision** occurs when two passphrases map to the same underlying private k
 
 The number of possible BIP39 passphrases depends on the length of the entropy used during generation:
 
-- **128 bits**: $$2^{128}\approx3.4\times10^{38}$$ possibilities.
-- **256 bits**: $$2^{256}\approx1.15\times10^{77}$$ possibilities.
+- **128 bits**: $2^{128}\approx3.4\times10^{38}$ possibilities.
+- **256 bits**: $2^{256}\approx1.15\times10^{77}$ possibilities.
 
 For a 12-word passphrase (128 bits of entropy + 4 bits of checksum), the number of possible combinations is:
 
@@ -212,10 +212,10 @@ $$P\approx 1 - e^{-\frac{N^2}{2M}}$$
 
 Where:
 
-- M = $$2^{128}$$ or $$2^{256}$$ (total possibilities).
+- M = $2^{128}$ or $2^{256}$ (total possibilities).
 - N = Number of generated passphrases.
 
-Even with $$N=10^{18}$$ (a quintillion passphrases), the probability of collision for $$M=2^{128}$$ is negligible.
+Even with $N=10^{18}$ (a quintillion passphrases), the probability of collision for $M=2^{128}$ is negligible.
 
 ### Why the Order of Words Matters
 
