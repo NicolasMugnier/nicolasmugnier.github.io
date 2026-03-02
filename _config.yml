@@ -31,8 +31,12 @@ footer_title : "This is a footer :footprints:"
 show_excerpts: true
 hero: docker-guide
 
-#disqus:
-#  shortname: nicolasmugnier-github-io
+giscus:
+  repo: "NicolasMugnier/nicolasmugnier.github.io"
+  repo_id: "MDEwOlJlcG9zaXRvcnk1NTcwNzkyNw=="
+  category: "General"
+  category_id: "DIC_kwDOA1IJF84C3HUL"
+  theme: "dark_dimmed"
 
 author:
   name: Nicolas Mugnier
