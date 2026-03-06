@@ -1,3 +1,13 @@
+---
+tags: [microservices, php, docker, auth0, architecture]
+author: Nicolas Mugnier
+categories: architecture
+title: Building a Microservices Architecture with PHP, Docker & Auth0
+description: "A concrete PHP demo illustrating microservices patterns: service isolation, inter-service communication, BFF, JWT authentication, and Docker orchestration with Traefik."
+image: /assets/img/micro-services.png
+locale: en_US
+---
+
 # Building a Microservices Architecture with PHP, Docker & Auth0
 
 ## Introduction
@@ -11,15 +21,15 @@ Microservices architecture is an approach where an application is decomposed int
 The demo consists of **3 microservices** and a **shared infrastructure layer**:
 
 ```
-                        ┌─────────────────────────┐
+                        ┌──────────────────────────┐
      Client ──────────> │   ms-back-for-front      │  (API Aggregation / BFF)
                         └────────┬────────┬────────┘
                                  │        │
                     ┌────────────┘        └─────────────┐
-                    ▼                                    ▼
+                    ▼                                   ▼
         ┌─────────────────────┐             ┌──────────────────────┐
-        │   ms-learning-path   │ ──────────> │      ms-course        │
-        │  (Learning Paths)    │  (HTTP)     │      (Courses)        │
+        │   ms-learning-path  │ ──────────> │      ms-course       │
+        │  (Learning Paths)   │  (HTTP)     │      (Courses)       │
         └─────────────────────┘             └──────────────────────┘
                 SQLite                              PostgreSQL
 ```
@@ -30,7 +40,7 @@ All services are routed through **Traefik**, which acts as a reverse proxy and h
 
 ## The Services
 
-### 1. `ms-course` — Course Service
+### 1. Course Service - `ms-course`
 
 The simplest service. It manages `Course` entities (id, name) stored in **PostgreSQL** and exposes a basic REST API:
 
@@ -44,7 +54,7 @@ Built with **PHP 7.4**, it uses **Doctrine ORM** to interact with the database a
 
 ---
 
-### 2. `ms-learning-path` — Learning Path Service
+### 2. Learning Path Service - `ms-learning-path`
 
 This service manages `LearningPath` entities (id, name, courses[]) stored in **SQLite**. A learning path is an ordered collection of course IDs.
 
@@ -62,7 +72,7 @@ This illustrates a key microservices pattern: **services own their data and comm
 
 ---
 
-### 3. `ms-back-for-front` — Backend For Frontend (BFF)
+### 3. Backend For Frontend - `ms-back-for-front` (BFF)
 
 The BFF pattern solves a common problem: clients need aggregated data, but services only expose granular resources. Rather than forcing the client to make multiple calls, the BFF does it server-side.
 
@@ -165,6 +175,7 @@ This keeps each service **lightweight and focused**, with no framework overhead.
 
 ---
 
+<!--
 ## Running the Demo
 
 ```bash
@@ -186,6 +197,7 @@ curl -H "Authorization: Bearer <JWT>" http://ms-back-for-front.lan:8000/learning
 ```
 
 ---
+-->
 
 ## Conclusion
 
