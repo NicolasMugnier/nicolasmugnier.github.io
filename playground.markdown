@@ -36,4 +36,14 @@ permalink: /playground/
     </div>
   </a>
 
+  <a class="playground-card" href="https://born-in-ppm.anyvoid.dev" target="_blank" rel="noopener">
+    <div class="playground-card-image">
+      <img src="/assets/img/born-in-ppm.png" alt="Born in PPM"/>
+    </div>
+    <div class="playground-card-body">
+      <h3 class="playground-card-title">Born in PPM</h3>
+      <p class="playground-card-description">Découvrez combien de personnes sont nées en même temps que vous, exprimé en parties par million, créé en vibecoding.</p>
+    </div>
+  </a>
+
 </div>
