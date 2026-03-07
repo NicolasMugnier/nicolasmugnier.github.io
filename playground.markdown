@@ -26,4 +26,14 @@ permalink: /playground/
     </div>
   </a>
 
+  <a class="playground-card" href="https://birthday-problem.anyvoid.dev" target="_blank" rel="noopener">
+    <div class="playground-card-image">
+      <img src="/assets/img/birthday-problem.png" alt="Birthday Problem"/>
+    </div>
+    <div class="playground-card-body">
+      <h3 class="playground-card-title">Birthday Problem</h3>
+      <p class="playground-card-description">Un simulateur interactif du paradoxe des anniversaires, créé en vibecoding.</p>
+    </div>
+  </a>
+
 </div>
