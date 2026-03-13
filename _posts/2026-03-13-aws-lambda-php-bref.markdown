@@ -1,3 +1,13 @@
+---
+tags: [php, aws, lambda, serverless, bref, clean-architecture, symfony]
+author: Nicolas Mugnier
+categories: architecture
+title: Running PHP on AWS Lambda with Bref and Clean Architecture
+description: "A PHP 8.1 POC deploying a Clean Architecture application to AWS Lambda using Bref, Symfony DI, and the Serverless Framework."
+image: /assets/img/lambda-php.png
+locale: en_US
+---
+
 # Running PHP on AWS Lambda with Bref and Clean Architecture
 
 ## Introduction
@@ -18,27 +28,27 @@ PHP is not natively supported by AWS Lambda. However, Lambda allows you to bring
   Caller (CLI / Event)
          │
          ▼
-  ┌─────────────────────────────────────────────┐
-  │              AWS Lambda                      │
-  │                                             │
-  │  ┌─────────────┐  ┌────────────┐  ┌──────────────┐
-  │  │  addBook    │  │  getBook   │  │  deleteBook  │
-  │  │  handler    │  │  handler   │  │  handler     │
-  │  └──────┬──────┘  └─────┬──────┘  └──────┬───────┘
-  │         │               │                 │
-  │         ▼               ▼                 ▼
-  │  ┌─────────────────────────────────────────────┐
-  │  │         Symfony DI Container                │
-  │  │   AddBook / GetBook / RemoveBook use cases  │
-  │  └─────────────────┬───────────────────────────┘
-  │                    │
-  │                    ▼
-  │           ┌─────────────────┐
-  │           │  BookRepository  │  (in-memory / pluggable)
-  │           └─────────────────┘
-  │
-  │  Runtime: PHP 8.1 via Bref Layer (provided.al2)
-  └─────────────────────────────────────────────┘
+  ┌───────────────────────────────────────────────────────────┐
+  │              AWS Lambda                                   │
+  │                                                           │
+  │  ┌─────────────┐  ┌────────────┐  ┌──────────────┐        │
+  │  │  addBook    │  │  getBook   │  │  deleteBook  │        │
+  │  │  handler    │  │  handler   │  │  handler     │        │
+  │  └──────┬──────┘  └─────┬──────┘  └───────┬──────┘        │
+  │         │               │                 │               │
+  │         ▼               ▼                 ▼               │
+  │  ┌─────────────────────────────────────────────┐          │
+  │  │         Symfony DI Container                │          │
+  │  │   AddBook / GetBook / RemoveBook use cases  │          │
+  │  └─────────────────┬───────────────────────────┘          │
+  │                    │                                      │
+  │                    ▼                                      │
+  │           ┌─────────────────┐                             │
+  │           │  BookRepository │  (in-memory / pluggable)    │
+  │           └─────────────────┘                             │
+  │                                                           │
+  │  Runtime: PHP 8.1 via Bref Layer (provided.al2)           │
+  └───────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -47,10 +57,10 @@ PHP is not natively supported by AWS Lambda. However, Lambda allows you to bring
 
 ```
 demo/
-├── serverless.yml              (infrastructure as code)
+├── serverless.yml                     (infrastructure as code)
 ├── composer.json
 └── src/
-    ├── BusinessRules/          (domain — no framework dependencies)
+    ├── BusinessRules/                 (domain — no framework dependencies)
     │   ├── Entities/
     │   │   └── Book.php
     │   ├── Gateways/
@@ -68,17 +78,17 @@ demo/
     │           ├── RemoveBook.php
     │           ├── Request/RemoveBookRequest.php
     │           └── Response/RemoveBookResponse.php
-    ├── Repositories/
-    │   └── BookRepository.php  (implements BookGateway)
-    ├── Events/                 (Lambda entry points)
+    ├── Gateways/
+    │   └── InMemoryBookGateway.php    (implements BookGateway)
+    ├── Events/                        (Lambda entry points)
     │   ├── create/index.php
     │   ├── read/index.php
     │   └── delete/index.php
     └── config/
-        └── services.yml        (Symfony DI configuration)
+        └── services.yml               (Symfony DI configuration)
 ```
 
-The structure is deliberately divided into two worlds: **domain** (`BusinessRules/`) that knows nothing about Lambda, and **infrastructure** (`Events/`, `Repositories/`) that adapts the domain to the outside world.
+The structure is deliberately divided into two worlds: **domain** (`BusinessRules/`) that knows nothing about Lambda, and **infrastructure** (`Events/`, `Gateways/`) that adapts the domain to the outside world.
 
 ---
 
@@ -158,11 +168,11 @@ interface BookGateway
 
 ```php
 // src/BusinessRules/UseCases/AddBook/AddBook.php
-class AddBook implements UseCase
+class AddBook
 {
-    public function __construct(private BookGateway $bookGateway) {}
+    public function __construct(private readonly BookGateway $bookGateway) {}
 
-    public function execute(UseCaseRequest $request): UseCaseResponse
+    public function __invoke(AddBookRequest $request): AddBookResponse
     {
         $book = new Book(uniqid(), $request->title, $request->author);
         $this->bookGateway->add($book);
@@ -173,11 +183,11 @@ class AddBook implements UseCase
 
 Use cases are plain PHP classes. They receive a typed Request DTO, perform domain logic, and return a typed Response DTO — no HTTP, no Lambda, no framework.
 
-### The Repository (Adapter)
+### The Gateway Implementation (Adapter)
 
 ```php
-// src/Repositories/BookRepository.php
-class BookRepository implements BookGateway
+// src/Gateways/InMemoryBookGateway.php
+class InMemoryBookGateway implements BookGateway
 {
     private array $books = [];
 
@@ -219,7 +229,7 @@ return function (array $event) use ($container): array {
     $request = AddBookRequest::create($event['title'], $event['author']);
     /** @var AddBook $useCase */
     $useCase = $container->get(AddBook::class);
-    $response = $useCase->execute($request);
+    $response = $useCase($request);
 
     return ['id' => $response->book->id];
 };
@@ -244,7 +254,7 @@ services:
     exclude: '../../src/Events'
 
   App\BusinessRules\Gateways\BookGateway:
-    class: App\Repositories\BookRepository
+    class: App\Gateways\InMemoryBookGateway
 
   App\BusinessRules\UseCases\AddBook\AddBook:
     public: true
@@ -256,7 +266,7 @@ services:
     public: true
 ```
 
-`autowire: true` means Symfony resolves constructor dependencies automatically. The only explicit binding is `BookGateway → BookRepository`, which is exactly the Dependency Inversion Principle in action.
+`autowire: true` means Symfony resolves constructor dependencies automatically. The only explicit binding is `BookGateway → InMemoryBookGateway`, which is exactly the Dependency Inversion Principle in action.
 
 ---
 
@@ -300,7 +310,7 @@ serverless invoke --function deleteBook -d '{"id": "64a1bc..."}'
 
 This POC is intentionally minimal. To move toward production, you would:
 
-1. **Add a real database** — Implement a `DynamoDbBookRepository` that implements `BookGateway` and interacts with DynamoDB via `async-aws/dynamodb`. No use case code changes required.
+1. **Add a real database** — Implement a `DynamoDbBookGateway` that implements `BookGateway` and interacts with DynamoDB via `async-aws/dynamodb`. No use case code changes required.
 2. **Add an HTTP trigger** — Attach an API Gateway event to each function and map HTTP methods to the right handlers.
 3. **Add IAM permissions** — Use `serverless-iam-roles-per-function` to grant each function only the DynamoDB actions it needs.
 4. **Add tests** — Use cases are plain PHP classes, easy to unit test without mocking Lambda or AWS.
