@@ -1,3 +1,13 @@
+---
+tags: [aws, lambda, serverless, dynamodb, s3, typescript, iac]
+author: Nicolas Mugnier
+categories: architecture
+title: Building a Serverless REST API with AWS Lambda, DynamoDB & S3
+description: "A TypeScript demo implementing a full CRUD API with AWS Lambda, API Gateway, DynamoDB, and S3, all defined as code with the Serverless Framework."
+image: /assets/img/aws-serverless.png
+locale: en_US
+---
+
 # Building a Serverless REST API with AWS Lambda, DynamoDB & S3
 
 ## Introduction
@@ -9,22 +19,22 @@ Serverless architecture lets you build and run applications without managing ser
 ## Architecture Overview
 
 ```
-                    ┌─────────────────────┐
-  Client ────────>  │   API Gateway (HTTP) │
-                    └────────┬────────────┘
+                    ┌───────────────────────┐
+  Client ────────>  │   API Gateway (HTTP)  │
+                    └────────┬──────────────┘
                              │
-              ┌──────────────┼──────────────────┐
+              ┌──────────────┼───────────────────┐
               ▼              ▼                   ▼
         ┌──────────┐  ┌──────────┐       ┌──────────────┐
         │  Lambda  │  │  Lambda  │  ...  │    Lambda    │
         │  create  │  │   read   │       │  add media   │
-        └────┬─────┘  └────┬─────┘       └──────┬───────┘
+        └────┬─────┘  └────┬─────┘       └───────┬──────┘
              │             │                     │
              ▼             ▼                     ▼
-        ┌──────────────────────────┐     ┌──────────────┐
+        ┌──────────────────────────┐     ┌───────────────┐
         │        DynamoDB          │     │      S3       │
         │   (learning-path table)  │     │ (media files) │
-        └──────────────────────────┘     └──────────────┘
+        └──────────────────────────┘     └───────────────┘
 ```
 
 Each Lambda function handles a single HTTP route and is granted only the IAM permissions it needs — no shared roles, no over-privileged functions.
