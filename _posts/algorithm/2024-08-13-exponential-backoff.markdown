@@ -4,7 +4,7 @@ author: Nicolas Mugnier
 categories: algorithm
 title: Algorithme d'exponentiel backoff
 description: Présentation de l'algorithme d'exponentiel backoff, son utilité, quand et comment l'utiliser ?
-image: /assets/img/exponential-backoff.png
+image: /assets/img/exponential-backoff.webp
 locale: fr_FR
 translation_key: exponential-backoff
 ---

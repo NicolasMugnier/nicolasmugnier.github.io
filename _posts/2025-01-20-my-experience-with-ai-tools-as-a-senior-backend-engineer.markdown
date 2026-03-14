@@ -4,7 +4,7 @@ author: Nicolas Mugnier
 categories: ai
 title: "My Experience with AI Tools as a Senior Backend Engineer"
 description: "Feedback on using AI tools in a daily workflow as a Senior Backend Engineer"
-image: /assets/img/ai-usage-1.png
+image: /assets/img/ai-usage-1.webp
 locale: en_US
 ---
 

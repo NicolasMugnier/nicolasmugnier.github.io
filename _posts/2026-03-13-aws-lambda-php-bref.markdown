@@ -4,7 +4,7 @@ author: Nicolas Mugnier
 categories: architecture
 title: Running PHP on AWS Lambda with Bref and Clean Architecture
 description: "A PHP 8.1 POC deploying a Clean Architecture application to AWS Lambda using Bref, Symfony DI, and the Serverless Framework."
-image: /assets/img/lambda-php.png
+image: /assets/img/lambda-php.webp
 locale: en_US
 ---
 

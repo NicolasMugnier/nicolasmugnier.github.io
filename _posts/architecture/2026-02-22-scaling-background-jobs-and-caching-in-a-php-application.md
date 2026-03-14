@@ -4,7 +4,7 @@ author: Nicolas Mugnier
 categories: architecture
 description: "How we scaled a fragile PHP/Symfony pipeline into a resilient system: cursor-based iteration with Doctrine, async jobs with Messenger, tag-based cache invalidation, and a custom PHPStan rule."
 locale: en_US
-image: /assets/img/scaling-background-jobs-and-caching.png
+image: /assets/img/scaling-background-jobs-and-caching.webp
 ---
 
 # Scaling Background Jobs and Caching in a PHP Platform: Patterns That Worked

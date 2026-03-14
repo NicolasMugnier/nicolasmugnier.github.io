@@ -4,7 +4,7 @@ author: Nicolas Mugnier
 categories: architecture
 title: Building a Microservices Architecture with PHP, Docker & Auth0
 description: "A concrete PHP demo illustrating microservices patterns: service isolation, inter-service communication, BFF, JWT authentication, and Docker orchestration with Traefik."
-image: /assets/img/micro-services.png
+image: /assets/img/micro-services.webp
 locale: en_US
 ---
 

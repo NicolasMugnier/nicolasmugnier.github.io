@@ -4,7 +4,7 @@ author: Nicolas Mugnier
 categories: architecture
 title: Building a Serverless REST API with AWS Lambda, DynamoDB & S3
 description: "A TypeScript demo implementing a full CRUD API with AWS Lambda, API Gateway, DynamoDB, and S3, all defined as code with the Serverless Framework."
-image: /assets/img/aws-serverless.png
+image: /assets/img/aws-serverless.webp
 locale: en_US
 ---
 

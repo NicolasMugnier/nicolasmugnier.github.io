@@ -4,7 +4,7 @@ author: Nicolas Mugnier
 categories: docker
 title: "Docker guide, build a PHP Application"
 description: "Step by step guide showing how to build a simple application using Docker"
-image: /assets/img/docker-guide.png
+image: /assets/img/docker-guide.webp
 locale: en_US
 ---
 

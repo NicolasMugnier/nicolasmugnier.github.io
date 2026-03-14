@@ -4,7 +4,7 @@ author: Nicolas Mugnier
 categories: farcaster
 title: "Spin the Wheel"
 description: "Build a Farcaster Frame"
-image: /assets/img/spin-the-wheel.jpg
+image: /assets/img/spin-the-wheel.webp
 locale: en_US
 ---
 

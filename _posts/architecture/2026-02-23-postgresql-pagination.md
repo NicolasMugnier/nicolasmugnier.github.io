@@ -4,7 +4,7 @@ author: Nicolas Mugnier
 categories: architecture
 description: "A cost analysis of OFFSET, keyset, and cursor-based pagination in PostgreSQL — with complexity formulas and trade-offs for batch jobs vs. user-facing APIs."
 locale: en_US
-image: /assets/img/postgresql-pagination.png
+image: /assets/img/postgresql-pagination.webp
 ---
 
 # PostgreSQL Pagination — Cost Analysis

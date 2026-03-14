@@ -4,7 +4,7 @@ author: Nicolas Mugnier
 categories: web3
 title: "The Ultimate Guide to BIP39 Passphrases"
 description: "Demystifying BIP39: A Conceptual Breakdown of Passphrase Generation"
-image: /assets/img/bip39.png
+image: /assets/img/bip39.webp
 locale: en_US
 ---
 

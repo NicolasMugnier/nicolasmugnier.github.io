@@ -4,7 +4,7 @@ author: Nicolas Mugnier
 categories: farcaster
 title: "Introduction to Farcaster Frames"
 description: "How to configure a Farcaster frame on an existing Single Page Application"
-image: /assets/img/farcaster-frames.jpg
+image: /assets/img/farcaster-frames.webp
 locale: en_US
 ---
 

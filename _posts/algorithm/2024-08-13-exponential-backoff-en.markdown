@@ -4,7 +4,7 @@ author: Nicolas Mugnier
 categories: algorithm
 title: Exponential Backoff Algorithm
 description: Overview of the exponential backoff algorithm, its purpose, and when and how to use it.
-image: /assets/img/exponential-backoff.png
+image: /assets/img/exponential-backoff.webp
 locale: en_US
 translation_key: exponential-backoff
 ---
