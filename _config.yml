@@ -40,7 +40,7 @@ giscus:
 author:
   name: Nicolas Mugnier
   bio: "Senior Backend Engineer | Architecure & Development"
-  avatar: /assets/img/avatar.jpeg
+  avatar: /assets/img/avatar.webp
 
 header_pages: []
   #- about.markdown
