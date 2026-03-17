@@ -954,6 +954,29 @@ hr {
   }
 }
 
+// --- Topic page ---
+.topic-header {
+  margin-bottom: 2rem;
+
+  .topic-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-heading);
+    margin-bottom: 0.5rem;
+  }
+
+  .topic-description {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+.topic-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
 // --- Tags page ---
 .tags-page {
   h3 {

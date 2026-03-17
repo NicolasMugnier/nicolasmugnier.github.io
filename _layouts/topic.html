@@ -1,0 +1,70 @@
+---
+layout: base
+---
+
+<div class="home">
+  <header class="topic-header">
+    <h1 class="topic-title">{{ page.title | escape }}</h1>
+    {%- if page.description -%}
+    <p class="topic-description">{{ page.description | escape }}</p>
+    {%- endif -%}
+  </header>
+
+  {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
+  {%- assign all_posts = site.posts -%}
+
+  {%- assign topic_posts = "" | split: "" -%}
+  {%- for slug in page.post_slugs -%}
+    {%- assign matched = all_posts | where_exp: "p", "p.slug == slug" -%}
+    {%- for p in matched -%}
+      {%- assign topic_posts = topic_posts | push: p -%}
+    {%- endfor -%}
+  {%- endfor -%}
+
+  {%- if topic_posts.size > 0 -%}
+  <div class="post-grid topic-grid">
+    {%- for post in topic_posts -%}
+    <a class="post-card" href="{{ post.url | relative_url }}">
+      <div class="card-image-wrapper">
+        <img src="{{ post.image }}" alt="{{ post.title | escape }}" loading="lazy"/>
+        <span class="card-author-badge">
+          <img src="{{ site.author.avatar | relative_url }}" alt="{{ site.author.name }}"/>
+          {{ site.author.name }}
+        </span>
+        <span class="card-date-badge">{{ post.date | date: date_format }}</span>
+        {%- if post.translation_key -%}
+        <span class="card-locale-group">
+          {%- for tp in all_posts -%}
+            {%- if tp.translation_key == post.translation_key -%}
+          <span class="card-locale-link{% if tp.url == post.url %} active{% endif %}" data-href="{{ tp.url | relative_url }}">{{ tp.locale | split: "_" | first | upcase }}</span>
+            {%- endif -%}
+          {%- endfor -%}
+        </span>
+        {%- elsif post.locale -%}
+        <span class="card-locale-badge">{{ post.locale | split: "_" | first | upcase }}</span>
+        {%- endif -%}
+      </div>
+      <div class="card-body">
+        <h3 class="card-title">{{ post.title | escape }}</h3>
+        <p class="card-description">{{ post.description | default: post.excerpt | strip_html | truncate: 120 }}</p>
+        {% assign post_words = post.content | number_of_words %}
+        {% assign post_reading_time = post_words | divided_by: 200 | plus: 1 %}
+        <span class="card-reading-time"><svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-2px"><path d="M8 3.5a.5.5 0 0 0-1 0V8a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 7.71z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/></svg> {{ post_reading_time }} min</span>
+      </div>
+    </a>
+    {%- endfor -%}
+  </div>
+  {%- else -%}
+  <p style="color: var(--text-muted);">Aucun article trouvé pour ce topic.</p>
+  {%- endif -%}
+</div>
+
+<script>
+document.querySelectorAll('.card-locale-link[data-href]').forEach(function(el) {
+  el.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    window.location.href = this.getAttribute('data-href');
+  });
+});
+</script>
