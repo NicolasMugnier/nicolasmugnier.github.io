@@ -38,43 +38,51 @@ layout: base
     </p>
   </header>
 
-  {%- if page.tags.size > 0 -%}
-  <div class="post-tags">
-    {%- for tag in page.tags -%}
-    <span class="tag-badge">{{ tag }}</span>
-    {%- endfor -%}
+  <div class="post-layout">
+    <div class="post-body">
+      {%- if page.tags.size > 0 -%}
+      <div class="post-tags">
+        {%- for tag in page.tags -%}
+        <span class="tag-badge">{{ tag }}</span>
+        {%- endfor -%}
+      </div>
+      {%- endif -%}
+
+      <nav class="post-toc post-toc-inline" id="post-toc-inline"></nav>
+
+      <div class="post-content e-content" itemprop="articleBody">
+        {{ content }}
+      </div>
+
+      {%- comment -%} Find prev/next posts, skipping translations of the same article {%- endcomment -%}
+      {%- assign nav_prev = nil -%}
+      {%- assign nav_next = nil -%}
+      {%- assign found_current = false -%}
+      {%- for p in site.posts -%}
+        {%- if p.url == page.url -%}
+          {%- assign found_current = true -%}
+          {%- continue -%}
+        {%- endif -%}
+        {%- if page.translation_key and p.translation_key == page.translation_key -%}
+          {%- continue -%}
+        {%- endif -%}
+        {%- if found_current and nav_next == nil -%}
+          {%- assign nav_next = p -%}
+        {%- endif -%}
+        {%- unless found_current -%}
+          {%- assign nav_prev = p -%}
+        {%- endunless -%}
+      {%- endfor -%}
+
+      {%- if site.giscus.repo -%}
+      {%- include giscus_comments.html -%}
+      {%- endif -%}
+    </div>
+
+    <aside class="post-toc-sidebar">
+      <nav class="post-toc" id="post-toc"></nav>
+    </aside>
   </div>
-  {%- endif -%}
-
-  <nav class="post-toc" id="post-toc"></nav>
-
-  <div class="post-content e-content" itemprop="articleBody">
-    {{ content }}
-  </div>
-
-  {%- comment -%} Find prev/next posts, skipping translations of the same article {%- endcomment -%}
-  {%- assign nav_prev = nil -%}
-  {%- assign nav_next = nil -%}
-  {%- assign found_current = false -%}
-  {%- for p in site.posts -%}
-    {%- if p.url == page.url -%}
-      {%- assign found_current = true -%}
-      {%- continue -%}
-    {%- endif -%}
-    {%- if page.translation_key and p.translation_key == page.translation_key -%}
-      {%- continue -%}
-    {%- endif -%}
-    {%- if found_current and nav_next == nil -%}
-      {%- assign nav_next = p -%}
-    {%- endif -%}
-    {%- unless found_current -%}
-      {%- assign nav_prev = p -%}
-    {%- endunless -%}
-  {%- endfor -%}
-
-  {%- if site.giscus.repo -%}
-  {%- include giscus_comments.html -%}
-  {%- endif -%}
 
   {%- if nav_prev or nav_next -%}
   <nav class="post-nav">
@@ -100,8 +108,9 @@ layout: base
 (function(){
   var content = document.querySelector('.post-content');
   var toc = document.getElementById('post-toc');
+  var tocInline = document.getElementById('post-toc-inline');
   var headings = content.querySelectorAll('h2, h3');
-  if (headings.length < 3) { toc.remove(); return; }
+  if (headings.length < 3) { toc.remove(); tocInline.remove(); return; }
   var list = document.createElement('ul');
   headings.forEach(function(h, i) {
     if (!h.id) h.id = 'heading-' + i;
@@ -128,7 +137,30 @@ layout: base
     });
     h.appendChild(anchor);
   });
+  var title = document.createElement('p');
+  title.className = 'toc-title';
+  title.textContent = 'Content';
+  toc.appendChild(title);
   toc.appendChild(list);
+
+  // Clone into inline TOC (shown on small screens)
+  tocInline.appendChild(title.cloneNode(true));
+  tocInline.appendChild(list.cloneNode(true));
+
+  // Highlight active section while scrolling
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        var id = entry.target.id;
+        [toc, tocInline].forEach(function(nav) {
+          nav.querySelectorAll('a').forEach(function(a) {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+          });
+        });
+      }
+    });
+  }, { rootMargin: '-10% 0px -80% 0px' });
+  headings.forEach(function(h) { observer.observe(h); });
 
   // Re-scroll to anchor after all content (images, Mermaid) has loaded
   if (window.location.hash) {
