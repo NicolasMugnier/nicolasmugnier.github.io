@@ -209,18 +209,44 @@ document.addEventListener('DOMContentLoaded', function() {
     [D,D,D,D,D,D,D,D,D,D],
   ];
 
-  var px = 8;
-  var base = 'font-size:0;line-height:0;padding:' + px + 'px;';
-  var fmt = '';
-  var styles = [];
-  grid.forEach(function(row, ri) {
-    row.forEach(function(c) {
-      fmt += '%c ';
-      styles.push(base + (c ? 'background:' + c + ';' : ''));
+  var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+  if (!isSafari) {
+    var px = 16;
+    var cols = grid[0].length, rows = grid.length;
+    var canvas = document.createElement('canvas');
+    canvas.width  = cols * px;
+    canvas.height = rows * px;
+    var ctx = canvas.getContext('2d');
+    grid.forEach(function(row, ri) {
+      row.forEach(function(color, ci) {
+        if (color) {
+          ctx.fillStyle = color;
+          ctx.fillRect(ci * px, ri * px, px, px);
+        }
+      });
     });
-    if (ri < grid.length - 1) fmt += '\n';
-  });
-  console.log.apply(console, [fmt].concat(styles));
+    var url = canvas.toDataURL();
+    var pw = canvas.width / 2, ph = canvas.height / 2;
+    console.log('%c ',
+      'padding:' + ph + 'px ' + pw + 'px;' +
+      'background:url(' + url + ') no-repeat center;' +
+      'background-size:contain;font-size:0;line-height:0;'
+    );
+  } else {
+    var px = 8;
+    var base = 'font-size:0;line-height:0;padding:' + px + 'px;';
+    var fmt = '';
+    var styles = [];
+    grid.forEach(function(row, ri) {
+      row.forEach(function(c) {
+        fmt += '%c ';
+        styles.push(base + (c ? 'background:' + c + ';' : ''));
+      });
+      if (ri < grid.length - 1) fmt += '\n';
+    });
+    console.log.apply(console, [fmt].concat(styles));
+  }
 
   var getInTouch = '636f6e736f6c652e6c6f6740616e79766f69642e646576';
 
