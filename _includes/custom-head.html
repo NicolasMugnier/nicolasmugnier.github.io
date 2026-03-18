@@ -185,3 +185,62 @@ document.addEventListener('DOMContentLoaded', function() {
   window.addEventListener('hashchange', highlightFromHash);
 });
 </script>
+<script>
+(function() {
+  var _ = null;
+  var D = '#3b0764'; // dark outer hood
+  var M = '#6d28d9'; // inner hood / shadow
+  var F = '#f5f3ff'; // face (light)
+  var E = '#1e1b4b'; // eyes & mouth
+
+  // Elliot pixel grid (10 x 12)
+  var grid = [
+    [_,_,D,D,D,D,D,D,_,_],
+    [_,D,D,M,M,M,M,D,D,_],
+    [D,D,M,F,F,F,F,M,D,D],
+    [D,M,F,E,F,F,E,F,M,D],
+    [D,M,F,F,F,F,F,F,M,D],
+    [D,M,F,F,E,E,F,F,M,D],
+    [D,M,F,F,F,F,F,F,M,D],
+    [_,D,D,M,F,F,M,D,D,_],
+    [_,_,D,D,D,D,D,_,_,_],
+    [_,_,D,D,D,D,D,D,_,_],
+    [_,D,D,D,D,D,D,D,D,_],
+    [D,D,D,D,D,D,D,D,D,D],
+  ];
+
+  var px = 8;
+  var base = 'font-size:0;line-height:0;padding:' + px + 'px;';
+  var fmt = '';
+  var styles = [];
+  grid.forEach(function(row, ri) {
+    row.forEach(function(c) {
+      fmt += '%c ';
+      styles.push(base + (c ? 'background:' + c + ';' : ''));
+    });
+    if (ri < grid.length - 1) fmt += '\n';
+  });
+  console.log.apply(console, [fmt].concat(styles));
+
+  var getInTouch = '636f6e736f6c652e6c6f6740616e79766f69642e646576';
+
+  var box = [
+    '  ╔══════════════════════════════════════════╗',
+    '  ║  · · · · · · · · · · · · · · · · · · · · ║',
+    '  ║                                          ║',
+    '  ║   Hello, friend. 👀                      ║',
+    '  ║   So you inspect the source too?         ║',
+    '  ║                                          ║',
+    '  ║   ┌──────────────────────────────────┐   ║',
+    '  ║   │  > console.log("Hello, friend")  │   ║',
+    '  ║   └──────────────────────────────────┘   ║',
+    '  ║                                          ║',
+    '  ║   Get in touch 👇                        ║',
+    '  ║                                          ║',
+    '  ╚══════════════════════════════════════════╝',
+    '',
+    '  > ' + getInTouch,
+  ].join('\n');
+  console.log('%c' + box, 'color:#00ff41;font-family:monospace;font-size:12px;line-height:1.6;');
+})();
+</script>
