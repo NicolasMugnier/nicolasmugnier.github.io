@@ -49,6 +49,44 @@ The rules:
 - **Business hours only** — 9:00 to 17:00, so the team is around if something goes wrong
 - **Otherwise** — green light, with a countdown of hours left in the window
 
+<div style="margin: 1.5rem 0; padding: 1.25rem 1.5rem; border: 1px solid #e0e0e0; border-radius: 8px; background: #f9f9f9;">
+  <p style="margin: 0 0 0.75rem; font-weight: 600;">Try it live</p>
+  <button id="deploy-check-btn" onclick="checkDeploy()" style="cursor: pointer; padding: 0.5rem 1.25rem; background: #1a1a1a; color: #fff; border: none; border-radius: 6px; font-size: 0.95rem;">
+    Can I deploy right now?
+  </button>
+  <p id="deploy-check-result" style="margin: 0.75rem 0 0; font-family: monospace; font-size: 0.95rem; min-height: 1.4em;"></p>
+</div>
+
+<script>
+async function checkDeploy() {
+  const btn = document.getElementById('deploy-check-btn');
+  const result = document.getElementById('deploy-check-result');
+  btn.disabled = true;
+  result.textContent = 'Checking…';
+  try {
+    const res = await fetch('https://mcp-deploy-check.anyvoid.dev/mcp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json, text/event-stream',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0', id: 1,
+        method: 'tools/call',
+        params: { name: 'can_i_deploy', arguments: {} }
+      }),
+    });
+    const text = await res.text();
+    const match = text.match(/"text":"([^"]+)"/);
+    result.textContent = match ? match[1] : 'Unexpected response.';
+  } catch {
+    result.textContent = 'Server unavailable — try again later.';
+  } finally {
+    btn.disabled = false;
+  }
+}
+</script>
+
 ---
 
 ## Step 1: The TypeScript server (stdio transport)
