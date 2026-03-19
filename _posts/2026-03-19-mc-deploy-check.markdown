@@ -49,12 +49,10 @@ The rules:
 - **Business hours only** — 9:00 to 17:00, so the team is around if something goes wrong
 - **Otherwise** — green light, with a countdown of hours left in the window
 
-<div style="margin: 1.5rem 0; padding: 1.25rem 1.5rem; border: 1px solid #e0e0e0; border-radius: 8px; background: #f9f9f9;">
-  <p style="margin: 0 0 0.75rem; font-weight: 600;">Try it live</p>
-  <button id="deploy-check-btn" onclick="checkDeploy()" style="cursor: pointer; padding: 0.5rem 1.25rem; background: #1a1a1a; color: #fff; border: none; border-radius: 6px; font-size: 0.95rem;">
-    Can I deploy right now?
-  </button>
-  <p id="deploy-check-result" style="margin: 0.75rem 0 0; font-family: monospace; font-size: 0.95rem; min-height: 1.4em;"></p>
+<div class="try-it-box">
+  <p class="try-it-label">Try it live</p>
+  <button id="deploy-check-btn" onclick="checkDeploy()">Can I deploy right now?</button>
+  <p id="deploy-check-result" class="try-it-result"></p>
 </div>
 
 <script>

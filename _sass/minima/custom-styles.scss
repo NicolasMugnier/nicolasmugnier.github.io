@@ -1166,6 +1166,44 @@ pre:hover .code-copy-btn {
   }
 }
 
+// --- Try it live block ---
+.try-it-box {
+  margin: 1.5rem 0;
+  padding: 1.25rem 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  background: var(--bg-card);
+
+  .try-it-label {
+    margin: 0 0 0.75rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  button {
+    cursor: pointer;
+    padding: 0.5rem 1.25rem;
+    background: var(--brand);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: background 0.2s ease;
+
+    &:hover { background: var(--brand-hover); }
+    &:disabled { opacity: 0.6; cursor: default; }
+  }
+
+  .try-it-result {
+    margin: 0.75rem 0 0;
+    font-family: monospace;
+    font-size: 0.95rem;
+    min-height: 1.4em;
+    color: var(--text);
+  }
+}
+
 // --- Line numbers & code block override ---
 div.highlight,
 figure.highlight {
