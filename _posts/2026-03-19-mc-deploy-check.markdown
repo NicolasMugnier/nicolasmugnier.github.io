@@ -8,11 +8,13 @@ image: /assets/img/mcp-deploy-check.webp
 locale: en_US
 ---
 
-One of the unwritten rules of software engineering: **never deploy on a Friday**. Or after 5pm. Or on weekends. Everyone knows it, yet somehow it keeps happening.
+I wanted to understand MCP (Model Context Protocol) hands-on — not just read the docs, but actually build something, hit the rough edges, and see how it feels to extend Claude with a custom tool.
 
-Instead of relying on willpower, I built a small MCP (Model Context Protocol) server that answers one question: *can I deploy to production right now?* You ask Claude, Claude asks the server, the server checks the clock — done.
+For the experiment I picked a deliberately simple idea: a server that answers one question — *can I deploy to production right now?* — based on the day and time. The ["never deploy on Friday"](https://medium.com/openclassrooms-product-design-and-engineering/do-not-deploy-on-friday-92b1b46ebfe6) rule is a classic piece of engineering folklore, which made it a fun and relatable subject for a first MCP project. The server is intentionally opinionated (and a bit tongue-in-cheek): it blocks Fridays, weekends, and anything outside business hours, and gives you a reason either way.
 
-Here's how I built it, from a local Docker POC to a production deployment on Vercel with a custom domain.
+The goal here was to learn, not to enforce policy.
+
+Here's what I built, how it works, and what I learned along the way — from a local Docker POC to a production deployment on Vercel with a custom domain.
 
 ---
 
@@ -20,7 +22,20 @@ Here's how I built it, from a local Docker POC to a production deployment on Ver
 
 MCP (Model Context Protocol) is an open protocol developed by Anthropic that lets you extend AI assistants like Claude with custom tools. Instead of just chatting, Claude can call your server to fetch data, run checks, or trigger actions — and use the results to answer your question.
 
-It's a simple client-server pattern: you define tools (with a name, description, and optional parameters), and Claude decides when to call them based on context.
+Before MCP, connecting an LLM to external capabilities meant either baking everything into the prompt, writing custom glue code per-application, or relying on proprietary plugin systems tied to a specific platform. MCP standardizes this: any client that speaks the protocol (Claude Code, Claude Desktop, or your own app built on the SDK) can connect to any compliant server.
+
+The architecture is a simple client-server pattern:
+
+- **You** define tools on the server — each tool has a name, a description, and an optional JSON Schema for parameters.
+- **Claude** reads the tool list at startup and decides autonomously when to call them, based on the conversation context.
+- **The server** executes the tool and returns structured content (text, images, or other types).
+- **Claude** uses the result to formulate its response.
+
+The description of each tool is critical — it's what Claude uses to decide *when* to invoke it. A well-written description ("Checks if it's currently safe to deploy to production based on the day and time") is more reliable than a vague one.
+
+Two transport modes exist depending on where your server runs:
+- **stdio** — the client spawns the server as a child process and communicates over stdin/stdout. Simple, zero network config, ideal for local tools.
+- **Streamable HTTP** — the server exposes an HTTP endpoint. Required for remote/shared deployments.
 
 ---
 
@@ -34,8 +49,6 @@ The rules:
 - **Business hours only** — 9:00 to 17:00, so the team is around if something goes wrong
 - **Otherwise** — green light, with a countdown of hours left in the window
 
-> **Honest take:** I actually deploy on Fridays. Not at 5pm, but the day of the week alone is never a good enough reason to hold back a deployment. What actually matters is: do you have monitoring in place? Is the team available? Is the change well-tested and scoped? Is there an easy rollback path? A Friday deploy with all those boxes checked is safer than a Tuesday deploy without them. The "never on Friday" rule is a proxy for risk — but it's a blunt one. [This article from OpenClassrooms](https://medium.com/openclassrooms-product-design-and-engineering/do-not-deploy-on-friday-92b1b46ebfe6) digs into that nuance well.
-
 ---
 
 ## Step 1: The TypeScript server (stdio transport)
@@ -48,6 +61,8 @@ export function checkDeploy(): { allowed: boolean; reason: string } {
   const now = new Date();
   const day = now.getDay(); // 0=Sun, 5=Fri, 6=Sat
   const hour = now.getHours();
+
+  const dayName = now.toLocaleDateString('en-US', { weekday: 'long' });
 
   if (day === 0 || day === 6) {
     return { allowed: false, reason: `It's ${dayName}. Nobody deploys on weekends.` };
@@ -82,7 +97,7 @@ The stdio transport means the server communicates over stdin/stdout — Claude C
 
 ---
 
-## Step 2: Running it with Docker
+## Step 2: Containerizing and testing locally
 
 No local Node.js installs needed. A multi-stage Dockerfile keeps the runtime image lean:
 
@@ -117,7 +132,36 @@ And a `.mcp.json` at the project root tells Claude Code how to launch it:
 }
 ```
 
-At this point the POC works locally — you can ask Claude *"can I deploy?"* and it calls the tool.
+Build the image once:
+
+```bash
+docker build -t mcp-deploy-check .
+```
+
+Then drop the `.mcp.json` at the root of any project where you want the tool available. Claude Code picks it up automatically on next launch.
+
+### Testing locally with Claude Code
+
+Once the server is registered, just open Claude Code in that project and ask naturally:
+
+```
+You: can I deploy?
+
+Claude: I'll check that for you.
+        [Calling tool: can_i_deploy]
+        🚫 NO — It's Friday. Step away from the keyboard.
+```
+
+Or on a Wednesday morning:
+
+```
+You: is now a good time to push to prod?
+
+Claude: [Calling tool: can_i_deploy]
+        ✅ YES — You're good to go! ~6h left in the window.
+```
+
+Claude decides on its own to call the tool — you don't have to say "use the deploy-check tool". The tool description is enough for it to figure out the intent.
 
 ---
 
@@ -141,7 +185,11 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
 
   let body: unknown = undefined;
   if (req.method === "POST") {
-    body = await parseBody(req);
+    body = await new Promise((resolve) => {
+      let data = "";
+      req.on("data", (chunk) => (data += chunk));
+      req.on("end", () => resolve(JSON.parse(data)));
+    });
   }
 
   await transport.handleRequest(req, res, body);
@@ -158,7 +206,19 @@ Vercel compiles `api/*.ts` files natively — no build configuration needed. A m
 }
 ```
 
-After connecting the GitHub repository to Vercel and deploying, the server is live. The `.mcp.json` switches from Docker to HTTP:
+After connecting the GitHub repository to Vercel and deploying, the server is live.
+
+---
+
+## Step 4: Testing it
+
+The server repo itself keeps its Docker-based `.mcp.json` — that's for developing and testing the tool locally. The deployed endpoint is meant to be consumed from *other* projects.
+
+### Configure the client
+
+There are two ways to point Claude Code at the live server.
+
+**Option 1 — manually**, add a `.mcp.json` in the project directory, or in your global Claude Code configuration to have it available everywhere:
 
 ```json
 {
@@ -171,13 +231,21 @@ After connecting the GitHub repository to Vercel and deploying, the server is li
 }
 ```
 
-> **Note:** the `type: "http"` field is required — omitting it causes a schema validation error in Claude Code.
+**Option 2 — via the `claude mcp add` command**, which writes the configuration for you:
 
----
+```bash
+# Available only in the current project
+claude mcp add --transport http deploy-check https://mcp-deploy-check.anyvoid.dev/mcp
 
-## Testing it
+# Available globally across all your projects
+claude mcp add --transport http --scope user deploy-check https://mcp-deploy-check.anyvoid.dev/mcp
+```
 
-The Streamable HTTP transport expects clients to declare support for both response formats:
+> **Note:** in both options, specifying the transport is required — `"type": "http"` in the JSON file, `--transport http` in the CLI. Omitting it causes a schema validation error in Claude Code.
+
+### Verify with curl
+
+Before using it through Claude, you can hit the endpoint directly. The Streamable HTTP transport expects clients to declare support for both response formats:
 
 ```bash
 curl -X POST "https://mcp-deploy-check.anyvoid.dev/mcp" \
@@ -186,42 +254,63 @@ curl -X POST "https://mcp-deploy-check.anyvoid.dev/mcp" \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"can_i_deploy","arguments":{}}}'
 ```
 
-Response on a Monday evening:
+Response on a Tuesday evening:
 
 ```
 event: message
 data: {"result":{"content":[{"type":"text","text":"🚫 NO — It's 21:47 — end of business hours. Next window: Wednesday at 9:00."}]}}
 ```
 
----
+### Use it through Claude Code
 
-## What's next
+Once configured, the interaction is the same as with the local Docker server — just ask naturally:
 
-This is a minimal POC, but the pattern opens up more interesting possibilities:
+```
+You: can I deploy?
 
-- **Timezone support** — pass a timezone argument so distributed teams get the right answer
-- **Deployment freeze periods** — block deploys during release freezes or holidays via a config file
-- **On-call check** — call PagerDuty or OpsGenie to verify someone is actually on-call before allowing a deploy
-- **Audit log** — record every check so you have a history of who asked and when
+Claude: [Calling tool: can_i_deploy]
+        🚫 NO — It's Friday. Step away from the keyboard.
+```
 
-The core idea stays the same: a single, focused tool that Claude can call when the question comes up naturally in conversation. No dashboards, no context switching — just ask.
+The difference is that the tool now runs on Vercel rather than in a local Docker container — but from Claude's perspective, nothing changed.
 
 ---
 
 ## Final architecture
 
 ```
-Claude Code
-    │
-    │  HTTP (Streamable HTTP transport)
-    ▼
-Vercel Serverless Function (api/mcp.ts)
-    │
-    ▼
-checkDeploy() — inspects day + time
-    │
-    ▼
-"🚫 NO — It's Friday. Step away from the keyboard."
+                    Claude Code
+                        │
+          ┌─────────────┴──────────────┐
+          │ local (stdio)              │ remote (HTTP)
+          ▼                            ▼
+  Docker container             Vercel Serverless
+  node dist/index.js           Function (api/mcp.ts)
+          │                            │
+          └─────────────┬──────────────┘
+                        ▼
+              checkDeploy() — inspects day + time
+                        │
+                        ▼
+          "🚫 NO — It's Friday. Step away from the keyboard."
 ```
 
-The full source is available at [github.com/NicolasMugnier/mcp-deploy-check](https://github.com/NicolasMugnier/mcp-deploy-check).
+---
+
+## Conclusion
+
+The deploy-check tool is deliberately trivial — checking the day and time is not a hard problem. But that's exactly what made it a good first MCP project: the logic was simple enough to stay out of the way, and I could focus entirely on understanding the protocol, the transport layers, the tool registration, and how Claude actually decides to invoke a tool.
+
+What I took away is less about this specific server and more about what the pattern makes possible. MCP lets you give Claude contextual knowledge about your environment — your infrastructure, your processes, your team's constraints — without building a dedicated interface for it. The assistant doesn't just answer general questions anymore; it can answer *your* questions, grounded in *your* reality.
+
+That's the value. Not the automation, but the reduction of friction between a question and a reliable answer.
+
+Using this naturally raises a broader question: when does a problem call for an MCP server, rather than a prompt or a `CLAUDE.md` file? That's worth a dedicated post.
+
+---
+
+## References
+
+- [mcp-deploy-check — GitHub repository](https://github.com/NicolasMugnier/mcp-deploy-check)
+- [Model Context Protocol — official documentation](https://modelcontextprotocol.io)
+- [MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk)
