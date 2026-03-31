@@ -1,4 +1,26 @@
 services:
+  convert-image:
+    build:
+      context: .
+      dockerfile: Dockerfile.convert-image
+    volumes:
+      - .:/app
+    working_dir: /app
+    profiles:
+      - tools
+
+  #generate-image:
+  #  build:
+  #    context: .
+  #    dockerfile: Dockerfile.generate-image
+  #  working_dir: /app
+  #  volumes:
+  #    - .:/app
+  #   env_file:
+  #    - .env
+  #  profiles:
+  #    - tools
+
   jekyll:
     image: jekyll/jekyll:4
     command: bash -c "bundle install && bundle exec jekyll serve --host 0.0.0.0 --livereload --drafts"
