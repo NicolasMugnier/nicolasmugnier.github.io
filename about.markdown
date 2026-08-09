@@ -4,7 +4,7 @@ title: About
 permalink: /about/
 ---
 
-Ingénieur Backend Senior avec plus 15 années d'expérience en développement d'applications web et microservices.
+Ingénieur Backend avec plus 15 années d'expérience en développement d'applications web et microservices.
 
 Expertise technique :
 
