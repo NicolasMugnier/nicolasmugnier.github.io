@@ -21,7 +21,7 @@
 title: Backend Engineer Insights
 tagline: Blog
 description: >-
-  Hi :wave:, I'm Nicolas ! Sharing insights, experiences, and thoughts as a Senior Backend Engineer.
+  Hi :wave:, I'm Nicolas ! Sharing insights, experiences, and thoughts as a Backend Engineer.
   This blog covers technical challenges, best practices, and personal reflections
   on navigating the backend engineering landscape.
 baseurl: "" # the subpath of your site, e.g. /blog
@@ -39,7 +39,7 @@ giscus:
 
 author:
   name: Nicolas Mugnier
-  bio: "Senior Backend Engineer | Architecure & Development"
+  bio: "Backend Engineer | Architecture & Development"
   avatar: /assets/img/avatar.webp
 
 header_pages: []
