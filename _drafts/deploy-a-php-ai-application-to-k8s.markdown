@@ -1,31 +1,42 @@
-# Deploying a PHP AI Application to Kubernetes: A GitOps Walkthrough
+---
+layout: post
+title: "Deploying a PHP Application to Kubernetes: A GitOps Walkthrough"
+tags: [php, kubernetes, gitops, frankenphp, aws]
+author: Nicolas Mugnier
+categories: architecture
+description: "How I shipped a FrankenPHP Symfony app to EKS: Terragrunt, Argo CD, non-root containers, SSM secrets, CronJobs, and probes."
+image: /assets/img/deploy-php-k8s.webp
+locale: en_US
+---
 
-When you first ship an AI-powered backend service to production, the application code is rarely the hard part. What takes time — and iteration — is everything around it: the container, the deployment pipeline, the secrets, the scheduler, and the runtime configuration. This article walks through the real sequence of decisions made when deploying a PHP application (built on FrankenPHP) to a Kubernetes cluster using a full GitOps stack.
+# Deploying a PHP Application to Kubernetes: A GitOps Walkthrough
+
+When you first ship a PHP backend to Kubernetes, the application code is rarely the hard part. What takes time, and iteration, is everything around it: the container, the pipeline, the secrets, the scheduler, and the runtime. This is the sequence of decisions I made deploying a Symfony app on FrankenPHP to EKS with a GitOps stack.
+
+The service talks to external APIs (including an AI provider). That did not change the cluster shape. It did make secret paths, health probes, and a crash-on-boot smoke test non-negotiable.
 
 ---
 
-## The Stack
+## The stack
 
-Before diving in, here is the toolchain involved:
-
-- **PHP 8.3 / Symfony** — application runtime
-- **FrankenPHP** — modern PHP server built on top of Caddy
-- **Docker** — container image
-- **GitHub Actions** — CI/CD pipelines
-- **Terraform + Terragrunt** — infrastructure provisioning
-- **Argo CD + Helm** — GitOps-based Kubernetes deployment
-- **AWS EKS** — Kubernetes cluster
-- **AWS Systems Manager Parameter Store + External Secrets Operator** — secret injection into pods
+- **PHP 8.3 / Symfony**: application runtime
+- **FrankenPHP**: PHP server on top of Caddy
+- **Docker**: container image
+- **GitHub Actions**: CI/CD
+- **Terraform + Terragrunt**: AWS bootstrap
+- **Argo CD + Helm**: GitOps deploy
+- **AWS EKS**: cluster
+- **SSM Parameter Store + External Secrets Operator**: secrets into pods
 
 ---
 
-## 1. Bootstrapping the Infrastructure with Terragrunt
+## 1. Bootstrapping AWS with Terragrunt
 
-The first step before any code runs in Kubernetes is provisioning the underlying AWS infrastructure. Rather than managing raw Terraform directly, the project uses **Terragrunt** — a thin wrapper that adds DRY configuration, remote state management, and environment inheritance.
+Before anything runs in the cluster, the AWS side has to exist. I used **Terragrunt** on top of Terraform: DRY includes, remote state, environment inheritance. Not a second IaC language, a wrapper.
 
 ### Remote state
 
-Terraform state is stored remotely in an S3 bucket, with a unique key per project and environment:
+State lives in S3, one key per project and environment:
 
 ```hcl
 remote_state {
@@ -40,11 +51,11 @@ remote_state {
 }
 ```
 
-Using `use_lockfile = true` prevents concurrent Terraform runs from corrupting state — essential in a team where multiple engineers or CI jobs might plan or apply simultaneously.
+`use_lockfile = true` stops two applies from corrupting the same state (another engineer, or two CI jobs).
 
 ### Application bootstrap module
 
-A shared internal Terraform module handles the boilerplate: creating the **ECR repository** for Docker images, the necessary **IAM roles**, and wiring up **monitoring** (alerting channel, environments to monitor). This pattern avoids duplicating the same Terraform code across every service in the organisation.
+A shared internal module owns the boring part: **ECR**, **IAM**, monitoring wiring. Each service does not copy that Terraform.
 
 ```hcl
 inputs = {
@@ -60,25 +71,23 @@ inputs = {
 
 ## 2. GitOps with Argo CD and Helm
 
-Once the AWS resources exist, the application itself is deployed via **Argo CD** — a GitOps operator that watches the repository and reconciles the Kubernetes cluster state with what is declared in Git.
+Once the AWS resources exist, Argo CD watches Git and reconciles the cluster to what the repo declares.
 
 ### Helm values hierarchy
 
-Configuration is split across a three-level Helm values hierarchy:
-
 ```
 deploy/argo/backend/
-├── Chart.yaml              ← chart declaration
-├── values.yaml             ← shared defaults (all envs)
-├── staging/values.yaml     ← staging-specific overrides
-└── production/values.yaml  ← production-specific overrides
+├── Chart.yaml              # chart
+├── values.yaml             # shared defaults
+├── staging/values.yaml     # staging overrides
+└── production/values.yaml  # production overrides
 ```
 
-This pattern avoids duplicating configuration while allowing each environment to diverge where it needs to. A value defined in `values.yaml` is automatically inherited unless overridden at a deeper level.
+A value in `values.yaml` is inherited unless an environment file overrides it. Divergence is explicit.
 
 ### Resource allocation
 
-The base resource profile for the container is conservative and intentional:
+The first profile is intentionally small:
 
 ```yaml
 resources:
@@ -90,24 +99,24 @@ resources:
     memory: 512Mi
 ```
 
-Requests define what Kubernetes **guarantees** to the pod (used for scheduling decisions). Limits define the **maximum** it can consume before being throttled (CPU) or killed (memory). Starting low and adjusting based on observed usage is a safer approach than over-provisioning from day one.
+Requests are what the scheduler **guarantees**. Limits are the **ceiling** (CPU throttle, OOM kill on memory). Start low, raise from observed usage. Do not guess production size on day one.
 
 ---
 
-## 3. The CI/CD Pipeline
+## 3. The CI/CD pipeline
 
-Three GitHub Actions workflows handle the full lifecycle:
+Four GitHub Actions workflows cover the lifecycle:
 
 | Workflow | Trigger | Purpose |
 |---|---|---|
-| `pull-request.yml` | Every PR | Run tests, static analysis, build image |
-| `default.yml` | Push to `main` | Build, push to ECR, deploy to staging |
-| `release_on_tag.yml` | Git tag | Deploy to production |
-| `infra-as-code.yml` | Changes to `deploy/terragrunt/` | Plan or apply Terraform |
+| `pull-request.yml` | Every PR | Tests, PHPStan, build image, smoke-start the container |
+| `default.yml` | Push to `main` | Build, push to ECR, deploy staging |
+| `release_on_tag.yml` | Git tag | Deploy production |
+| `infra-as-code.yml` | Changes under `deploy/terragrunt/` | Plan or apply Terraform |
 
 ### Docker smoke test in CI
 
-A subtle but useful addition to the PR pipeline: after building the Docker image, the workflow starts the container for a few seconds before stopping it.
+After building the image on a PR, start it for a few seconds and **assert it is still running**. A `docker stop || true` alone is not a test: a crash still looks green.
 
 ```yaml
 - name: Build Docker image (no push)
@@ -117,51 +126,52 @@ A subtle but useful addition to the PR pipeline: after building the Docker image
     load: true
     tags: my-app-backend:test
 
-- name: Test container starts
+- name: Test container stays up
   run: |
     docker run --rm -d --name test-container my-app-backend:test
     sleep 5
-    docker stop test-container || true
+    docker inspect -f '{{.State.Running}}' test-container | grep -qx true
+    docker stop test-container
 ```
 
-This catches a class of errors that static analysis cannot: a missing PHP extension, an incorrect entrypoint, or a misconfigured environment variable that causes the process to crash immediately. The `|| true` ensures the CI step doesn't fail if the container exits cleanly on its own.
+This catches what PHPStan will not: a missing extension, a bad entrypoint, an env var the process needs at boot.
 
 ### Static analysis gate
 
-Every PR also runs **PHPStan** before merge. This is particularly important for a PHP codebase interacting with external APIs — type errors that are only caught at runtime in a dynamic language get surfaced at PR time instead.
+Every PR runs **PHPStan** before merge. On a PHP codebase that calls external APIs, type mistakes that used to explode at runtime show up on the PR.
 
 ---
 
-## 4. Container Security Hardening
+## 4. Container security hardening
 
-The Dockerfile went through several iterations to reach a production-safe state. Each step addressed a specific concern.
+The Dockerfile went through several iterations. Each change had a concrete failure behind it.
 
-### Switching from port 443 to port 80
+### Do not let FrankenPHP terminate TLS
 
-FrankenPHP (built on Caddy) defaults to listening on port 443 with automatic TLS. This is elegant for standalone deployments but problematic behind a Kubernetes ingress controller, which:
+FrankenPHP (Caddy) defaults to port 443 and automatic certificates. Behind a Kubernetes ingress that is the wrong split:
 
-1. **Terminates TLS itself** at the ingress layer — so the backend doesn't need it
-2. **Requires elevated capabilities** (or root) to bind to ports below 1024
+1. The ingress **already terminates TLS**
+2. Binding 443 inside the pod wants extra privilege (`CAP_NET_BIND_SERVICE` or root)
 
-The fix is a single environment variable:
+The fix we used is a single environment variable:
 
 ```dockerfile
 ENV SERVER_NAME=:80
 ```
 
-`SERVER_NAME` is Caddy's way of declaring its listening address. Setting it to `:80` switches the server to plain HTTP mode, disabling automatic certificate management entirely. TLS is handled upstream by the ingress.
+`SERVER_NAME` is how Caddy sets the listen address. `:80` is plain HTTP, no automatic certs. TLS stays on the ingress.
 
-### Dropping unnecessary Linux capabilities
+### Drop capabilities you no longer need
 
-FrankenPHP ships with `CAP_NET_BIND_SERVICE` set on its binary, allowing it to bind to privileged ports as a non-root user. Since we moved to port 80 and run behind an ingress, this capability is not needed:
+FrankenPHP ships with `CAP_NET_BIND_SERVICE` on the binary so it can bind 443 as non-root. After moving off 443 and sitting behind the ingress, we dropped it:
 
 ```dockerfile
 RUN setcap -r /usr/local/bin/frankenphp
 ```
 
-Removing capabilities follows the **principle of least privilege**: the process should have exactly the permissions it needs, no more.
+Least privilege: keep only what the process still needs.
 
-### Running as a non-root user
+### Run as non-root
 
 ```dockerfile
 ARG USER=www-data
@@ -173,15 +183,16 @@ RUN \
 USER ${USER}
 ```
 
-The container runs as `www-data` (UID 33 on Debian), not root. The `chown` call covers:
-- `/config/caddy` and `/data/caddy` — Caddy's runtime storage (config, certificates)
-- `/app` — the application directory (cache, logs)
+The process is `www-data` (UID 33 on Debian). `chown` covers:
 
-Without this, the process would fail to write to those directories at runtime even though the image built successfully.
+- `/config/caddy` and `/data/caddy`: Caddy runtime storage
+- `/app`: app cache and logs
 
-### Aligning UIDs between Docker and Kubernetes
+Without that, the image builds, then the process dies at runtime on `Permission denied`.
 
-This is a common pitfall. The Dockerfile sets `USER www-data` (UID 33). The Kubernetes `podSecurityContext` must declare the same UID:
+### Align UIDs between Docker and Kubernetes
+
+Dockerfile `USER www-data` (UID 33) is not enough. The pod must declare the same UID:
 
 ```yaml
 podSecurityContext:
@@ -190,16 +201,16 @@ podSecurityContext:
   fsGroup: 33
 ```
 
-- `runAsUser` / `runAsGroup` — the UID/GID the process runs as inside the pod
-- `fsGroup` — Kubernetes will `chown` all mounted volumes to this GID at pod startup, ensuring the process can read and write to them
+- `runAsUser` / `runAsGroup`: UID/GID of the process
+- `fsGroup`: kubelet chowns mounted volumes to this GID at start
 
-If these do not match, you get permission errors on mounted volumes even if the Dockerfile itself is correct.
+If these drift, volume mounts fail even when the Dockerfile is correct.
 
 ---
 
-## 5. Secrets Management with External Secrets Operator
+## 5. Secrets with External Secrets Operator
 
-Sensitive credentials (API keys, OAuth secrets) are stored in **AWS Systems Manager Parameter Store** and injected into pods at runtime by the **External Secrets Operator (ESO)**. ESO watches Kubernetes `ExternalSecret` resources and syncs the values from SSM into native Kubernetes `Secret` objects, which are then mounted as environment variables.
+API keys live in **AWS SSM Parameter Store**. **External Secrets Operator** watches `ExternalSecret` objects, copies values into Kubernetes `Secret`s, then the chart injects them as env vars.
 
 ```yaml
 externalSecrets:
@@ -211,20 +222,20 @@ externalSecrets:
       name: APP_SERVICE_API_KEY
 ```
 
-One issue encountered here: the SSM path convention. The initial paths used a prefix that did not match the actual path in Parameter Store. ESO would silently fail to fetch the secret, and the pod would start without the environment variable — causing runtime errors far from the actual root cause.
+The failure mode I hit: Helm paths used a prefix that did not match SSM. ESO did not fail the deploy. The pod started, the env var was missing, the error showed up three layers later in application logs.
 
-**Lesson:** Always verify SSM paths explicitly before deploying. A mismatch between the path declared in Helm and the actual parameter location in SSM will not surface as a build error.
+**Lesson:** grep the live SSM path before the first deploy. A wrong path is not a CI error.
 
 ---
 
-## 6. Kubernetes CronJob for the Scheduler
+## 6. CronJob for the scheduler
 
-The application needs to trigger a background task on a schedule. In Kubernetes, this is handled by a **CronJob** resource, declared through the Helm chart:
+Background work is a Kubernetes **CronJob** in the same chart:
 
 ```yaml
 cronJobs:
   initiate-calls:
-    schedule: "0 7-15/2 * * 1-5"   # every 2h, Mon–Fri, 7am–3pm
+    schedule: "0 7-15/2 * * 1-5"   # every 2h, Mon-Fri, 7am-3pm
     command: "php bin/console app:my-command"
     restartPolicy: Never
     image:
@@ -232,18 +243,14 @@ cronJobs:
       imagePullPolicy: IfNotPresent
 ```
 
-Two configuration points worth highlighting:
+- `fromApp: true`: same image as the web deployment. Right default when `bin/console` and the HTTP server share the codebase.
+- `imagePullPolicy: IfNotPresent`: skip a pull on every tick **only if the tag is immutable** (digest or a unique tag). `latest` plus `IfNotPresent` will happily run a stale image.
 
-- `fromApp: true` — reuses the same Docker image as the main application deployment, rather than requiring a separate image build for the scheduler. This is the correct default for a monolithic PHP app where the console and the web server share the same codebase.
-- `imagePullPolicy: IfNotPresent` — avoids pulling the image on every cron execution. On a self-hosted cluster with a private registry, unnecessary pulls add latency and network load. Since the image is already present on the node from the main deployment, this is safe.
-
-A useful trick for temporarily disabling a CronJob without removing it from the configuration is to set an impossible schedule (e.g., February 31st). The Helm resource stays defined, but Kubernetes never triggers it — making it trivial to re-enable later by restoring a valid schedule.
+To disable a CronJob without deleting it, set a schedule that never fires (31 February). The Helm object stays; Kubernetes does not trigger it. Restore the real schedule to turn it back on.
 
 ---
 
-## 7. Health Probes and Autoscaling
-
-The final piece was configuring **liveness/readiness probes** and the **Horizontal Pod Autoscaler (HPA)**.
+## 7. Health probes and autoscaling
 
 ### Probes
 
@@ -257,10 +264,10 @@ livenessProbe:
   periodSeconds: 20
 ```
 
-- **Readiness**: Kubernetes only routes traffic to a pod once this probe passes. 3 failures × 10s = 30 seconds of grace before the pod is marked unready and removed from the load balancer.
-- **Liveness**: If a pod becomes unhealthy, Kubernetes restarts it. The higher threshold (5 × 20s = 100s) prevents restart loops during legitimate slow operations like cache warming.
+- **Readiness**: traffic only after the probe passes. 3 failures times 10s = 30s before the pod leaves the Service.
+- **Liveness**: Kubernetes restarts the pod. 5 times 20s = 100s, so cache warmup does not look like a crash loop.
 
-Both probes hit a dedicated health check endpoint (e.g., `/check/liveness`).
+Both hit a dedicated endpoint (for example `/check/liveness`), not `/`.
 
 ### HPA
 
@@ -272,18 +279,16 @@ hpa:
   targetMemoryUtilizationPercentage: 80
 ```
 
-The HPA keeps at least one replica running at all times and scales up to three when CPU exceeds 70% or memory exceeds 80%. In staging, this was capped to `maxReplicas: 1` — there is no value in testing autoscaling behaviour in a non-production environment, and it keeps the staging footprint small.
+At least one replica, up to three when CPU exceeds 70% or memory exceeds 80%. Staging was `maxReplicas: 1`. Staging should test the app, not the autoscaler.
 
 ---
 
-## Key Takeaways
+## What I would keep doing
 
-Working through this deployment surfaced several patterns that apply to any PHP service on Kubernetes:
-
-1. **FrankenPHP needs `SERVER_NAME=:80` behind an ingress.** The default TLS behaviour conflicts with ingress-level TLS termination.
-2. **UID alignment is non-negotiable.** The Dockerfile `USER`, the Kubernetes `podSecurityContext`, and volume mounts must all agree on the same UID/GID.
-3. **Verify secret paths before deploying.** A typo in an SSM path produces no build error — only a silent runtime failure.
-4. **Use `fromApp: true` for CronJobs in a monorepo.** Reusing the application image avoids a separate build step for scheduled tasks.
-5. **Start probes lenient, tighten later.** It is easier to tighten a probe threshold once you understand the application's startup and response behaviour than to debug restart loops on day one.
-6. **Cap staging replicas to 1.** Staging should test code, not infrastructure scaling behaviour.
-
+1. **FrankenPHP behind an ingress: `SERVER_NAME=:80`.** Default TLS on 443 fights ingress TLS.
+2. **UID alignment is mandatory.** Dockerfile `USER`, `podSecurityContext`, and volume `fsGroup` must be the same UID/GID.
+3. **Verify SSM paths before deploy.** A typo is silent at apply time and loud at runtime.
+4. **CronJobs reuse the app image** (`fromApp: true`) in this layout.
+5. **Smoke-test the image in CI** by asserting the process is still running, not by ignoring `docker stop`.
+6. **Start probes loose, tighten later.** Easier than debugging restart loops on day one.
+7. **Cap staging at 1 replica.** Do not rehearse HPA there.
