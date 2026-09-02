@@ -21,9 +21,9 @@
 title: Backend Engineer Insights
 tagline: Blog
 description: >-
-  Hi :wave:, I'm Nicolas ! Sharing insights, experiences, and thoughts as a Backend Engineer.
-  This blog covers technical challenges, best practices, and personal reflections
-  on navigating the backend engineering landscape.
+  Technical notes on backend systems: APIs, search, async jobs, and the architecture
+  choices that hold up in production. Written from the seat of a backend engineer,
+  not a tutorial mill.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://blog.anyvoid.dev" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  "NicolasMugnier"
