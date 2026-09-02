@@ -4,19 +4,14 @@ title: About
 permalink: /about/
 ---
 
-Ingénieur Backend avec plus 15 années d'expérience en développement d'applications web et microservices.
+Backend engineer, 16 years. I design and run systems at scale: APIs, search, async workloads, observability.
 
-Expertise technique :
+**Architecture · Product · Scale · Reliability**
 
-- Architecture backend et conception d'APIs
-- PHP (frameworks modernes)
-- Node.js / TypeScript
-- Microservices et architecture distribuée
+Currently Senior Backend Engineer at OpenClassrooms. Matching and search on a large job board: aggregation, recommendations, auto-apply, org scoring. Before that: serverless AWS (~20 TypeScript/Node services) at Amer Sports, lead PHP / Magento / marketplaces.
 
-Domaines d'intervention :
+I care about domain boundaries, search at scale, catching incidents before the business does, and raising the bar for the team without managing people.
 
-- Conception et développement de nouvelles fonctionnalités
-- Architecture et optimisation de systèmes backend
-- Mentorat technique et review de code
+**Stack I actually ship with:** PHP/Symfony · Node.js/TypeScript · PostgreSQL · AWS · Docker
 
-Passionné par la création de solutions techniques robustes et scalables qui répondent aux besoins métier.
+Not looking for a language-shaped box. Happy to talk about Staff Backend roles, remote or Annecy, on a product, a platform, or a monolith that needs straightening out.
