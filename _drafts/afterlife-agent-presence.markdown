@@ -17,6 +17,10 @@ I wanted a room, not a dashboard. One page, read only, three characters in a Cyb
 
 This is the sequence from a first version that is running on a VPS loopback, viewed from a laptop through an SSH tunnel.
 
+![Afterlife bar, live: Panam, Rogue and Alt at the counter, last-seen labels, read-only](/assets/img/afterlife-agent-presence-ui.webp)
+
+Live mode, 20:00. All three gateways up, idle at the bar. The footer is the product rule: lecture seule, the game commands nothing.
+
 ---
 
 ## 1. Three levels, not a green LED
