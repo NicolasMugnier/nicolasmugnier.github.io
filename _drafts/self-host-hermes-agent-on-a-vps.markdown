@@ -11,39 +11,39 @@ locale: en_US
 
 # Self-hosting Hermes Agent on a VPS
 
-Hermes Agent on a laptop is fine until you close the lid. A Telegram bot that should answer at 2am, a specialised profile, a cron that must fire without you: those need a process that outlives the notebook.
+Hermes Agent on a laptop is fine until you close the lid. I needed something that still answers on Telegram at 2am, keeps a specialised profile alive, and fires cron without the notebook.
 
-I had three shapes: a managed host, [Hermes Cloud](https://hermes-agent.nousresearch.com/docs/){:target="_blank"}, or a VPS I administer. Cloud is a disposable trial, not the house for profiles I care about. I took a small Ubuntu 24.04 box (2 vCPU, 4 GB RAM, 40 GB disk) and ran the LLM over an API. One agent at a time, no local Chromium: 4 GB is enough, and RAM on this host upgrades in place.
+Three shapes were on the table: a managed host, [Hermes Cloud](https://hermes-agent.nousresearch.com/docs/){:target="_blank"}, or a VPS I administer. Cloud is a disposable trial, not the house for profiles I care about. I took a small Ubuntu 24.04 box (2 vCPU, 4 GB RAM, 40 GB disk) and ran the LLM over an API. One agent at a time, no local Chromium: 4 GB is enough, and RAM on this host upgrades in place.
 
-The WAN surface I wanted was **Telegram only**. No public dashboard, no `hermes serve` on the internet, no mesh VPN on day one. Telegram bots do not need an inbound port. The gateway polls over outbound HTTPS.
+The only WAN surface I wanted was Telegram. No public dashboard, no `hermes serve` on the internet, no mesh VPN on day one. Telegram bots do not need an inbound port. The gateway polls over outbound HTTPS.
 
-This is a report of a deploy that is running, not a distro-agnostic tutorial. Commands with placeholders live in the appendix.
+This is the sequence of decisions from a deploy that is running. Commands with placeholders live in the appendix. It is not a distro-agnostic tutorial.
 
 ---
 
-## Two processes, two Unix users
+## 1. Two processes, two Unix users
 
 Hermes mixes two runtimes that people collapse into one:
 
-- `hermes gateway`: Telegram, cron, messaging. **Yes.** One systemd user unit per profile.
-- `hermes serve`: backend for Desktop and the web dashboard. **Not yet.**
+- `hermes gateway`: Telegram, cron, messaging. Yes. One systemd user unit per profile.
+- `hermes serve`: backend for Desktop and the web dashboard. Not yet.
 
 The OS split mirrors that:
 
 - an **admin** user: `sudo`, SSH, `apt`, file copies
-- a **runtime** user `hermes`: **no sudo, no SSH key**. You enter with `sudo -u hermes -i`
+- a **runtime** user `hermes`: no sudo, no SSH key. You enter with `sudo -u hermes -i`
 
-The agent has a terminal. Give it sudo, a Git deploy key, or an admin port, and a prompt can spend those. Hardening SSH to key-only does not fix that threat model. It only kills password brute-force.
+The agent has a terminal. Give it sudo, a Git deploy key, or an admin port, and a prompt can spend those. Hardening SSH to key-only does not fix that. It only kills password brute-force.
 
-Runtime is **native** plus systemd `--user`, not Docker wrapping Hermes. Install with `--skip-browser`: Chromium on 4 GB is a second machine. Web search and Browser Use in the cloud still work.
+Runtime is native plus systemd `--user`, not Docker wrapping Hermes. Install with `--skip-browser`: Chromium on 4 GB is a second machine. Web search and Browser Use in the cloud still work.
 
 ---
 
-## Harden the box before installing the agent
+## 2. Harden the box before installing the agent
 
 Order was deliberate: OS first, agent second.
 
-**SSH.** Ed25519, KDF `-a 100`, passphrase on the key. Password auth cut with a drop-in `/etc/ssh/sshd_config.d/10-hardening.conf`. The `10-` prefix is not cosmetics. On Ubuntu 24.04 **the first matching value wins**. A `99-` file loses to `50-cloud-init.conf`. Confirm with `sshd -T`, not by reading `sshd_config` by eye. Root login off, `AuthenticationMethods publickey`. Keep a **second SSH session open** before you reload `sshd`.
+**SSH.** Ed25519, KDF `-a 100`, passphrase on the key. Password auth cut with a drop-in `/etc/ssh/sshd_config.d/10-hardening.conf`. The `10-` prefix is not cosmetics. On Ubuntu 24.04 the first matching value wins. A `99-` file loses to `50-cloud-init.conf`. Confirm with `sshd -T`, not by reading `sshd_config` by eye. Root login off, `AuthenticationMethods publickey`. Keep a second SSH session open before you reload `sshd`.
 
 **UFW.** Deny incoming, allow outgoing, OpenSSH only. `ss -lntup`: the only public listener is `:22`. No 80, 443, 9119, 8642.
 
@@ -51,13 +51,13 @@ Order was deliberate: OS first, agent second.
 
 **Swap.** 2 GB at `/swapfile`. At rest, about 3 GB available of 3.7 GB. Headroom for a spike, not for a second browser.
 
-Build packages (`build-essential`, `ripgrep`, `ffmpeg`, …) go in as **admin**. The Hermes installer offers `sudo`. Answer `n`. The runtime user must not grow sudo through the installer.
+Build packages (`build-essential`, `ripgrep`, `ffmpeg`, …) go in as admin. The Hermes installer offers `sudo`. Answer `n`. The runtime user must not grow sudo through the installer.
 
-Linger (`loginctl enable-linger hermes`) keeps user services alive after you disconnect SSH. Linger **does not enable** a `disabled` unit. You need both.
+Linger (`loginctl enable-linger hermes`) keeps user services alive after you disconnect SSH. Linger does not enable a `disabled` unit. You need both.
 
 ---
 
-## Canary: the `default` profile
+## 3. Canary: the `default` profile
 
 The first agent on the box is throwaway. New Telegram bot, not the tokens from the laptop. Allowlist: one account. Never `GATEWAY_ALLOW_ALL_USERS=true`.
 
@@ -65,7 +65,7 @@ The first agent on the box is throwaway. New Telegram bot, not the tokens from t
 curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash -s -- --skip-browser
 ```
 
-Wizard, in short: Nous Portal (device-code, URL opened on the laptop), a free model until setup is done, Tool Gateway Web + Whisper (Image and Browser unchecked), **local** terminal, messaging = the test bot, home channel = yes, gateway service = yes.
+Wizard, in short: Nous Portal (device-code, URL opened on the laptop), a free model until setup is done, Tool Gateway Web + Whisper (Image and Browser unchecked), local terminal, messaging = the test bot, home channel = yes, gateway service = yes.
 
 Then xAI OAuth headless:
 
@@ -76,31 +76,31 @@ hermes config set model.default grok-4.6
 hermes gateway restart
 ```
 
-The bot answered with Grok. `/whoami` shows `unrestricted`. That is not a hole. The allowlist decides **who** talks. Without `allow_admin_from`, every allowlisted user gets every slash command. Here there is one user.
+The bot answered with Grok. `/whoami` shows `unrestricted`. That is not a hole. The allowlist decides who talks. Without `allow_admin_from`, every allowlisted user gets every slash command. Here there is one user.
 
-systemd trap: `sudo -u hermes -i` is not a user session. `systemctl --user` fails until:
+The failure mode I hit: `sudo -u hermes -i` is not a user session. `systemctl --user` fails until:
 
 ```bash
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
 ```
 
-The gateway was **running** and **disabled**. Reboot would kill it. `enable` after the export, not linger alone.
+The gateway was running and disabled. Reboot would kill it. `enable` after the export, not linger alone.
 
 `hermes update` always rebuilds the web UI. There is no `--skip-build` on update.
 
 ---
 
-## The work profile is not the canary
+## 4. The work profile is not the canary
 
 The canary proved the machine. The second profile is the real use: a specialised agent and a private working tree.
 
 ### A Hermes profile is not the work directory
 
-`hermes profile export` takes SOUL, MEMORY, config, skills. It does **not** take `.env` or `auth.json` (wanted). The work files are not in that archive. Two transfers, SCP, not a shared drive.
+`hermes profile export` takes SOUL, MEMORY, config, skills. It does not take `.env` or `auth.json` (wanted). The work files are not in that archive. Two transfers, SCP, not a shared drive.
 
 Import on the VPS with `hermes profile import`. Do not `hermes import` a full laptop backup: that would overwrite the `default` you just hardened.
 
-Redo auth **with** `-p <profile>`. Without the flag, tokens land in the `default` home.
+Redo auth with `-p <profile>`. Without the flag, tokens land in the `default` home.
 
 ### Git stays on the laptop
 
@@ -110,8 +110,8 @@ What I did instead:
 
 - Git (stable docs) stays on the laptop. Commits are mine, never the agent's.
 - Watch outputs and drafts: not in git, they live on the VPS.
-- Copy to the VPS: `rsync` **without** `.git`, as admin, into `/tmp`, then `sudo rsync` + `chown hermes`. Zero Git secrets on the box.
-- Workspace **per profile**: `/home/hermes/workspaces/<profile>/`, not a bucket the next bot would read.
+- Copy to the VPS: `rsync` without `.git`, as admin, into `/tmp`, then `sudo rsync` + `chown hermes`. Zero Git secrets on the box.
+- Workspace per profile: `/home/hermes/workspaces/<profile>/`, not a bucket the next bot would read.
 
 Admin cannot write into `/home/hermes/` (mode 700). That is why `/tmp` exists. A direct `rsync` into the `hermes` home fails with *Permission denied*, even after `mkdir`.
 
@@ -123,7 +123,7 @@ The export still contains laptop paths (`/Users/<you>/…`). Leave them and the 
 hermes -p <profile> config set terminal.cwd /home/hermes/workspaces/<profile>
 ```
 
-`terminal.cwd` is not the Hermes home. It is the starting directory of the agent's **shell**. Under a systemd gateway, `.` is in practice `/home/hermes`, not the work tree. SOUL does not change cwd by itself.
+`terminal.cwd` is not the Hermes home. It is the starting directory of the agent's shell. Under a systemd gateway, `.` is in practice `/home/hermes`, not the work tree. SOUL does not change cwd by itself.
 
 ### Second Telegram bot
 
@@ -133,7 +133,7 @@ New bot, distinct token, same allowlist. Unit `hermes-gateway-<profile>.service`
 
 ---
 
-## Left on purpose
+## 5. What I left out
 
 - Mesh VPN, `hermes serve`, public HTTPS, OAuth dashboard
 - Changing the SSH port
@@ -147,7 +147,7 @@ New bot, distinct token, same allowlist. Unit `hermes-gateway-<profile>.service`
 
 ---
 
-## When both bots answer
+## 6. When both bots answer
 
 - **Machine:** Ubuntu 24.04, 4 GB, 2 GB swap, SSH key-only, UFW on 22, fail2ban on systemd
 - **Users:** admin (`sudo`) / runtime `hermes` (linger, no sudo, no SSH)
@@ -160,13 +160,13 @@ Check the chat model with `hermes -p <profile> config get model.provider` / `mod
 
 ---
 
-## What this actually taught
+## What I would keep doing
 
-1. **SSH key-only is not agent security.** The real perimeter is the terminal, the allowlist, and secrets in the runtime home.
+1. **Treat SSH key-only as box hygiene, not agent security.** The real perimeter is the terminal, the allowlist, and secrets in the runtime home.
 2. **One Linux user per runtime, not per bot.** Isolation between profiles is one gateway each and one workspace each, not three UIDs.
-3. **Linger is not enabled.** A process can run today and die on reboot.
-4. **The first sshd value wins.** Name the drop-in `10-`, confirm with `sshd -T`.
-5. **Exporting a profile does not export the work.** Hermes archive on one side, files on the other, paths rewritten, auth redone.
+3. **Enable the unit. Linger is not enable.** A process can run today and die on reboot.
+4. **Name the sshd drop-in `10-`.** Confirm with `sshd -T`. The first matching value wins on Ubuntu 24.04.
+5. **Export the profile and the work as two transfers.** Rewrite laptop paths, redo auth with `-p`.
 6. **Do not give the agent git "to make it simpler".** Auto-pull means a key in the perimeter. Copying without `.git` is more verbose and more correct.
 
 ---
@@ -182,7 +182,7 @@ ssh-keygen -t ed25519 -a 100 -C "laptop@hermes-vps" -f ~/.ssh/id_ed25519_vps
 # macOS: ssh-add --apple-use-keychain ~/.ssh/id_ed25519_vps
 ```
 
-Paste the `.pub` in the hoster's SSH-key panel at provision time, and/or into `/home/ADMIN/.ssh/authorized_keys`. **Never** the private key.
+Paste the `.pub` in the hoster's SSH-key panel at provision time, and/or into `/home/ADMIN/.ssh/authorized_keys`. Never the private key.
 
 ```
 Host hermes-vps
