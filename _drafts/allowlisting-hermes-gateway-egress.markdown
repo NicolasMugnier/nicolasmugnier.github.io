@@ -5,6 +5,7 @@ tags: [hermes, linux, nftables, security, telegram]
 author: Nicolas Mugnier
 categories: ai
 description: "A tool-using agent is an orchestrator, not a vault. We cut local HTTP at the gateway cgroup, left web reading on the Nous tool gateway, and listed the holes that remain."
+image: /assets/img/hermes-gateway-egress-allowlist.webp
 locale: en_US
 ---
 
