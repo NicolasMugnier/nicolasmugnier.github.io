@@ -1,18 +1,16 @@
 # Mermaid
 
-This theme initialises Mermaid on `.mermaid` only (`_includes/custom-head.html`, mermaid@10, `startOnLoad: true`).
+GitHub renders fenced mermaid blocks. The blog does too: `_includes/custom-head.html` promotes `pre code.language-mermaid` to `.mermaid`, then `mermaid.run()`.
 
-Use:
+Use a fence in the markdown file:
 
-```html
-<div class="mermaid">
-flowchart TD
-    A[Step] --> B["Label with: colon"]
-</div>
-```
+    ```mermaid
+    flowchart TD
+        A[Step] --> B["Label with: colon"]
+    ```
 
-Never a fenced ` ```mermaid ` block. Kramdown turns that into `<pre><code>`, so it stays a code listing.
+Do not use `<div class="mermaid">` for new diagrams. GitHub will not draw those.
 
-Quote node labels that contain colons or commas.
+Quote node labels that contain colons or commas. Close every parenthesis in sequence messages. A truncated line kills the whole graph.
 
-Match existing posts (sorts, scaling jobs): unindented `<div class="mermaid">`, then the graph, then `</div>`.
+Existing posts that still use `<div class="mermaid">` keep working.

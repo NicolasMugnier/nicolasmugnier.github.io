@@ -46,7 +46,7 @@ Do not use the repo Docker `convert-image` service for covers.
 
 ## Diagrams
 
-Mermaid v10 is loaded in `_includes/custom-head.html`. Use `<div class="mermaid">`, not a fenced `mermaid` code block.
+Mermaid v10 is loaded in `_includes/custom-head.html`. Use a fenced `mermaid` block (GitHub and the blog both render it). Do not use `<div class="mermaid">` for new diagrams.
 
 ## Agents
 

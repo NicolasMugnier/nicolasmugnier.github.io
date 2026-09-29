@@ -33,7 +33,7 @@ Ce cloisonnement a deux conséquences importantes :
 
 ## Vue d'ensemble de l'architecture
 
-<div class="mermaid">
+```mermaid
 graph TD
     PIM["PIM\n(source de vérité produits)"]
 
@@ -67,7 +67,7 @@ graph TD
     TOPICS -->|souscription| M_APAC_A
     TOPICS -->|souscription| M_EU_B
     SQS -.->|retry / DLQ| PMS
-</div>
+```
 
 ---
 
@@ -135,7 +135,7 @@ Sans mécanisme de traçabilité, retrouver l'origine d'un problème dans cette 
 
 La solution retenue est le **CorrelationId** : un identifiant unique généré par le **publisher** au moment de la publication du message initial. Cet identifiant est ensuite **propagé dans tous les messages dérivés** et dans tous les logs tout au long de la chaîne de traitement.
 
-<div class="mermaid">
+```mermaid
 sequenceDiagram
     participant PIM as PIM / API
     participant MS as Microservice (Lambda)
@@ -150,7 +150,7 @@ sequenceDiagram
     ESB->>M_B: product-updated (correlationId: corrId)
     Note over M_A: log corrId à chaque étape
     Note over M_B: log corrId à chaque étape
-</div>
+```
 
 ### Ce que ça change concrètement
 
@@ -179,7 +179,7 @@ Aucun utilisateur humain n'intervient dans ces échanges. Toutes les communicati
 
 L'authentification repose sur le flux **Client Credentials** d'OAuth2.
 
-<div class="mermaid">
+```mermaid
 sequenceDiagram
     participant MS as Microservice (Lambda)
     participant AUTH as Authorization Server
@@ -187,9 +187,9 @@ sequenceDiagram
 
     MS->>AUTH: POST /token (client_id + client_secret + grant_type=client_credentials)
     AUTH-->>MS: access_token (JWT)
-    MS->>ESB: Publish message (Authorization: Bearer token)
+    MS->>ESB: Publish message with Bearer token
     ESB-->>MS: ACK
-</div>
+```
 
 Chaque acteur du système, chaque microservice, chaque site Magento, possède ses propres **`client_id` / `client_secret`** et des **scopes OAuth2** qui définissent précisément ce qu'il est autorisé à faire :
 
@@ -276,7 +276,7 @@ resources:
 
 **SQS Dead Letter Queue (DLQ)** : après un nombre configurable d'échecs (ici 3 tentatives), le message est transféré dans une queue dédiée. Une alarme CloudWatch surveille la DLQ et alerte l'équipe dès qu'un message y atterrit. Cela transforme les erreurs silencieuses en incidents visibles et traitables.
 
-<div class="mermaid">
+```mermaid
 graph LR
     APIGW["API Gateway"] -->|invoke| H1["Lambda\nupdateProduct"]
     H1 -->|write| DB["DynamoDB"]
@@ -285,13 +285,13 @@ graph LR
     H2 -->|publish| ESB["ESB"]
     SQS -->|échec x3| DLQ["DLQ"]
     DLQ -->|alerte| CW["CloudWatch Alarm"]
-</div>
+```
 
 ### Flux de publication d'un événement
 
 Lorsqu'un produit est mis à jour via l'API d'un microservice, le flux est le suivant :
 
-<div class="mermaid">
+```mermaid
 sequenceDiagram
     participant CLIENT as Client externe
     participant APIGW as API Gateway
@@ -310,7 +310,7 @@ sequenceDiagram
     APIGW-->>CLIENT: 200 OK
     SQS->>LAMBDA: trigger (async)
     LAMBDA->>ESB: publish product-updated
-</div>
+```
 
 La publication sur l'ESB est **découplée de la réponse HTTP** via SQS. Cela garantit que l'API reste rapide et que la publication sur le broker ne bloque pas la réponse au client. En cas d'échec de publication, le message part en **Dead Letter Queue** pour analyse et rejeu.
 
@@ -329,14 +329,14 @@ Un **module Magento dédié** gère :
 
 Si le traitement d'un message échoue (erreur de validation, problème de base de données), le message est **nack'd** et remis en queue pour un nouveau traitement après un délai exponentiel.
 
-<div class="mermaid">
+```mermaid
 graph LR
     ESB["ESB : product-updated"] -->|message| MODULE["Module Magento Consumer"]
     MODULE -->|parse + validate| PROCESS["Traitement métier"]
     PROCESS -->|succès| ACK["ACK"]
     PROCESS -->|échec| NACK["NACK (retry)"]
     NACK -->|max retries atteint| DLQ["Dead Letter Queue"]
-</div>
+```
 
 ---
 
@@ -394,7 +394,7 @@ Le microservice :
 2. Pour chaque produit, publie un événement `product-updated` sur le topic de l'ESB, avec un flag `replay: true` dans le payload
 3. Les consommateurs Magento traitent ces événements exactement comme des mises à jour normales
 
-<div class="mermaid">
+```mermaid
 sequenceDiagram
     participant OPS as Opérateur
     participant API as API Gateway /products/replay
@@ -410,7 +410,7 @@ sequenceDiagram
         LAMBDA->>ESB: publish product-updated (replay: true) x N
     end
     LAMBDA-->>API: 202 Accepted
-</div>
+```
 
 Le flag `replay: true` dans le payload permet aux consommateurs, s'ils le souhaitent, d'adapter leur comportement : par exemple, ne pas déclencher certaines notifications client lors d'un replay.
 

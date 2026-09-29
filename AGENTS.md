@@ -40,7 +40,7 @@ There is no test suite. Verify in the browser.
 - New posts: English, `locale: en_US`, extension `.markdown`
 - Never Unicode em dash U+2014
 - Never duplicate `title:` as a body H1
-- Mermaid: `<div class="mermaid">`, never a fenced `mermaid` block
+- Mermaid: fenced `mermaid` block (GitHub + blog). Never a raw `<div class="mermaid">` on new diagrams.
 - Covers: 1280x720, motif in the vertical center band (article page crops to a wide banner)
 - Convert covers with host `ffmpeg` to WebP. Never the repo Docker `convert-image` / `cwebp` service
 - Draft in `_drafts/` first. Publish only when asked, by moving to `_posts/<category>/YYYY-MM-DD-slug.markdown`
