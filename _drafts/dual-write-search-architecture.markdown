@@ -9,8 +9,6 @@ image: /assets/img/dual-write-search.webp
 locale: en_US
 ---
 
-# Dual-Write Search Architecture with PostgreSQL Generated Columns
-
 The matching query had a shape Algolia cannot express. Two gaps mattered.
 
 A talent selects one or more job-search areas. Those areas are bounding boxes, and **all of them are indexed** on the talent. A job posting sits at one position (latitude, longitude). Matching means: which talents have at least one box that contains the posting.
