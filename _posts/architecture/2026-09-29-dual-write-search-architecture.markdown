@@ -295,7 +295,7 @@ Because `updated_at` is generated from `data->>'updatedAt'`, keeping the JSON va
 
 ## End-to-end flow
 
-```mermaid
+<div class="mermaid">
 flowchart TD
     A[User action] --> B[Use case]
     B --> C[Domain event]
@@ -306,11 +306,11 @@ flowchart TD
     F --> H[Serialise once]
     H --> I[AlgoliaTalentSearchGateway]
     H --> J[DoctrineTalentSearchGateway]
-    I --> K[Algolia frontend: full-text, facets, geo]
+    I --> K["Algolia frontend: full-text, facets, geo"]
     J --> L[PostgreSQL JSONB data]
-    L --> M[Generated columns: updated_at, path_id, country]
-    M --> N[Backend: joins, point-in-box]
-```
+    L --> M["Generated columns: updated_at, path_id, country"]
+    M --> N["Backend: joins, point-in-box"]
+</div>
 
 One serialisation pass is the point: both backends get the same document. Structure cannot drift. Timing can: the DB write is in the ORM flush, Algolia is a separate HTTP call in the same handler.
 
