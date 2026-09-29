@@ -9,8 +9,6 @@ image: /assets/img/ooda.webp
 locale: en_US
 ---
 
-# The OODA Loop in Software Development: When the Right Tool Creates the Wrong Design
-
 In military strategy, the [OODA loop](https://en.wikipedia.org/wiki/OODA_loop){:target="_blank"}, **Observe, Orient, Decide, Act**, describes how to process information and adapt faster than your opponent. It translates well to software development, particularly when iterating on design decisions.
 
 This article walks through a [concrete example]({% post_url architecture/2026-02-22-scaling-background-jobs-and-caching-in-a-php-application %}#part-3--profile-completion-cache-making-expensive-aggregations-cheap) where using the "correct" tooling led to a subtle but significant architectural problem and how recognizing it early produced a simpler, better design.

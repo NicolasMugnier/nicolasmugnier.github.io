@@ -9,8 +9,6 @@ image: /assets/img/self-host-hermes-agent-on-a-vps.webp
 locale: en_US
 ---
 
-# Self-hosting Hermes Agent on a VPS
-
 Hermes Agent on a laptop is fine until you close the lid. I needed something that still answers on Telegram at 2am, keeps a specialised profile alive, and fires cron without the notebook.
 
 Three shapes were on the table: a managed host, [Hermes Cloud](https://hermes-agent.nousresearch.com/docs/){:target="_blank"}, or a VPS I administer. Cloud is a disposable trial, not the house for profiles I care about. I took a small Ubuntu 24.04 box (2 vCPU, 4 GB RAM, 40 GB disk) and ran the LLM over an API. One agent at a time, no local Chromium: 4 GB is enough, and RAM on this host upgrades in place.

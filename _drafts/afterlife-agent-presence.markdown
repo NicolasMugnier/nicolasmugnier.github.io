@@ -9,8 +9,6 @@ image: /assets/img/afterlife-agent-presence.webp
 locale: en_US
 ---
 
-# A read-only Afterlife for Hermes agent presence
-
 Several Hermes agents live in separate chats and gateways. You can ask each one what it is doing. You cannot see, in one glance, who is there, who is in a turn, and who is down.
 
 I wanted a room, not a dashboard. One page, read only, three characters in a Cyberpunk 2077 Afterlife bar. The character state is the process state. A click opens a fiche. It does not send `/stop`, it does not spawn a turn, it does not write to the agent.

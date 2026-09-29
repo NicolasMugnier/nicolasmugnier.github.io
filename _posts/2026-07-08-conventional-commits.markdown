@@ -9,8 +9,6 @@ image: /assets/img/conventional-commits.webp
 locale: en_US
 ---
 
-# A Practical Guide to Conventional Commits
-
 Conventional Commits is a lightweight specification for writing structured commit messages. It makes changelogs easier to generate, history easier to read, and versioning easier to automate.
 
 ## The Format

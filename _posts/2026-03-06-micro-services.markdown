@@ -8,8 +8,6 @@ image: /assets/img/micro-services.webp
 locale: en_US
 ---
 
-# Building a Microservices Architecture with PHP, Docker & Auth0
-
 ## Introduction
 
 Microservices architecture is an approach where an application is decomposed into small, independently deployable services, each responsible for a specific business domain. In this article, we walk through a concrete demo built in PHP that illustrates the core patterns: service isolation, inter-service HTTP communication, API aggregation, JWT-based security, and container orchestration with Docker and Traefik.

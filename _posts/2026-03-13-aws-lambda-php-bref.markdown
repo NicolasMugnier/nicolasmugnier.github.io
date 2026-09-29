@@ -8,8 +8,6 @@ image: /assets/img/lambda-php.webp
 locale: en_US
 ---
 
-# Running PHP on AWS Lambda with Bref and Clean Architecture
-
 ## Introduction
 
 AWS Lambda supports custom runtimes, which means you can run virtually any language — including PHP. In this article, we walk through a POC that deploys a PHP 8.1 application to AWS Lambda using **Bref**, a layer-based PHP runtime for Lambda. The application follows **Clean Architecture** principles and manages a simple `Book` resource across three Lambda functions, all wired together with **Symfony Dependency Injection** and deployed via the **Serverless Framework**.

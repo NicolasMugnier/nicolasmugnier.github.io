@@ -8,8 +8,6 @@ image: /assets/img/esb-microservices-ecommerce.webp
 locale: fr_FR
 ---
 
-# ESB, microservices et e-commerce : retour d'expérience
-
 ## Contexte
 
 Le projet : une plateforme e-commerce multi-marques et multi-régions. Chaque marque dispose de ses propres sites Magento 2, déclinés par zone géographique — APAC, EMEA, États-Unis. En parallèle, un ensemble de microservices AWS gèrent les données métier : catalogue produits, commandes, stocks, clients.

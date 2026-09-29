@@ -9,8 +9,6 @@ image: /assets/img/deploy-php-k8s.webp
 locale: en_US
 ---
 
-# Deploying a PHP Application to Kubernetes: A GitOps Walkthrough
-
 When you first ship a PHP backend to Kubernetes, the application code is rarely the hard part. What takes time, and iteration, is everything around it: the container, the pipeline, the secrets, the scheduler, and the runtime. This is the sequence of decisions I made deploying a Symfony app on FrankenPHP to EKS with a GitOps stack.
 
 The service talks to external APIs (including an AI provider). That did not change the cluster shape. It did make secret paths, health probes, and a crash-on-boot smoke test non-negotiable.

@@ -9,8 +9,6 @@ image: /assets/img/hermes-gateway-egress-allowlist.webp
 locale: en_US
 ---
 
-# Allowlisting egress for Hermes Telegram gateways
-
 The threat I wanted to close is boring on paper: the agent reads credentials on disk and sends them off the box over HTTP, without the secret ever showing up in Telegram.
 
 A Hermes agent with `terminal`, `read_file`, and web tools is an orchestrator. Prompt injection does not need a URL I pasted. A page the agent chose to fetch is enough. Chat redaction hides what comes *back* into the thread. It does not stop a POST that already left.

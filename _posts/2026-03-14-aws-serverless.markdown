@@ -8,8 +8,6 @@ image: /assets/img/aws-serverless.webp
 locale: en_US
 ---
 
-# Building a Serverless REST API with AWS Lambda, DynamoDB & S3
-
 ## Introduction
 
 Serverless architecture lets you build and run applications without managing servers. AWS handles provisioning, scaling, and availability — you only write business logic. In this article, we walk through a concrete demo that implements a full CRUD API for a "Learning Path" resource using **AWS Lambda**, **API Gateway**, **DynamoDB**, and **S3**, all defined as code with the **Serverless Framework** and written in **TypeScript**.
