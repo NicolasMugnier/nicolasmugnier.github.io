@@ -1,4 +1,5 @@
 ---
+layout: post
 tags: [esb, rabbitmq, microservices, ecommerce, magento, aws, architecture, oauth2]
 author: Nicolas Mugnier
 categories: architecture
