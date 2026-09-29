@@ -81,7 +81,7 @@ readonly class ServiceGateway
 
 Dans cet exemple, la méthode `__invoke` prend en paramètre l'URL d'une API externe. Cette URL est utilisée afin de réaliser un `GET` sur l'API.
 
-Un test particulier est réalisé sur le code HTTP **429** — ce code retourné par le serveur distant indique que celui-ci ne peut plus traiter la demande car trop de requêtes ont été envoyées.
+Un test particulier est réalisé sur le code HTTP **429**: ce code retourné par le serveur distant indique que celui-ci ne peut plus traiter la demande car trop de requêtes ont été envoyées.
 
 Dans ce cas, il est pertinent de temporiser la requête et de la rejouer. La temporisation est ici réalisée via l'instruction `usleep()`, le temps d'attente entre deux tentatives croît de façon exponentielle en fonction du nombre de tentatives effectuées.
 

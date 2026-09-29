@@ -81,7 +81,7 @@ readonly class ServiceGateway
 
 In this example, the `__invoke` method takes the URL of an external API as a parameter. This URL is used to perform a `GET` request against the API.
 
-A specific check is performed on the HTTP **429** status code — this code returned by the remote server indicates that it can no longer process the request because too many requests have been sent.
+A specific check is performed on the HTTP **429** status code: this code returned by the remote server indicates that it can no longer process the request because too many requests have been sent.
 
 In such cases, it makes sense to throttle the request and replay it. The throttling is achieved here via the `usleep()` instruction, where the wait time between two attempts grows exponentially based on the number of attempts made.
 

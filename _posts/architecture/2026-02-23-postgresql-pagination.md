@@ -3,7 +3,7 @@ tags: [postgresql, database, pagination, performance]
 author: Nicolas Mugnier
 categories: architecture
 title: "PostgreSQL Pagination: Cost Analysis"
-description: "A cost analysis of OFFSET, keyset, and cursor-based pagination in PostgreSQL — with complexity formulas and trade-offs for batch jobs vs. user-facing APIs."
+description: "A cost analysis of OFFSET, keyset, and cursor-based pagination in PostgreSQL, with complexity formulas and trade-offs for batch jobs vs. user-facing APIs."
 locale: en_US
 image: /assets/img/postgresql-pagination.webp
 ---
@@ -16,7 +16,7 @@ When querying PostgreSQL with `OFFSET 50000`, PostgreSQL has no way to "jump" to
 
 **With an index scan:** traverses index entries one by one, skipping the first 50,000 matching entries. Cheaper than full row reads, but still cannot skip to position N directly.
 
-The cost of `OFFSET` is **O(n)** — it grows linearly with the offset value.
+The cost of `OFFSET` is **O(n)**: it grows linearly with the offset value.
 
 ### Why keyset pagination is better
 
@@ -24,7 +24,7 @@ The cost of `OFFSET` is **O(n)** — it grows linearly with the offset value.
 -- Slow at high offsets:
 SELECT * FROM posts ORDER BY created_at LIMIT 10 OFFSET 50000;
 
--- Always fast — uses the index to jump directly to the cursor position in O(log n):
+-- Always fast - uses the index to jump directly to the cursor position in O(log n):
 SELECT * FROM posts WHERE created_at < :last_seen_cursor ORDER BY created_at DESC LIMIT 10;
 ```
 
@@ -66,7 +66,7 @@ k + 2k + 3k + ... + n = k × (1 + 2 + ... + n/k) ≈ n²/(2k) = O(n²/k)
 
 ## With a cursor
 
-A PostgreSQL cursor maintains traversal state server-side. The index (or sequential scan) is set up **once** at `DECLARE`, then each `FETCH` continues from where it left off — no repeated index lookups.
+A PostgreSQL cursor maintains traversal state server-side. The index (or sequential scan) is set up **once** at `DECLARE`, then each `FETCH` continues from where it left off, no repeated index lookups.
 
 ```sql
 DECLARE cur CURSOR FOR SELECT * FROM posts ORDER BY created_at;
@@ -86,7 +86,7 @@ O(log n)  +  n × O(1)  =  O(n)
 
 ### Order
 
-The `ORDER BY` clause in the `DECLARE` statement drives this. If a matching index exists, PostgreSQL sets up an **index scan** on it once — the index is already physically sorted, so the cursor just walks it sequentially. Each `FETCH` advances a pointer along that index scan. No re-sorting, no re-scanning from the start.
+The `ORDER BY` clause in the `DECLARE` statement drives this. If a matching index exists, PostgreSQL sets up an **index scan** on it once, the index is already physically sorted, so the cursor just walks it sequentially. Each `FETCH` advances a pointer along that index scan. No re-sorting, no re-scanning from the start.
 
 ### No duplicates
 
@@ -95,11 +95,11 @@ PostgreSQL uses **MVCC** (Multi-Version Concurrency Control). When you `DECLARE`
 This means:
 - rows inserted **after** `DECLARE` are invisible to the cursor
 - rows deleted **after** `DECLARE` are still visible (as they existed in the snapshot)
-- no row can appear twice because the cursor advances a position pointer server-side — it never re-reads already-fetched positions
+- no row can appear twice because the cursor advances a position pointer server-side, it never re-reads already-fetched positions
 
 ### The trade-off this creates
 
-This is exactly why cursors require holding an **open transaction** for their entire lifetime. The snapshot must stay alive until the cursor is closed (`CLOSE cur` or end of transaction). The longer the transaction, the longer PostgreSQL must retain old row versions for other concurrent readers — which is why long-running cursors can cause **table bloat** and interfere with `VACUUM` on busy tables.
+This is exactly why cursors require holding an **open transaction** for their entire lifetime. The snapshot must stay alive until the cursor is closed (`CLOSE cur` or end of transaction). The longer the transaction, the longer PostgreSQL must retain old row versions for other concurrent readers, which is why long-running cursors can cause **table bloat** and interfere with `VACUUM` on busy tables.
 
 ---
 

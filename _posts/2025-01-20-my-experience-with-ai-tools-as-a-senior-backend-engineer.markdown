@@ -34,11 +34,11 @@ AI companions can also help describe the behaviour of methods or classes, especi
 
 One of the most effective ways I've used AI is as a conversational companion. Engaging in a dialogue with AI about specific technical points allows me to explore different approaches and refine solutions. This collaborative process feels similar to discussing issues with a colleague, where AI assists in thinking through complex problems.
 
-Additionally, AI can be seen as an interactive form of documentation. One strong advantage is its ability to integrate public documentation and answer related questions. While we must always maintain a critical mindset regarding AI-generated responses, the more precise the question, the more relevant the AI's answer tends to be—much like a conversation with a knowledgeable person. This makes it particularly useful for developers needing quick references to documentation, saving time while still allowing for deeper analysis later if needed.
+Additionally, AI can be seen as an interactive form of documentation. One strong advantage is its ability to integrate public documentation and answer related questions. While we must always maintain a critical mindset regarding AI-generated responses, the more precise the question, the more relevant the AI's answer tends to be, much like a conversation with a knowledgeable person. This makes it particularly useful for developers needing quick references to documentation, saving time while still allowing for deeper analysis later if needed.
 
 ## AI-Assisted Writing
 
-Another area where AI proves helpful is in writing and editing documents. By providing a prompt with specific instructions—whether to be concise or more verbose, or to adjust the tone of the message—AI can help reformulate certain ideas in a clearer, more structured way. It can maintain the core meaning while improving the clarity of expression. This becomes especially useful when drafting technical content or communicating complex topics, making the writing process faster and more efficient.
+Another area where AI proves helpful is in writing and editing documents. By providing a prompt with specific instructions (whether to be concise or more verbose, or to adjust the tone of the message), AI can help reformulate certain ideas in a clearer, more structured way. It can maintain the core meaning while improving the clarity of expression. This becomes especially useful when drafting technical content or communicating complex topics, making the writing process faster and more efficient.
 
 ## Conclusion
 

@@ -8,46 +8,46 @@ image: /assets/img/mcp-deploy-check.webp
 locale: en_US
 ---
 
-I wanted to understand MCP (Model Context Protocol) hands-on — not just read the docs, but actually build something, hit the rough edges, and see how it feels to extend Claude with a custom tool.
+I wanted to understand MCP (Model Context Protocol) hands-on, not just read the docs, but actually build something, hit the rough edges, and see how it feels to extend Claude with a custom tool.
 
-For the experiment I picked a deliberately simple idea: a server that answers one question — *can I deploy to production right now?* — based on the day and time. The ["never deploy on Friday"](https://medium.com/openclassrooms-product-design-and-engineering/do-not-deploy-on-friday-92b1b46ebfe6) rule is a classic piece of engineering folklore, which made it a fun and relatable subject for a first MCP project. The server is intentionally opinionated (and a bit tongue-in-cheek): it blocks Fridays, weekends, and anything outside business hours, and gives you a reason either way.
+For the experiment I picked a deliberately simple idea: a server that answers one question: *can I deploy to production right now?*, based on the day and time. The ["never deploy on Friday"](https://medium.com/openclassrooms-product-design-and-engineering/do-not-deploy-on-friday-92b1b46ebfe6) rule is a classic piece of engineering folklore, which made it a fun and relatable subject for a first MCP project. The server is intentionally opinionated (and a bit tongue-in-cheek): it blocks Fridays, weekends, and anything outside business hours, and gives you a reason either way.
 
 The goal here was to learn, not to enforce policy.
 
-Here's what I built, how it works, and what I learned along the way — from a local Docker POC to a production deployment on Vercel with a custom domain.
+Here's what I built, how it works, and what I learned along the way, from a local Docker POC to a production deployment on Vercel with a custom domain.
 
 ---
 
 ## What is MCP?
 
-MCP (Model Context Protocol) is an open protocol developed by Anthropic that lets you extend AI assistants like Claude with custom tools. Instead of just chatting, Claude can call your server to fetch data, run checks, or trigger actions — and use the results to answer your question.
+MCP (Model Context Protocol) is an open protocol developed by Anthropic that lets you extend AI assistants like Claude with custom tools. Instead of just chatting, Claude can call your server to fetch data, run checks, or trigger actions, and use the results to answer your question.
 
 Before MCP, connecting an LLM to external capabilities meant either baking everything into the prompt, writing custom glue code per-application, or relying on proprietary plugin systems tied to a specific platform. MCP standardizes this: any client that speaks the protocol (Claude Code, Claude Desktop, or your own app built on the SDK) can connect to any compliant server.
 
 The architecture is a simple client-server pattern:
 
-- **You** define tools on the server — each tool has a name, a description, and an optional JSON Schema for parameters.
+- **You** define tools on the server, each tool has a name, a description, and an optional JSON Schema for parameters.
 - **Claude** reads the tool list at startup and decides autonomously when to call them, based on the conversation context.
 - **The server** executes the tool and returns structured content (text, images, or other types).
 - **Claude** uses the result to formulate its response.
 
-The description of each tool is critical — it's what Claude uses to decide *when* to invoke it. A well-written description ("Checks if it's currently safe to deploy to production based on the day and time") is more reliable than a vague one.
+The description of each tool is critical: it's what Claude uses to decide *when* to invoke it. A well-written description ("Checks if it's currently safe to deploy to production based on the day and time") is more reliable than a vague one.
 
 Two transport modes exist depending on where your server runs:
-- **stdio** — the client spawns the server as a child process and communicates over stdin/stdout. Simple, zero network config, ideal for local tools.
-- **Streamable HTTP** — the server exposes an HTTP endpoint. Required for remote/shared deployments.
+- **stdio**: the client spawns the server as a child process and communicates over stdin/stdout. Simple, zero network config, ideal for local tools.
+- **Streamable HTTP**: the server exposes an HTTP endpoint. Required for remote/shared deployments.
 
 ---
 
 ## The idea
 
-A single tool: `can_i_deploy`. No parameters needed — the server just inspects the current day and time and returns a yes or no with a reason.
+A single tool: `can_i_deploy`. No parameters needed, the server just inspects the current day and time and returns a yes or no with a reason.
 
 The rules:
-- **No weekends** — close your laptop
-- **No Fridays** — the classic rule, non-negotiable
-- **Business hours only** — 9:00 to 17:00, so the team is around if something goes wrong
-- **Otherwise** — green light, with a countdown of hours left in the window
+- **No weekends**: close your laptop
+- **No Fridays**: the classic rule, non-negotiable
+- **Business hours only**: 9:00 to 17:00, so the team is around if something goes wrong
+- **Otherwise**: green light, with a countdown of hours left in the window
 
 <div class="try-it-box">
   <p class="try-it-label">Try it live</p>
@@ -78,7 +78,7 @@ async function checkDeploy() {
     const match = text.match(/"text":"([^"]+)"/);
     result.textContent = match ? match[1] : 'Unexpected response.';
   } catch {
-    result.textContent = 'Server unavailable — try again later.';
+    result.textContent = 'Server unavailable, try again later.';
   } finally {
     btn.disabled = false;
   }
@@ -122,14 +122,14 @@ const server = new McpServer({ name: "mcp-deploy-check", version: "1.0.0" });
 server.tool("can_i_deploy", "Checks if it's safe to deploy to production.", {}, async () => {
   const { allowed, reason } = checkDeploy();
   return {
-    content: [{ type: "text", text: `${allowed ? "✅ YES" : "🚫 NO"} — ${reason}` }],
+    content: [{ type: "text", text: `${allowed ? "✅ YES" : "🚫 NO"} - ${reason}` }],
   };
 });
 
 await server.connect(new StdioServerTransport());
 ```
 
-The stdio transport means the server communicates over stdin/stdout — Claude Code launches it as a child process.
+The stdio transport means the server communicates over stdin/stdout: Claude Code launches it as a child process.
 
 ---
 
@@ -185,7 +185,7 @@ You: can I deploy?
 
 Claude: I'll check that for you.
         [Calling tool: can_i_deploy]
-        🚫 NO — It's Friday. Step away from the keyboard.
+        🚫 NO - It's Friday. Step away from the keyboard.
 ```
 
 Or on a Wednesday morning:
@@ -194,16 +194,16 @@ Or on a Wednesday morning:
 You: is now a good time to push to prod?
 
 Claude: [Calling tool: can_i_deploy]
-        ✅ YES — You're good to go! ~6h left in the window.
+        ✅ YES - You're good to go! ~6h left in the window.
 ```
 
-Claude decides on its own to call the tool — you don't have to say "use the deploy-check tool". The tool description is enough for it to figure out the intent.
+Claude decides on its own to call the tool. You don't have to say "use the deploy-check tool". The tool description is enough for it to figure out the intent.
 
 ---
 
 ## Step 3: Deploying to Vercel
 
-The stdio transport only works locally. For a remote deployment, MCP supports **Streamable HTTP transport** — each request is handled independently, making it a perfect fit for serverless.
+The stdio transport only works locally. For a remote deployment, MCP supports **Streamable HTTP transport**: each request is handled independently, making it a perfect fit for serverless.
 
 The key change is in the transport layer. The deploy logic (`check.ts`) stays untouched:
 
@@ -233,7 +233,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
 }
 ```
 
-Vercel compiles `api/*.ts` files natively — no build configuration needed. A minimal `vercel.json` routes all traffic to the handler:
+Vercel compiles `api/*.ts` files natively, no build configuration needed. A minimal `vercel.json` routes all traffic to the handler:
 
 ```json
 {
@@ -248,13 +248,13 @@ After connecting the GitHub repository to Vercel and deploying, the server is li
 
 ## Step 4: Testing it
 
-The server repo itself keeps its Docker-based `.mcp.json` — that's for developing and testing the tool locally. The deployed endpoint is meant to be consumed from *other* projects.
+The server repo itself keeps its Docker-based `.mcp.json`: that's for developing and testing the tool locally. The deployed endpoint is meant to be consumed from *other* projects.
 
 ### Configure the client
 
 There are two ways to point Claude Code at the live server.
 
-**Option 1 — manually**, add a `.mcp.json` in the project directory, or in your global Claude Code configuration to have it available everywhere:
+**Option 1 (manually):** add a `.mcp.json` in the project directory, or in your global Claude Code configuration to have it available everywhere:
 
 ```json
 {
@@ -267,7 +267,7 @@ There are two ways to point Claude Code at the live server.
 }
 ```
 
-**Option 2 — via the `claude mcp add` command**, which writes the configuration for you:
+**Option 2:** use the `claude mcp add` command, which writes the configuration for you:
 
 ```bash
 # Available only in the current project
@@ -277,7 +277,7 @@ claude mcp add --transport http deploy-check https://mcp-deploy-check.anyvoid.de
 claude mcp add --transport http --scope user deploy-check https://mcp-deploy-check.anyvoid.dev/mcp
 ```
 
-> **Note:** in both options, specifying the transport is required — `"type": "http"` in the JSON file, `--transport http` in the CLI. Omitting it causes a schema validation error in Claude Code.
+> **Note:** in both options, specifying the transport is required:`"type": "http"` in the JSON file, `--transport http` in the CLI. Omitting it causes a schema validation error in Claude Code.
 
 ### Verify with curl
 
@@ -294,21 +294,21 @@ Response on a Tuesday evening:
 
 ```
 event: message
-data: {"result":{"content":[{"type":"text","text":"🚫 NO — It's 21:47 — end of business hours. Next window: Wednesday at 9:00."}]}}
+data: {"result":{"content":[{"type":"text","text":"🚫 NO - It's 21:47 - end of business hours. Next window: Wednesday at 9:00."}]}}
 ```
 
 ### Use it through Claude Code
 
-Once configured, the interaction is the same as with the local Docker server — just ask naturally:
+Once configured, the interaction is the same as with the local Docker server, just ask naturally:
 
 ```
 You: can I deploy?
 
 Claude: [Calling tool: can_i_deploy]
-        🚫 NO — It's Friday. Step away from the keyboard.
+        🚫 NO - It's Friday. Step away from the keyboard.
 ```
 
-The difference is that the tool now runs on Vercel rather than in a local Docker container — but from Claude's perspective, nothing changed.
+The difference is that the tool now runs on Vercel rather than in a local Docker container, but from Claude's perspective, nothing changed.
 
 ---
 
@@ -325,19 +325,19 @@ The difference is that the tool now runs on Vercel rather than in a local Docker
           │                            │
           └─────────────┬──────────────┘
                         ▼
-              checkDeploy() — inspects day + time
+              checkDeploy() - inspects day + time
                         │
                         ▼
-          "🚫 NO — It's Friday. Step away from the keyboard."
+          "🚫 NO - It's Friday. Step away from the keyboard."
 ```
 
 ---
 
 ## Conclusion
 
-The deploy-check tool is deliberately trivial — checking the day and time is not a hard problem. But that's exactly what made it a good first MCP project: the logic was simple enough to stay out of the way, and I could focus entirely on understanding the protocol, the transport layers, the tool registration, and how Claude actually decides to invoke a tool.
+The deploy-check tool is deliberately trivial, checking the day and time is not a hard problem. But that's exactly what made it a good first MCP project: the logic was simple enough to stay out of the way, and I could focus entirely on understanding the protocol, the transport layers, the tool registration, and how Claude actually decides to invoke a tool.
 
-What I took away is less about this specific server and more about what the pattern makes possible. MCP lets you give Claude contextual knowledge about your environment — your infrastructure, your processes, your team's constraints — without building a dedicated interface for it. The assistant doesn't just answer general questions anymore; it can answer *your* questions, grounded in *your* reality.
+What I took away is less about this specific server and more about what the pattern makes possible. MCP lets you give Claude contextual knowledge about your environment, your infrastructure, your processes, your team's constraints, without building a dedicated interface for it. The assistant doesn't just answer general questions anymore; it can answer *your* questions, grounded in *your* reality.
 
 That's the value. Not the automation, but the reduction of friction between a question and a reliable answer.
 
@@ -347,6 +347,6 @@ Using this naturally raises a broader question: when does a problem call for an 
 
 ## References
 
-- [mcp-deploy-check — GitHub repository](https://github.com/NicolasMugnier/mcp-deploy-check)
-- [Model Context Protocol — official documentation](https://modelcontextprotocol.io)
+- [mcp-deploy-check: GitHub repository](https://github.com/NicolasMugnier/mcp-deploy-check)
+- [Model Context Protocol, official documentation](https://modelcontextprotocol.io)
 - [MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk)

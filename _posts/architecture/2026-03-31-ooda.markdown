@@ -31,7 +31,7 @@ The codebase provides declarative `#[Cache]` and `#[InvalidateCache]` attributes
 - On each mutation use case, declare `#[InvalidateCache]` pointing to the userId tag
 
 ```php
-// GetProfileScoreRequest — __toString() encodes userId + hash of datafields list,
+// GetProfileScoreRequest - __toString() encodes userId + hash of datafields list,
 // so the cache auto-invalidates when the list of datafields changes
 public function __toString(): string
 {

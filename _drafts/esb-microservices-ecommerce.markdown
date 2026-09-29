@@ -10,7 +10,7 @@ locale: fr_FR
 
 ## Contexte
 
-Le projet : une plateforme e-commerce multi-marques et multi-régions. Chaque marque dispose de ses propres sites Magento 2, déclinés par zone géographique — APAC, EMEA, États-Unis. En parallèle, un ensemble de microservices AWS gèrent les données métier : catalogue produits, commandes, stocks, clients.
+Le projet : une plateforme e-commerce multi-marques et multi-régions. Chaque marque dispose de ses propres sites Magento 2, déclinés par zone géographique: APAC, EMEA, États-Unis. En parallèle, un ensemble de microservices AWS gèrent les données métier : catalogue produits, commandes, stocks, clients.
 
 Le défi est classique mais concret : comment faire circuler l'information de façon fiable entre des systèmes hétérogènes, sans créer de couplage fort, sans point de défaillance unique, et avec la capacité de rejouer des événements en cas de besoin ?
 
@@ -20,9 +20,9 @@ La réponse a été la mise en place d'un **Enterprise Service Bus**, avec une c
 
 ## Le PIM : source de vérité des données produits
 
-Au cœur de cette architecture se trouve un **PIM** (Product Information Management). C'est lui qui détient la source de vérité pour toutes les données produits : références, descriptions, prix, médias, attributs métier. Toutes les applications — microservices et sites Magento — dérivent leurs données produits de ce système.
+Au cœur de cette architecture se trouve un **PIM** (Product Information Management). C'est lui qui détient la source de vérité pour toutes les données produits : références, descriptions, prix, médias, attributs métier. Toutes les applications, microservices et sites Magento, dérivent leurs données produits de ce système.
 
-Le PIM n'écrit pas directement dans les bases de données des microservices ni dans les catalogues Magento. Il communique exclusivement via l'**API REST** du Product Service, qui est le seul point d'entrée autorisé pour les mutations produits. C'est également le PIM qui génère le `correlationId` de chaque opération — puisque c'est lui l'initiateur de la chaîne d'événements.
+Le PIM n'écrit pas directement dans les bases de données des microservices ni dans les catalogues Magento. Il communique exclusivement via l'**API REST** du Product Service, qui est le seul point d'entrée autorisé pour les mutations produits. C'est également le PIM qui génère le `correlationId` de chaque opération, puisque c'est lui l'initiateur de la chaîne d'événements.
 
 Ce cloisonnement a deux conséquences importantes :
 
@@ -37,7 +37,7 @@ Ce cloisonnement a deux conséquences importantes :
 graph TD
     PIM["PIM\n(source de vérité produits)"]
 
-    subgraph AWS ["AWS — Microservices"]
+    subgraph AWS ["AWS: Microservices"]
         PMS["Product Service (Lambda + DynamoDB)"]
         OMS["Order Service (Lambda + DynamoDB)"]
         STOCK["Stock Service (Lambda + DynamoDB)"]
@@ -50,11 +50,11 @@ graph TD
         TOPICS["Topics : product-created / product-updated / product-deleted / stock-updated / ..."]
     end
 
-    subgraph MAGENTO ["Magento 2 — Sites e-commerce"]
-        M_EU_A["Marque A — EMEA"]
-        M_US_A["Marque A — US"]
-        M_APAC_A["Marque A — APAC"]
-        M_EU_B["Marque B — EMEA"]
+    subgraph MAGENTO ["Magento 2: Sites e-commerce"]
+        M_EU_A["Marque A: EMEA"]
+        M_US_A["Marque A: US"]
+        M_APAC_A["Marque A: APAC"]
+        M_EU_B["Marque B: EMEA"]
     end
 
     PIM -->|API REST| PMS
@@ -82,7 +82,7 @@ Les échanges reposent sur le modèle **publish / subscribe** :
 - Les microservices AWS sont les **producteurs** : ils publient des événements métier sur le broker.
 - Les sites Magento 2 sont les **consommateurs** : ils souscrivent aux topics qui les concernent et traitent les messages de façon autonome.
 
-Aucun des deux ne connaît l'autre directement. Le couplage se limite au contrat du message — son format JSON et la convention de nommage des topics.
+Aucun des deux ne connaît l'autre directement. Le couplage se limite au contrat du message, son format JSON et la convention de nommage des topics.
 
 ---
 
@@ -104,7 +104,7 @@ Le format retenu : **`{scope}-{action}`**
 Cette convention présente plusieurs avantages :
 
 - **Lisibilité immédiate** : un développeur qui découvre le système comprend au premier coup d'œil ce que transporte chaque topic.
-- **Prévisibilité** : ajouter un nouveau domaine métier ne nécessite pas de réunion pour décider du nommage — la règle s'applique mécaniquement.
+- **Prévisibilité** : ajouter un nouveau domaine métier ne nécessite pas de réunion pour décider du nommage, la règle s'applique mécaniquement.
 - **Découplage producteur / consommateur** : un site Magento qui souscrit à `product-updated` n'a aucune connaissance du microservice qui publie. Il consomme un contrat, pas une implémentation.
 
 Chaque message publié sur un topic embarque un **payload JSON normalisé** : un identifiant unique de l'événement, un timestamp, le scope, l'action, et les données métier associées.
@@ -118,7 +118,7 @@ Chaque message publié sur un topic embarque un **payload JSON normalisé** : un
   "action": "updated",
   "payload": {
     "sku": "PROD-00142",
-    "name": "Veste imperméable — Édition automne",
+    "name": "Veste imperméable - Édition automne",
     "price": 189.00,
     "currency": "EUR"
   }
@@ -140,8 +140,8 @@ sequenceDiagram
     participant PIM as PIM / API
     participant MS as Microservice (Lambda)
     participant ESB as ESB
-    participant M_A as Magento — Marque A
-    participant M_B as Magento — Marque B
+    participant M_A as Magento: Marque A
+    participant M_B as Magento: Marque B
 
     Note over PIM: corrId = uuid()
     PIM->>MS: PUT /products/PROD-00142 (correlationId: corrId)
@@ -168,8 +168,8 @@ On retrouve immédiatement :
 ### Règles d'implémentation
 
 - Le `correlationId` est généré **une seule fois**, par le publisher du message initial. Il n'est jamais régénéré en cours de route.
-- Si un consommateur publie lui-même un nouveau message en réaction (chaîne d'événements), il **réutilise le même `correlationId`** — il ne crée pas le sien.
-- Chaque composant — microservice, module Magento — logue le `correlationId` **en début de traitement**, ce qui permet de filtrer l'ensemble d'une trace dans n'importe quel outil de log.
+- Si un consommateur publie lui-même un nouveau message en réaction (chaîne d'événements), il **réutilise le même `correlationId`**, il ne crée pas le sien.
+- Chaque composant, microservice, module Magento, logue le `correlationId` **en début de traitement**, ce qui permet de filtrer l'ensemble d'une trace dans n'importe quel outil de log.
 
 ---
 
@@ -191,11 +191,11 @@ sequenceDiagram
     ESB-->>MS: ACK
 </div>
 
-Chaque acteur du système — chaque microservice, chaque site Magento — possède ses propres **`client_id` / `client_secret`** et des **scopes OAuth2** qui définissent précisément ce qu'il est autorisé à faire :
+Chaque acteur du système, chaque microservice, chaque site Magento, possède ses propres **`client_id` / `client_secret`** et des **scopes OAuth2** qui définissent précisément ce qu'il est autorisé à faire :
 
-- `esb:publish` — droit de publier des messages sur le broker
-- `esb:subscribe:product` — droit de souscrire aux topics du domaine `product`
-- `esb:subscribe:order` — droit de souscrire aux topics du domaine `order`
+- `esb:publish`, droit de publier des messages sur le broker
+- `esb:subscribe:product`, droit de souscrire aux topics du domaine `product`
+- `esb:subscribe:order`, droit de souscrire aux topics du domaine `order`
 
 Cela garantit qu'un site Magento ne peut pas publier de messages à la place d'un microservice, et qu'un microservice ne peut pas souscrire à des topics qui ne le concernent pas.
 
@@ -205,14 +205,14 @@ Les tokens sont **mis en cache** côté client pour éviter un appel à l'Author
 
 ## Les microservices AWS
 
-Les microservices sont écrits en **TypeScript / Node.js** et déployés sur AWS avec le **Serverless Framework**. Chaque service est indépendant — son propre dépôt, son propre `serverless.yml`, son propre cycle de déploiement. Un changement sur le Product Service n'implique aucun redéploiement des autres services.
+Les microservices sont écrits en **TypeScript / Node.js** et déployés sur AWS avec le **Serverless Framework**. Chaque service est indépendant, son propre dépôt, son propre `serverless.yml`, son propre cycle de déploiement. Un changement sur le Product Service n'implique aucun redéploiement des autres services.
 
 ### Serverless Framework
 
 Le **Serverless Framework** est l'outil qui orchestre le déploiement de l'ensemble des ressources AWS. Un fichier `serverless.yml` par service décrit les fonctions Lambda, les routes API Gateway, les queues SQS, les tables DynamoDB et les permissions IAM associées. Au moment du déploiement, le framework génère et applique un stack **CloudFormation** complet.
 
 ```yaml
-# Extrait serverless.yml — Product Service
+# Extrait serverless.yml - Product Service
 service: product-service
 
 provider:
@@ -347,14 +347,14 @@ Chaque site Magento souscrit explicitement aux topics qui le concernent. Un site
 La subscription est déclarée dans la configuration du module Magento et reflète les scopes OAuth2 accordés à ce site :
 
 ```
-Marque A — EMEA :
+Marque A - EMEA :
   ✓ product-created
   ✓ product-updated
   ✓ product-deleted
   ✓ stock-updated
   ✗ order-created  (géré en interne par Magento)
 
-Marque B — US :
+Marque B - US :
   ✓ product-created
   ✓ product-updated
   ✓ product-deleted
@@ -362,7 +362,7 @@ Marque B — US :
   ✓ customer-merged
 ```
 
-Cette granularité permet de **réduire la charge sur chaque site** : un consommateur ne traite que ce qu'il doit traiter. Elle facilite aussi le debug — si un site a un problème de synchronisation, on sait exactement quels topics inspecter.
+Cette granularité permet de **réduire la charge sur chaque site** : un consommateur ne traite que ce qu'il doit traiter. Elle facilite aussi le debug, si un site a un problème de synchronisation, on sait exactement quels topics inspecter.
 
 ---
 
@@ -412,7 +412,7 @@ sequenceDiagram
     LAMBDA-->>API: 202 Accepted
 </div>
 
-Le flag `replay: true` dans le payload permet aux consommateurs — s'ils le souhaitent — d'adapter leur comportement : par exemple, ne pas déclencher certaines notifications client lors d'un replay.
+Le flag `replay: true` dans le payload permet aux consommateurs, s'ils le souhaitent, d'adapter leur comportement : par exemple, ne pas déclencher certaines notifications client lors d'un replay.
 
 Le full replay peut être **partiel** : on peut rejouer uniquement les produits créés après une date donnée (`since`), ou uniquement pour certains consommateurs (`targets`).
 
@@ -434,6 +434,6 @@ Le full replay peut être **partiel** : on peut rejouer uniquement les produits 
 
 ## Conclusion
 
-Mettre en place un ESB sur ce type de projet — multi-marques, multi-régions, systèmes hétérogènes — a permis de découpler durablement les producteurs des consommateurs, de standardiser les échanges, et de donner aux équipes opérationnelles des leviers concrets pour gérer les incidents et les montées de version.
+Mettre en place un ESB sur ce type de projet, multi-marques, multi-régions, systèmes hétérogènes, a permis de découpler durablement les producteurs des consommateurs, de standardiser les échanges, et de donner aux équipes opérationnelles des leviers concrets pour gérer les incidents et les montées de version.
 
 Ce n'est pas une architecture universelle. Elle a un coût en complexité opérationnelle (broker à opérer, tokens à gérer, conventions à documenter). Mais dans un contexte où les flux de données sont nombreux et les acteurs multiples, c'est un investissement qui se rentabilise rapidement.

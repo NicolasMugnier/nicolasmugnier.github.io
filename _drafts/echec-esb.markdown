@@ -1,4 +1,4 @@
-# Pourquoi mon projet d'ESB a échoué — et ce que j'en ai appris
+# Pourquoi mon projet d'ESB a échoué, et ce que j'en ai appris
 
 Il existe des projets qui échouent malgré une bonne architecture, une motivation solide et une conviction profonde qu'il s'agit de la bonne direction. Mon tentative de mettre en place un Enterprise Service Bus en est l'exemple parfait.
 
@@ -16,7 +16,7 @@ Sur le papier, la solution avait du sens. Dans la réalité, l'atterrissage a é
 
 ## Un terrain qui n'était pas prêt
 
-La première erreur — que je n'avais pas suffisamment mesurée au départ — a été de sous-estimer le delta entre la maturité nécessaire pour ce type de projet et celle de l'organisation à ce moment-là.
+La première erreur, que je n'avais pas suffisamment mesurée au départ, a été de sous-estimer le delta entre la maturité nécessaire pour ce type de projet et celle de l'organisation à ce moment-là.
 
 Aucun système de queue n'était en place. Des outils comme AWS SQS ou AWS Lambda étaient inconnus de la plupart des équipes. La notion même d'ESB nécessitait d'être expliquée à tous les niveaux : technique, qualité, management. J'ai multiplié les présentations, les sessions de sensibilisation, les argumentaires. C'est du temps bien investi en théorie, mais en pratique, il s'agissait surtout de combler un retard considérable avant même de poser la première ligne de code.
 
@@ -44,7 +44,7 @@ Pour avancer malgré les frictions, j'ai accepté des compromis. Sur le design, 
 
 Et puis est venu le moment où, les composants choisis et l'implémentation presque terminée, une nouvelle ambition s'est invitée : offrir la developer experience parfaite. Rendre la consommation des événements "magique". L'idée était séduisante. Elle a conduit à une complexification significative de la solution, à des problèmes de performance, et finalement à l'abandon du projet.
 
-Les équipes ont continué à communiquer comme avant — point à point, synchrone, non scalable.
+Les équipes ont continué à communiquer comme avant, point à point, synchrone, non scalable.
 
 ---
 

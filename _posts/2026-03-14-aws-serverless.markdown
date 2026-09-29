@@ -10,7 +10,7 @@ locale: en_US
 
 ## Introduction
 
-Serverless architecture lets you build and run applications without managing servers. AWS handles provisioning, scaling, and availability — you only write business logic. In this article, we walk through a concrete demo that implements a full CRUD API for a "Learning Path" resource using **AWS Lambda**, **API Gateway**, **DynamoDB**, and **S3**, all defined as code with the **Serverless Framework** and written in **TypeScript**.
+Serverless architecture lets you build and run applications without managing servers. AWS handles provisioning, scaling, and availability. You only write business logic. In this article, we walk through a concrete demo that implements a full CRUD API for a "Learning Path" resource using **AWS Lambda**, **API Gateway**, **DynamoDB**, and **S3**, all defined as code with the **Serverless Framework** and written in **TypeScript**.
 
 ---
 
@@ -35,7 +35,7 @@ Serverless architecture lets you build and run applications without managing ser
         └──────────────────────────┘     └───────────────┘
 ```
 
-Each Lambda function handles a single HTTP route and is granted only the IAM permissions it needs — no shared roles, no over-privileged functions.
+Each Lambda function handles a single HTTP route and is granted only the IAM permissions it needs, no shared roles, no over-privileged functions.
 
 ---
 
@@ -79,7 +79,7 @@ Handlers are thin: they extract input from the API Gateway event and delegate to
 
 ## Infrastructure as Code: `serverless.yml`
 
-The entire AWS infrastructure is described in a single `serverless.yml` file. No clicking through the AWS Console — everything is version-controlled and reproducible.
+The entire AWS infrastructure is described in a single `serverless.yml` file. No clicking through the AWS Console, everything is version-controlled and reproducible.
 
 ### Provider
 
@@ -156,7 +156,7 @@ resources:
           RestrictPublicBuckets: true
 ```
 
-`PAY_PER_REQUEST` billing means you pay per DynamoDB operation — no capacity planning, no idle costs.
+`PAY_PER_REQUEST` billing means you pay per DynamoDB operation, no capacity planning, no idle costs.
 
 ---
 
@@ -214,13 +214,13 @@ export class LearningPathService {
 }
 ```
 
-Deleting a learning path also cleans up its associated S3 object — data integrity is enforced at the application level since DynamoDB has no foreign key constraints.
+Deleting a learning path also cleans up its associated S3 object, data integrity is enforced at the application level since DynamoDB has no foreign key constraints.
 
 ---
 
 ## Handlers
 
-Handlers are kept minimal — extract input, call service, return response:
+Handlers are kept minimal, extract input, call service, return response:
 
 ```typescript
 // src/api/learning-path/get.ts
@@ -255,7 +255,7 @@ jobs:
       - run: npx serverless deploy
 ```
 
-OIDC federation means GitHub Actions assumes an IAM role temporarily — no access keys, no secret rotation needed.
+OIDC federation means GitHub Actions assumes an IAM role temporarily, no access keys, no secret rotation needed.
 
 ---
 
@@ -282,7 +282,7 @@ The `serverless-offline` plugin emulates API Gateway locally. The `serverless-dy
 
 | Pattern | Implementation |
 |---------|---------------|
-| **Serverless compute** | AWS Lambda — no servers to manage |
+| **Serverless compute** | AWS Lambda, no servers to manage |
 | **Infrastructure as Code** | All resources defined in `serverless.yml` |
 | **Least-privilege IAM** | `serverless-iam-roles-per-function` plugin |
 | **Pay-per-use storage** | DynamoDB PAY_PER_REQUEST billing |
@@ -326,9 +326,9 @@ endpoints:
 
 This demo shows how much you can build with very little infrastructure code. The key takeaways:
 
-- **The Serverless Framework** lets you define Lambda functions, API Gateway routes, DynamoDB tables, and S3 buckets in a single YAML file — no manual AWS Console setup
+- **The Serverless Framework** lets you define Lambda functions, API Gateway routes, DynamoDB tables, and S3 buckets in a single YAML file, no manual AWS Console setup
 - **Per-function IAM roles** enforce the principle of least privilege at the function level, limiting blast radius if a function is compromised
-- **DynamoDB on-demand billing** removes capacity planning entirely — pay only for what you use
+- **DynamoDB on-demand billing** removes capacity planning entirely, pay only for what you use
 - **S3 and DynamoDB complement each other**: DynamoDB stores structured metadata, S3 stores binary objects; the application manages the relationship
 - **OIDC federation for CI/CD** eliminates the need to store long-lived AWS credentials as secrets
 - **TypeScript** brings type safety to Lambda handlers and service code, catching errors at compile time rather than at runtime in production

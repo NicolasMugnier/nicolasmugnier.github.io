@@ -8,7 +8,7 @@ image: /assets/img/ai-tools-one-year-later.webp
 locale: en_US
 ---
 
-A little over a year ago, I wrote about [my experience with AI tools as a Senior Backend Engineer](/ai/2025/01/20/my-experience-with-ai-tools-as-a-senior-backend-engineer.html). At the time, my conclusion was nuanced: useful in specific contexts, but often falling short for senior-level work. I predicted my feedback would look very different in six months. It did — and it kept evolving. Here is where I stand today.
+A little over a year ago, I wrote about [my experience with AI tools as a Senior Backend Engineer](/ai/2025/01/20/my-experience-with-ai-tools-as-a-senior-backend-engineer.html). At the time, my conclusion was nuanced: useful in specific contexts, but often falling short for senior-level work. I predicted my feedback would look very different in six months. It did, and it kept evolving. Here is where I stand today.
 
 ## How My Usage Has Evolved
 
@@ -16,7 +16,7 @@ A little over a year ago, I wrote about [my experience with AI tools as a Senior
 
 ## Code Generation: A Different Picture
 
-<!-- How code suggestions/generation has improved or changed — agentic coding, Claude Code, Cursor, etc. -->
+<!-- How code suggestions/generation has improved or changed, agentic coding, Claude Code, Cursor, etc. -->
 
 ## Architecture and Design: Still a Human Job?
 
@@ -24,7 +24,7 @@ A little over a year ago, I wrote about [my experience with AI tools as a Senior
 
 ## AI as a Pair Programmer
 
-<!-- Going beyond autocomplete — full conversations, task delegation, code review -->
+<!-- Going beyond autocomplete, full conversations, task delegation, code review -->
 
 ## What I Stopped Using AI For
 
@@ -32,7 +32,7 @@ A little over a year ago, I wrote about [my experience with AI tools as a Senior
 
 ## What I Now Rely On AI For
 
-<!-- The workflows that have become second nature — where AI genuinely saves time -->
+<!-- The workflows that have become second nature, where AI genuinely saves time -->
 
 ## The Critical Mindset, One Year Later
 

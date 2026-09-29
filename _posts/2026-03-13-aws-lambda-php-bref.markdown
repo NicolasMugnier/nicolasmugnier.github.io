@@ -10,13 +10,13 @@ locale: en_US
 
 ## Introduction
 
-AWS Lambda supports custom runtimes, which means you can run virtually any language — including PHP. In this article, we walk through a POC that deploys a PHP 8.1 application to AWS Lambda using **Bref**, a layer-based PHP runtime for Lambda. The application follows **Clean Architecture** principles and manages a simple `Book` resource across three Lambda functions, all wired together with **Symfony Dependency Injection** and deployed via the **Serverless Framework**.
+AWS Lambda supports custom runtimes, which means you can run virtually any language, including PHP. In this article, we walk through a POC that deploys a PHP 8.1 application to AWS Lambda using **Bref**, a layer-based PHP runtime for Lambda. The application follows **Clean Architecture** principles and manages a simple `Book` resource across three Lambda functions, all wired together with **Symfony Dependency Injection** and deployed via the **Serverless Framework**.
 
 ---
 
 ## Why PHP on Lambda?
 
-PHP is not natively supported by AWS Lambda. However, Lambda allows you to bring your own runtime via the `provided.al2` execution environment. **Bref** packages a PHP binary as a Lambda Layer, so your function code runs as if PHP were a first-class citizen — no Docker containers, no EC2 instances.
+PHP is not natively supported by AWS Lambda. However, Lambda allows you to bring your own runtime via the `provided.al2` execution environment. **Bref** packages a PHP binary as a Lambda Layer, so your function code runs as if PHP were a first-class citizen, no Docker containers, no EC2 instances.
 
 ---
 
@@ -58,7 +58,7 @@ demo/
 ├── serverless.yml                     (infrastructure as code)
 ├── composer.json
 └── src/
-    ├── BusinessRules/                 (domain — no framework dependencies)
+    ├── BusinessRules/                 (domain - no framework dependencies)
     │   ├── Entities/
     │   │   └── Book.php
     │   ├── Gateways/
@@ -179,7 +179,7 @@ class AddBook
 }
 ```
 
-Use cases are plain PHP classes. They receive a typed Request DTO, perform domain logic, and return a typed Response DTO — no HTTP, no Lambda, no framework.
+Use cases are plain PHP classes. They receive a typed Request DTO, perform domain logic, and return a typed Response DTO, no HTTP, no Lambda, no framework.
 
 ### The Gateway Implementation (Adapter)
 
@@ -207,7 +207,7 @@ class InMemoryBookGateway implements BookGateway
 }
 ```
 
-Today this is in-memory storage — enough for a demo. Swapping it for a DynamoDB repository only requires implementing `BookGateway` with a different class and updating the DI binding in `services.yml`. The use cases don't change.
+Today this is in-memory storage, enough for a demo. Swapping it for a DynamoDB repository only requires implementing `BookGateway` with a different class and updating the DI binding in `services.yml`. The use cases don't change.
 
 ---
 
@@ -308,11 +308,11 @@ serverless invoke --function deleteBook -d '{"id": "64a1bc..."}'
 
 This POC is intentionally minimal. To move toward production, you would:
 
-1. **Add a real database** — Implement a `DynamoDbBookGateway` that implements `BookGateway` and interacts with DynamoDB via `async-aws/dynamodb`. No use case code changes required.
-2. **Add an HTTP trigger** — Attach an API Gateway event to each function and map HTTP methods to the right handlers.
-3. **Add IAM permissions** — Use `serverless-iam-roles-per-function` to grant each function only the DynamoDB actions it needs.
-4. **Add tests** — Use cases are plain PHP classes, easy to unit test without mocking Lambda or AWS.
-5. **Set up CI/CD** — A GitHub Actions workflow with OIDC federation can run `serverless deploy` on every push to `main`.
+1. **Add a real database**: Implement a `DynamoDbBookGateway` that implements `BookGateway` and interacts with DynamoDB via `async-aws/dynamodb`. No use case code changes required.
+2. **Add an HTTP trigger**: Attach an API Gateway event to each function and map HTTP methods to the right handlers.
+3. **Add IAM permissions**: Use `serverless-iam-roles-per-function` to grant each function only the DynamoDB actions it needs.
+4. **Add tests**: Use cases are plain PHP classes, easy to unit test without mocking Lambda or AWS.
+5. **Set up CI/CD**: A GitHub Actions workflow with OIDC federation can run `serverless deploy` on every push to `main`.
 
 ---
 
@@ -322,6 +322,6 @@ This demo challenges the assumption that PHP and serverless don't mix. With Bref
 
 - **Bref** makes PHP a first-class Lambda runtime with zero Docker overhead
 - **Clean Architecture** pays off in a Lambda context: business logic is testable, portable, and completely decoupled from the event source
-- **Symfony DI** works perfectly in Lambda — lightweight enough to bootstrap per invocation without performance issues
+- **Symfony DI** works perfectly in Lambda: lightweight enough to bootstrap per invocation without performance issues
 - **Serverless Framework** turns multi-function infrastructure into a few lines of YAML
-- **Swapping the repository** (in-memory → DynamoDB → any database) requires no changes to domain code — only a new implementation of `BookGateway`
+- **Swapping the repository** (in-memory → DynamoDB → any database) requires no changes to domain code: only a new implementation of `BookGateway`

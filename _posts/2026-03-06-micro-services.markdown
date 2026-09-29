@@ -114,7 +114,7 @@ All services propagate an `x-correlation-id` header across the request chain. If
 $correlationId = $request->headers->get('x-correlation-id') ?? Uuid::uuid4()->toString();
 ```
 
-This enables **distributed tracing** — you can follow a single user request through all services in the logs.
+This enables **distributed tracing**: you can follow a single user request through all services in the logs.
 
 ---
 
@@ -149,11 +149,11 @@ labels:
 
 Rather than using the full Symfony framework, each service uses only the components it needs:
 
-- `symfony/routing` — URL pattern matching
-- `symfony/http-foundation` — `Request`/`Response` abstractions
-- `symfony/dependency-injection` — Service container wired via `services.yml`
-- `symfony/config` + `symfony/yaml` — YAML-based route and service configuration
-- `symfony/cache` — Filesystem adapter for token caching
+- `symfony/routing`: URL pattern matching
+- `symfony/http-foundation`:`Request`/`Response` abstractions
+- `symfony/dependency-injection`: Service container wired via `services.yml`
+- `symfony/config` + `symfony/yaml`: YAML-based route and service configuration
+- `symfony/cache`: Filesystem adapter for token caching
 
 This keeps each service **lightweight and focused**, with no framework overhead.
 
