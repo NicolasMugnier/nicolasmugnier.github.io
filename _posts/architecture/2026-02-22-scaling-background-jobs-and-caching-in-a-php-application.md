@@ -2,12 +2,11 @@
 tags: [php, symfony, doctrine, caching, phpstan]
 author: Nicolas Mugnier
 categories: architecture
+title: "Scaling Background Jobs and Caching in a PHP Platform: Patterns That Worked"
 description: "How we scaled a fragile PHP/Symfony pipeline into a resilient system: cursor-based iteration with Doctrine, async jobs with Messenger, tag-based cache invalidation, and a custom PHPStan rule."
 locale: en_US
 image: /assets/img/scaling-background-jobs-and-caching.webp
 ---
-
-# Scaling Background Jobs and Caching in a PHP Platform: Patterns That Worked
 
 When a background job that "works fine" starts crashing at scale, the fix is rarely a single change. It is usually a chain of architectural decisions — each one unlocking the next. This article walks through five of those decisions, made over several months on a PHP/Symfony platform, to turn a fragile synchronous pipeline into a resilient, cache-aware, statically verified system. Each part can be read independently, but together they tell the story of how a series of small, deliberate improvements compounded into a fundamentally different architecture.
 
