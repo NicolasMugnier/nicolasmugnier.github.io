@@ -4,20 +4,24 @@ title: "Dual-Write Search Architecture with PostgreSQL Generated Columns"
 tags: [php, postgresql, search, algolia, doctrine]
 author: Nicolas Mugnier
 categories: architecture
-description: "Keep Algolia for the frontend, add a PostgreSQL replica of the same document for backend queries: JSONB, generated columns, BOX geo, dual-write gateway."
+description: "Algolia cannot test an offer point against talent search boxes, and cannot express OR property IS NULL. Dual-write the same document to PostgreSQL."
 image: /assets/img/dual-write-search.webp
 locale: en_US
 ---
 
 # Dual-Write Search Architecture with PostgreSQL Generated Columns
 
-The platform used a third-party search engine (Algolia) as the only backend for indexed profiles. Algolia is a strong fit for the public search UI: full-text, faceting, geo-ranking, typo-tolerance. It created friction for backend use cases.
+The matching query had a shape Algolia cannot express. Two gaps mattered.
 
-- **Complex cross-domain queries** (for example: candidates matching a job posting's learning path, inside a geographic bounding box) meant either several Algolia round-trips with client-side merges, or duplicating filters that already existed in SQL.
-- **Availability**: an Algolia outage blocked any background job that had to inspect the index.
-- **Cost and rate limits** made it a bad idea to hammer the external API from batch indexation.
+A talent selects one or more job-search areas. Those areas are bounding boxes, and **all of them are indexed** on the talent. A job posting sits at one position (latitude, longitude). Matching means: which talents have at least one box that contains the posting.
 
-The goal: keep Algolia for everything the frontend needed, and add a **local database replica** of the same document for backend queries.
+That is the right polarity. The offer is a point. The talent can be available in several places.
+
+Algolia geo is built around a point on the document (`_geoloc`) plus a radius, or filtering those points inside a box. A talent is not a point. Native geolocation search does not cover "offer point inside the talent's boxes".
+
+The second gap is optional attributes. A filter of the form `property = :value OR property IS NULL` is trivial in SQL. Algolia has no such predicate.
+
+The backend had been calling Algolia as if it were the query engine. The need had moved on since that setup. Algolia still fits the frontend (full-text, facets, typo-tolerance). The evolved matching queries run in PostgreSQL, where `BOX` is a first-class type and `IS NULL` is just SQL, on a **local replica** of the same document.
 
 ---
 
@@ -101,7 +105,7 @@ The application only writes `data`. The database maintains derived columns. They
 
 ## Geographic search: `search_talent_box`
 
-Profiles can have several job-search areas, each a bounding box (northeast + southwest). Matching a recruiter point against those is **point-in-box**.
+Talents are indexed with every search box they selected (northeast + southwest). Finding talents for a job posting uses the posting's latitude and longitude. When the filter carries those coordinates, the predicate is **point-in-box** with `@>`.
 
 A child table holds the boxes:
 
@@ -119,7 +123,7 @@ CREATE TABLE search_talent_box (
 CREATE INDEX idx_search_talent_box_talent_id ON search_talent_box(search_talent_id);
 ```
 
-`BOX` is a native PostgreSQL rectangle. `@>` tests point containment:
+`BOX` is a native PostgreSQL rectangle. `@>` tests point containment. That is the operator used when the filter contains latitude and longitude:
 
 ```sql
 WHERE stb.bounding_box @> point(:latitude, :longitude)
@@ -143,7 +147,7 @@ LIMIT :limit OFFSET :offset
 
 ### Why a table, not a JSON array?
 
-Containment on `BOX` can use a GiST index. Coordinates in a JSON array mean manual arithmetic or `ST_Contains`: heavier, harder to index, no native `@>` .
+Containment on `BOX` can use a GiST index. Coordinates in a JSON array mean manual arithmetic or `ST_Contains`: heavier, harder to index, no native `@>`.
 
 `ON DELETE CASCADE` drops boxes when the candidate goes. The application also clears boxes before rewriting them, so updates do not leave orphans.
 
