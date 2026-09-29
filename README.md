@@ -1,17 +1,59 @@
+# blog.anyvoid.dev
 
-Hi :wave:, I'm Nicolas !
+Jekyll blog. Live: [https://blog.anyvoid.dev](https://blog.anyvoid.dev)
 
-I'm a Senior Backend Engineer and AWS enthousiast.
+Backend notes: APIs, search, async jobs, architecture that holds in production. New posts are English. Older French posts stay.
 
-:spiral_calendar: I've worked on differents kinds of projects and used many frameworks / tools / languages depending on the context :coffee: :
-- e-commerce extensions (Prestashop, Magento, Magento2)
-- e-commerce plateform (Magento / Magento2)
-- Containerize application (Akeneo) and deploy it on OpenShift
-- MicroServices / AWS / serverless / TypeScript
-- Laravel on personal projects
-- Symfony / Clean Architecture in my current position
+GitHub Pages builds `main`. Comments: Giscus.
 
-Hobbies : 
-- I'm riding MTB 2 or 3 times a week :mountain_biking_man:, I like to be in the forest and push my limits physically and technically
-- I'm also playing electric guitar :guitar: (:metal:)
-- I also like skiing :ski:
+## Preview locally
+
+Docker only. No local Ruby required.
+
+```bash
+docker compose up -d
+```
+
+- Site: http://localhost:4000 (drafts included)
+- Live reload: :35729
+
+Restart after `_config.yml` changes: `docker compose restart`.
+
+## Layout
+
+- `_posts/` published articles. Category folder matches frontmatter `categories:`
+- `_drafts/` unpublished. GitHub Pages ignores them; local preview does not
+- `assets/img/` covers and inline images (WebP)
+- `_layouts/` home, post, topic
+- `_sass/minima/custom-styles.scss` cards, hero, article cover crop
+- `_config.yml` `hero:` is a post **slug**, not a filename
+
+New post files use `.markdown`. Frontmatter needs `layout`, `title`, `tags` (YAML list), `author`, `categories`, `description`, `image`, `locale`.
+
+Do not repeat `title:` as a body H1. The post layout already prints it.
+
+## Covers
+
+1280x720 WebP. The article page crops to a wide banner (`object-fit: cover`, `max-height: 400px`), so the motif belongs in the vertical center.
+
+Convert on the host:
+
+```bash
+ffmpeg -y -i cover.png -c:v libwebp -quality 90 assets/img/slug.webp
+```
+
+Do not use the repo Docker `convert-image` service for covers.
+
+## Diagrams
+
+Mermaid v10 is loaded in `_includes/custom-head.html`. Use `<div class="mermaid">`, not a fenced `mermaid` code block.
+
+## Agents
+
+Conventions for coding agents: [AGENTS.md](./AGENTS.md), `.agents/rules/`, `.agents/skills/`.
+
+`CLAUDE.md` is stale. AGENTS.md wins.
+
+## License
+
+MIT. See [LICENSE](./LICENSE).
