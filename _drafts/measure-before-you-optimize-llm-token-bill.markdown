@@ -65,6 +65,8 @@ model            calls   fresh    cache_write   cache_read   output
 <large-model>      123   957 k       1 296 k      6 277 k     86 k
 ```
 
+Input here is not the `fresh` column. It is the three input classes together: 957 k + 1 296 k + 6 277 k = **8 530 k**, the 8.5 M in the title. Output (86 k) sits outside that sum.
+
 Two numbers jump out.
 
 **Output is 86 k against 8.5 M of input.** The bill is ~96% input. Anything that optimizes what the model *writes* is targeting the wrong end of the pipe.
@@ -112,7 +114,7 @@ execute_code    11        22
 
 Total tool output: 396 kchars, roughly 99 k tokens of unique content. Shell commands, the only slice a CLI proxy can touch, are 172 kchars of that, about 43 k tokens.
 
-Compress 70% of it, the optimistic end of the published range, and you save ~30 k tokens against a daily input of 8 531 k.
+Compress 70% of it, the optimistic end of the published range, and you save ~30 k tokens against a daily input of 8 530 k.
 
 **0.35%.**
 
