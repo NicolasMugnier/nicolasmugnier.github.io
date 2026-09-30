@@ -207,19 +207,34 @@ The plumbing (custom provider vs `model.extra_headers`) is a separate post.
 
 ## Verifying it worked
 
-The metric to watch is not total tokens, it is the **cache write / cache read ratio**:
+The metric to watch is not total tokens, it is the **cache write / cache read ratio**, and write tokens per call:
 
 ```sql
 SELECT date(last_seen,'unixepoch','localtime') AS day,
-       model,
+       SUM(api_call_count) AS calls,
        SUM(cache_write_tokens)/1000 AS cw_k,
-       SUM(cache_read_tokens)/1000  AS cr_k
+       SUM(cache_read_tokens)/1000  AS cr_k,
+       ROUND(1.0 * SUM(cache_write_tokens) / SUM(api_call_count)) AS cw_per_call
 FROM session_model_usage
-GROUP BY day, model
+GROUP BY day
 ORDER BY day DESC;
 ```
 
-Cache write should collapse while cache read grows: the same content, now on the 0.10× lane instead of the 1.25× one. If write stays flat, the TTL is not being honoured somewhere in the chain and the gateway is the next place to look.
+The analysis day versus the two days still in the database after that (Opus 5):
+
+```
+day           calls   cw_k    cr_k   cw_per_call   cr / cw
+------------  -----   ----    ----   -----------   ------
+analysis        123   1296    6277        10 537     4.8
+2026-09-09        3     20      18         6 679     0.9
+2026-09-10       69    235    2646         3 418    11.3
+```
+
+The 9th is three calls. Ignore it.
+
+The 10th is the first day large enough to read. Write per call dropped from ~10.5 k to ~3.4 k. Reads per write went from 4.8 to 11. Same content spending more time on the 0.10× lane.
+
+This is not a controlled A/B. Call count is not the same (123 vs 69), so I do not turn it into a % saved. The direction is the one the TTL change predicted. If write per call had stayed near 10 k, the TTL would not have been honoured and the gateway would have been next.
 
 Do not mix families when you convert tokens to money. Opus 5, Haiku and Sonnet share 0.10×. Opus 5.5 is 0.05×. Fable 5.1 is 0.025×. They are not the same line item.
 
