@@ -9,7 +9,7 @@ image: /assets/img/measure-before-you-optimize-llm-token-bill.webp
 locale: en_US
 ---
 
-I spent about €20 in a single day running [Hermes Agent](https://hermes-agent.nousresearch.com/) locally. That is not catastrophic, but extrapolated over a month of daily use it stops being pocket change, and it was worth understanding before it became a habit.
+I spent about €20 running [Hermes Agent](https://hermes-agent.nousresearch.com/) locally. That was barely two hours, and not intensive. Extrapolated over a month of daily use it stops being pocket change, and it was worth understanding before it became a habit.
 
 My first instinct was the one everybody has: install an output compressor. There is a whole category of tools for this now: CLI proxies that intercept `git status`, `ls`, or `pytest`, strip the noise, and hand the model a compact summary instead of the raw output. The pitch is compelling and the numbers advertised are large: 60-90% reduction.
 
