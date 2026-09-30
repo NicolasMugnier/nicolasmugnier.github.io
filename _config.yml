@@ -31,8 +31,7 @@ footer_title : "This is a footer :footprints:"
 show_excerpts: true
 hero: dual-write-search-architecture
 # Private pageviews only (GoatCounter dashboard). No public widget.
-# Set to the site code from https://www.goatcounter.com (e.g. anyvoid).
-# goatcounter: REPLACE_ME
+goatcounter: anyvoid
 
 giscus:
   repo: "NicolasMugnier/nicolasmugnier.github.io"
