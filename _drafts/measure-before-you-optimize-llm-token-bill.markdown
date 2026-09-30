@@ -178,8 +178,6 @@ hermes config set auxiliary.title_generation.provider "<provider>"
 # same pattern: compression, approval, curator, background_review, vision
 ```
 
-The background self-improvement task alone was ~8% of the day's tokens. Its own documentation noted that running it on a non-default model replays a compact digest rather than the full conversation: 3-5× cheaper before the per-token price difference even applies.
-
 ### 3. Fix the auxiliary calls that were silently failing
 
 This one was a genuine bug, and I only found it because I tested the previous change instead of trusting it.
