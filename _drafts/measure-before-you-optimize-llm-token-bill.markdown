@@ -43,7 +43,13 @@ That is the part output compressors cannot help with, because it is not about vo
 
 ## Measuring instead of guessing
 
-Hermes keeps a SQLite state database (`state.db`) with a `session_model_usage` table: per-model, per-task token counts. One query:
+Hermes keeps a SQLite state database (`state.db`) with a `session_model_usage` table: per-model, per-task token counts. I run the queries in this post with:
+
+```bash
+sqlite3 -header -column "${HERMES_HOME:-$HOME/.hermes}/state.db"
+```
+
+Then paste the SQL. `$HERMES_HOME` is set when a profile is active; otherwise it is `~/.hermes/state.db`. One query:
 
 ```sql
 SELECT model,
