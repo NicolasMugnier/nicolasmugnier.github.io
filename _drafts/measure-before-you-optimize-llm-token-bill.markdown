@@ -121,7 +121,14 @@ web_search       3        31
 execute_code    11        22
 ```
 
-Total tool output: 396 kchars, roughly 99 k tokens of unique content. Shell commands, the only slice a CLI proxy can touch, are 172 kchars of that, about 43 k tokens.
+`LENGTH(content)` is characters, not tokens. For this mix (English plus code) a usable rule of thumb is **~4 characters per token**, so kchars / 4 ≈ ktokens. That is an approximation, not a tokenizer.
+
+```
+total tools     396 kchars / 4  ≈  99 k tokens
+terminal only   172 kchars / 4  ≈  43 k tokens
+```
+
+Shell commands are the only slice a CLI proxy can touch.
 
 Compress 70% of it, the optimistic end of the published range, and you save ~30 k tokens against a daily input of 8 530 k.
 
