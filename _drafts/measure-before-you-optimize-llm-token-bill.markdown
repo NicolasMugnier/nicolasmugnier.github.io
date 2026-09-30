@@ -220,19 +220,16 @@ GROUP BY day
 ORDER BY day DESC;
 ```
 
-The analysis day versus the two days still in the database after that (Opus 5):
+The analysis day (8 September) versus 10 September, the first later day still in the database with enough calls (Opus 5):
 
 ```
 day           calls   cw_k    cr_k   cw_per_call   cr / cw
 ------------  -----   ----    ----   -----------   ------
-analysis        123   1296    6277        10 537     4.8
-2026-09-09        3     20      18         6 679     0.9
+2026-09-08      123   1296    6277        10 537     4.8
 2026-09-10       69    235    2646         3 418    11.3
 ```
 
-The 9th is three calls. Ignore it.
-
-The 10th is the first day large enough to read. Write per call dropped from ~10.5 k to ~3.4 k. Reads per write went from 4.8 to 11. Same content spending more time on the 0.10× lane.
+Write per call dropped from ~10.5 k to ~3.4 k. Reads per write went from 4.8 to 11. Same content spending more time on the 0.10× lane.
 
 This is not a controlled A/B. Call count is not the same (123 vs 69), so I do not turn it into a % saved. The direction is the one the TTL change predicted. If write per call had stayed near 10 k, the TTL would not have been honoured and the gateway would have been next.
 
