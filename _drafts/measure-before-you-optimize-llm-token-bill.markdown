@@ -73,14 +73,23 @@ Two numbers jump out.
 
 **Cache write is 1 296 k over 123 calls: about 10.5 k tokens per call.** That is the smoking gun. A healthy cache is written once and read many times. Mine was being rewritten on essentially every single call, at 1.25× while an Opus 5 read would have cost 0.10×.
 
-Weighting each class at Opus 5 public rates, 5-minute TTL:
+Weighting each class at Opus 5 public rates, 5-minute TTL. Tokens times the multiplier, then share of that weighted total:
 
 ```
-cache write   ~45%
-fresh input   ~26%
-cache read    ~17%
-output        ~12%
+cache write   1 296 k × 1.25 = 1 620
+fresh           957 k × 1.00 =   957
+cache read    6 277 k × 0.10 =   628
+output           86 k × 5.00 =   430
+                               -----
+weighted units                 3 635
+
+cache write   1 620 / 3 635  ~45%
+fresh           957 / 3 635  ~26%
+cache read      628 / 3 635  ~17%
+output          430 / 3 635  ~12%
 ```
+
+Token volume and bill share are not the same ranking. Cache read is most of the 8.5 M and only ~17% of the money. Cache write is 15% of the tokens and ~45% of the bill.
 
 Nearly half the bill was one pathology: paying premium rates to re-upload context the provider already had. Move the same tokens onto Opus 5.5 (0.05× reads) and the write share goes up, not down: every wasted write is then twenty-five fresh tokens, not twelve.
 
