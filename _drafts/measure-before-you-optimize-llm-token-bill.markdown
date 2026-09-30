@@ -121,7 +121,7 @@ web_search       3        31
 execute_code    11        22
 ```
 
-`LENGTH(content)` is characters, not tokens. For this mix (English plus code) a usable rule of thumb is **~4 characters per token**, so kchars / 4 ≈ ktokens. That is an approximation, not a tokenizer.
+`LENGTH(content)` is characters, not tokens. For this mix (English plus code) a usable rule of thumb is **~4 characters per token**, so kchars / 4 ≈ ktokens. That is an approximation, not a tokenizer. OpenAI states it for English text; Anthropic uses the same estimate.
 
 ```
 total tools     396 kchars / 4  ≈  99 k tokens
@@ -247,6 +247,8 @@ Fifteen minutes of SQL, three config lines. I never installed the compressor.
 - [Hermes: context compression and prompt caching](https://hermes-agent.nousresearch.com/docs/developer-guide/context-compression-and-caching)
 - [Hermes: auxiliary models](https://hermes-agent.nousresearch.com/docs/user-guide/configuration#auxiliary-models)
 - [Anthropic: prompt caching (per-model cache-hit rates)](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)
+- [Anthropic: pricing (1 token ≈ 4 characters)](https://platform.claude.com/docs/en/about-claude/pricing)
+- [OpenAI tokenizer (1 token ≈ 4 characters of English)](https://platform.openai.com/tokenizer)
 - [OpenAI: prompt caching](https://platform.openai.com/docs/guides/prompt-caching)
 - [JetBrains AI blog: benchmarking a token-reduction CLI proxy](https://blog.jetbrains.com/ai/2026/07/rtk-claude-code-token-savings/)
 - [rtk, CLI output compressor](https://github.com/rtk-ai/rtk)
