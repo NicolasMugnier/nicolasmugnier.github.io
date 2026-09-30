@@ -293,3 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
   console.log('%c' + box, 'color:#00ff41;font-family:monospace;font-size:12px;line-height:1.6;');
 })();
 </script>
+{% if jekyll.environment == "production" and site.goatcounter %}
+<script data-goatcounter="https://{{ site.goatcounter }}.goatcounter.com/count"
+        async src="https://gc.zgo.at/count.js"></script>
+{% endif %}
