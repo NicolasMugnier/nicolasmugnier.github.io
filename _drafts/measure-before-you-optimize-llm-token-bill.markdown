@@ -21,17 +21,21 @@ Here is how to find out where the money actually goes, and the three changes tha
 
 ## The four token classes
 
-Before measuring anything, it helps to know that not all tokens on an LLM bill cost the same. For a cache-enabled API there are four distinct classes, and their prices differ by more than an order of magnitude. Anthropic-style prompt cache, relative to fresh input:
+Before measuring anything, it helps to know that not all tokens on an LLM bill cost the same. For a cache-enabled API there are four distinct classes, and their prices differ by more than an order of magnitude. Anthropic-style prompt cache, relative to fresh input. Writes are the same multipliers on every Claude. **Reads are not.**
 
 | Class | What it is | Relative price |
 |---|---|---|
 | Input (fresh) | New content the model has never seen | 1× |
 | Cache **write** (5m TTL) | Content stored into the prompt cache | 1.25× |
 | Cache **write** (1h TTL) | Same write, longer retention | 2× |
-| Cache **read** | Content served from the prompt cache | 0.10× |
+| Cache **read** (Haiku, Sonnet) | Hit on those families | 0.10× |
+| Cache **read** (Opus 5.5) | Hit on Opus 5.5 | 0.05× |
+| Cache **read** (Fable 5.1) | Hit on Fable 5.1 / Mythos 5.1 | 0.025× |
 | Output | What the model generates | ~5× |
 
-The interesting pair is cache write versus cache read. At the 5-minute tier they are **12.5× apart for identical content**. Whether your conversation history is written or read is therefore a bigger lever than how large it is.
+I weight the rest of this post at **Opus 5.5** (0.05× reads). That is the model I actually run. The 0.10× figure is the Haiku/Sonnet default, and it is the one every blog post copies. Using it here would understate how expensive a missed cache is.
+
+The interesting pair is cache write versus cache read. At the 5-minute tier, on Opus 5.5, they are **25× apart for identical content** (1.25 / 0.05). On Haiku/Sonnet that gap is 12.5×. On Fable 5.1 it is 50×. Whether your conversation history is written or read is therefore a bigger lever than how large it is.
 
 That is the part output compressors cannot help with, because it is not about volume at all.
 
@@ -65,18 +69,18 @@ Two numbers jump out.
 
 **Output is 86 k against 8.5 M of input.** The bill is ~96% input. Anything that optimizes what the model *writes* is targeting the wrong end of the pipe.
 
-**Cache write is 1 296 k over 123 calls: about 10.5 k tokens per call.** That is the smoking gun. A healthy cache is written once and read many times. Mine was being rewritten on essentially every single call, at 1.25× while a read would have cost 0.10×.
+**Cache write is 1 296 k over 123 calls: about 10.5 k tokens per call.** That is the smoking gun. A healthy cache is written once and read many times. Mine was being rewritten on essentially every single call, at 1.25× while an Opus 5.5 read would have cost 0.05×.
 
-Weighting each class by its 5-minute price:
+Weighting each class at Opus 5.5 public rates, 5-minute TTL:
 
 ```
-cache write   ~45%
-fresh input   ~26%
-cache read    ~17%
-output        ~12%
+cache write   ~49%
+fresh input   ~29%
+output        ~13%
+cache read     ~9%
 ```
 
-Nearly half the bill was one pathology: paying premium rates to re-upload context the provider already had.
+Nearly half the bill was one pathology: paying premium rates to re-upload context the provider already had. Cheaper reads (0.05× instead of 0.10×) make that pathology *worse* as a share of the bill, not better: every wasted write is twenty-five fresh tokens, not twelve.
 
 ---
 
@@ -124,14 +128,14 @@ File reads, search results, and web fetches (224 kchars here, more than the shel
 
 Hermes default prompt-cache TTL was five minutes. My working rhythm is: ask a question, read the answer, think, read some code, come back. Regularly more than five minutes between turns.
 
-Every time that gap exceeded the TTL, the cache entry expired and the entire conversation prefix was rewritten at 1.25× instead of being read at 0.10×.
+Every time that gap exceeded the TTL, the cache entry expired and the entire conversation prefix was rewritten at 1.25× instead of being read at 0.05×.
 
 ```bash
 # 5m -> 1h  (Anthropic only accepts these two tiers, plus auto)
 hermes config set prompt_caching.cache_ttl 1h
 ```
 
-One line, and it addresses the ~45% slice.
+One line, and it addresses the ~49% slice.
 
 Two caveats, both from the [Hermes docs](https://hermes-agent.nousresearch.com/docs/developer-guide/context-compression-and-caching), not from folklore:
 
@@ -197,7 +201,9 @@ GROUP BY day, model
 ORDER BY day DESC;
 ```
 
-Cache write should collapse while cache read grows: the same content, now on the 0.10× lane instead of the 1.25× one. If write stays flat, the TTL is not being honoured somewhere in the chain and the gateway is the next place to look.
+Cache write should collapse while cache read grows: the same content, now on the 0.05× lane instead of the 1.25× one. If write stays flat, the TTL is not being honoured somewhere in the chain and the gateway is the next place to look.
+
+Do not mix families when you convert tokens to money. A Haiku cache read at 0.10× and an Opus 5.5 cache read at 0.05× are not the same line item.
 
 One caveat on my own numbers: the gateway does not return costs to the client, so `estimated_cost_usd` was zero across the board and I priced the classes manually at public rates. That produced a figure well above what I was actually charged, which tells me the real rate differs. **The ranking of the cost centres holds regardless of the unit price; the absolute amounts do not.** Rank first, then price.
 
@@ -222,7 +228,7 @@ Fifteen minutes of SQL, three config lines. I never installed the compressor.
 - [Hermes Agent](https://hermes-agent.nousresearch.com/)
 - [Hermes: context compression and prompt caching](https://hermes-agent.nousresearch.com/docs/developer-guide/context-compression-and-caching)
 - [Hermes: auxiliary models](https://hermes-agent.nousresearch.com/docs/user-guide/configuration#auxiliary-models)
-- [Anthropic: prompt caching](https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching)
+- [Anthropic: prompt caching (per-model cache-hit rates)](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)
 - [OpenAI: prompt caching](https://platform.openai.com/docs/guides/prompt-caching)
 - [JetBrains AI blog: benchmarking a token-reduction CLI proxy](https://blog.jetbrains.com/ai/2026/07/rtk-claude-code-token-savings/)
 - [rtk, CLI output compressor](https://github.com/rtk-ai/rtk)
