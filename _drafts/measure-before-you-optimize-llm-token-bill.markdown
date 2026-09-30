@@ -119,12 +119,14 @@ skill_view      12        47
 search_files    17        35
 web_search       3        31
 execute_code    11        22
+------------    --    ------
+total          124       374
 ```
 
 `LENGTH(content)` is characters, not tokens. For this mix (English plus code) a usable rule of thumb is **~4 characters per token**, so kchars / 4 ≈ ktokens. That is an approximation, not a tokenizer. OpenAI states it for English text; Anthropic uses the same estimate.
 
 ```
-total tools     396 kchars / 4  ≈  99 k tokens
+total tools     374 kchars / 4  ≈  94 k tokens
 terminal only   172 kchars / 4  ≈  43 k tokens
 ```
 
@@ -136,7 +138,7 @@ Compress 70% of it, the optimistic end of the published range, and you save ~30 
 
 The arithmetic is not a criticism of these tools. Their compression is real and often elegant. The problem is the denominator: shell output is one contributor to input tokens, input tokens are one part of the bill, and the reduction dilutes at every step. A vendor claim of "90% of bash output" is perfectly honest and still nearly irrelevant to your invoice. JetBrains ran an independent benchmark on the same class of tool and landed on a ceiling around 3%, an order of magnitude above my case, still not where the money is.
 
-File reads, search results, and web fetches (224 kchars here, more than the shell) bypass a CLI proxy entirely.
+The other tools in the table (202 kchars) bypass a CLI proxy entirely.
 
 ---
 
