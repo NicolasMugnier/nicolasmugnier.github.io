@@ -5,7 +5,7 @@ Instructions for any coding agent working in this repository.
 This is Nicolas Mugnier's Jekyll blog. Live site: https://blog.anyvoid.dev
 GitHub Pages from `main`. Theme: Minima (remote) plus custom layouts and SCSS.
 
-`CLAUDE.md` is stale (it still says French-only content and Disqus). **This file and `.agents/` win.**
+`CLAUDE.md` is a pointer only. **This file and `.agents/` win.**
 
 ## Where to look
 
